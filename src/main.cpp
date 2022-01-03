@@ -1,21 +1,19 @@
 #include <stdio.h>
-#include <string>
-
-#define SDL_MAIN_HANDLED
-#include "SDL2/SDL.h"
-
-const char* AppName = "Dx11-SDL2";
+#include "App.h"
 
 int main(int argc, char* argv[])
 {
-    printf("[MAIN] Init\n");
+    printf("[MAIN] Init App\n");
+    Application app("Dx11-SDL2", 640, 480);
+    app.Init();
 
-    if (SDL_Init(SDL_INIT_VIDEO) != 0)
+    while (app.isRunning)
     {
-        printf("[ERROR] Could not initialize SDL2 library\n");
-        return 1;
+        app.Tick();
     }
 
-    printf("[MAIN] Finished SDL initialization\n");
+    app.Close();
+
+    printf("[MAIN] Terminating\n");
     return 0;
 }
