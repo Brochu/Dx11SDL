@@ -17,4 +17,4 @@ add_executable (Dx11SDL2 ${src})
 target_include_directories (Dx11SDL2 PRIVATE ${CMAKE_CURRENT_LIST_DIR}/include)
 target_link_directories (Dx11SDL2 PRIVATE ${CMAKE_CURRENT_LIST_DIR}/libs)
 
-#target_link_libraries (Dx11SDL2 PRIVATE ${libs})
+target_link_libraries (Dx11SDL2 PRIVATE ${libs})
