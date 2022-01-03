@@ -11,6 +11,11 @@ set (src
 set (libs
     SDL2main
     SDL2
+
+    d3d11.lib
+    d3dx11.lib
+    dxgi.lib
+    d3dcompiler.lib
 )
 add_executable (Dx11SDL2 ${src})
 
