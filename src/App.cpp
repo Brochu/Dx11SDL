@@ -12,6 +12,8 @@ int Application::Init()
         return 1;
     }
 
+    //TODO: Create window and surface
+
     printf("[APP] Finished SDL initialization\n");
     return 0;
 }
@@ -20,11 +22,17 @@ int Application::Tick()
 {
     isRunning = false;
     printf("[APP] Ticking Systems\n");
+    //TODO: Need to poll the window for events
+    //TODO: Keyboard events
+    //TODO: Mouse events
+
+    //TODO: Forward events to the correct systems
     return 0;
 }
 
 void Application::Close()
 {
     //TODO: Cleanup allocated mem
+    //TODO: Destroy widow
     printf("[APP] Done Closing\n");
 }
