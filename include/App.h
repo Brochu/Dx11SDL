@@ -20,6 +20,6 @@ public:
 
 private:
 
-    SDL_Window* window;
-    SDL_Surface* surface;
+    SDL_Window* window = nullptr;
+    SDL_Surface* surface = nullptr;
 };
