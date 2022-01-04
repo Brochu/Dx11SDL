@@ -36,14 +36,13 @@ int Application::Init()
 
 int Application::Tick()
 {
+    //TODO: Maybe we want to add some time handling here with SDL_GetTicks()
     SDL_Event e;
     while (SDL_PollEvent(&e) != 0)
     {
-        //TODO: Need to poll the window for events
         if (e.type == SDL_QUIT)
             isRunning = false;
 
-        //TODO: Keyboard events
         if (e.type == SDL_KEYDOWN)
         {
             switch (e.key.keysym.sym)
@@ -63,9 +62,14 @@ int Application::Tick()
             }
         }
 
-        //TODO: Mouse events
+        if (e.type == SDL_MOUSEBUTTONDOWN)
+        {
+            printf("[APP] Mouse button %i pressed!\n", e.button.button);
+        }
     }
 
+    //TODO: Split event handling if different function
+    //TODO: Collect all state changes with events to send to systems
     //TODO: Forward events to the correct systems
     return 0;
 }
