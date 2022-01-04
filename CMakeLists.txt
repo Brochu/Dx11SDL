@@ -6,10 +6,12 @@ set (CMAKE_CXX_STANDARD 17)
 
 set (headers
     ${CMAKE_CURRENT_LIST_DIR}/include/App.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/Dx11Renderer.h
 )
 set (source
     ${CMAKE_CURRENT_LIST_DIR}/src/main.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/App.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/Dx11Renderer.cpp
 )
 
 set (libs
