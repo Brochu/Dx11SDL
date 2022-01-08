@@ -1,4 +1,5 @@
 #include "App.h"
+#include "SDL2/SDL_timer.h"
 
 Application::Application(const std::string&& name, int w, int h)
     : isRunning(true), AppName(name), width(w), height(h)
@@ -12,6 +13,9 @@ int Application::Init()
         printf("[ERROR] Could not initialize SDL2 library; error = %s\n", SDL_GetError());
         return 1;
     }
+
+    // Start tracking time spent in the app
+    startTicks = prevTicks = SDL_GetTicks64();
 
     window = SDL_CreateWindow(AppName.c_str(),
         SDL_WINDOWPOS_UNDEFINED,
@@ -42,7 +46,6 @@ int Application::Init()
 
 int Application::Tick()
 {
-    //TODO: Maybe we want to add some time handling here with SDL_GetTicks()
     SDL_Event e;
     while (SDL_PollEvent(&e) != 0)
     {
@@ -78,6 +81,14 @@ int Application::Tick()
     //TODO: Collect all state changes with events to send to systems
     //TODO: Forward events to the correct systems
 
+    // Time tracking
+    uint64_t currentTicks = SDL_GetTicks64();
+    float time = (currentTicks - startTicks) / 1000.f;
+    float deltaTime = (currentTicks - prevTicks) / 1000.f;
+    prevTicks = currentTicks;
+    //printf("[APP][TIMES] Time = %f; DeltaTime = %f\n", time, deltaTime);
+
+    render->Update(deltaTime);
     render->Render();
     return 0;
 }

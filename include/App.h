@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <string>
 
 #define SDL_MAIN_HANDLED
@@ -26,4 +27,7 @@ private:
     SDL_Window* window = nullptr;
     SDL_Surface* surface = nullptr;
     Dx11Renderer* render = nullptr;
+
+    uint64_t startTicks = 0;
+    uint64_t prevTicks = 0;
 };

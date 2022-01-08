@@ -8,6 +8,7 @@ class Dx11Renderer
 
 public:
     void Init(HWND hWindow, int width, int height);
+    void Update(float delta);
     void Render();
     void Quit();
 
@@ -16,6 +17,8 @@ private:
     ID3D11Device* device;
     ID3D11DeviceContext* ctx;
     ID3D11RenderTargetView* renderTarget;
+
+    float bgColor[4] = { 0.2f, 0.2f, 0.4f, 1.0f };
 
     static const char* SHADER_PATH;
 };
