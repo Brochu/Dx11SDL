@@ -1,6 +1,9 @@
 #include "App.h"
 #include "SDL2/SDL_timer.h"
 
+#include "imgui.h"
+#include "imgui_impl_sdl.h"
+
 Application::Application(const std::string&& name, int w, int h)
     : isRunning(true), AppName(name), width(w), height(h)
 { }
@@ -38,9 +41,17 @@ int Application::Init()
     SDL_VERSION(&wmInfo.version);
     SDL_GetWindowWMInfo(window, &wmInfo);
 
+    // IMGUI setup
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO io = ImGui::GetIO();
+    ImGui::StyleColorsDark();
+    ImGui_ImplSDL2_InitForD3D(window);
+
     render = new Dx11Renderer();
     render->Init(wmInfo.info.win.window, width, height);
     printf("[APP] Finished Dx11 initialization\n");
+
     return 0;
 }
 
@@ -49,6 +60,8 @@ int Application::Tick()
     SDL_Event e;
     while (SDL_PollEvent(&e) != 0)
     {
+        ImGui_ImplSDL2_ProcessEvent(&e);
+
         if (e.type == SDL_QUIT)
             isRunning = false;
 
@@ -89,6 +102,8 @@ int Application::Tick()
     //printf("[APP][TIMES] Time = %f; DeltaTime = %f\n", time, deltaTime);
 
     render->Update(time, deltaTime);
+
+    ImGui_ImplSDL2_NewFrame();
     render->Render();
     return 0;
 }
@@ -100,5 +115,9 @@ void Application::Close()
 
     render->Quit();
     delete render;
+
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
+
     printf("[APP] Done Closing\n");
 }

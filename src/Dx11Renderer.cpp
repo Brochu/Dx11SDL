@@ -8,6 +8,9 @@
 #include <directxmath.h>
 #include <d3dcompiler.h>
 
+#include "imgui.h"
+#include "imgui_impl_dx11.h"
+
 const char* Dx11Renderer::SHADER_PATH = "";
 
 void Dx11Renderer::Init(HWND hWindow, int width, int height)
@@ -49,7 +52,8 @@ void Dx11Renderer::Init(HWND hWindow, int width, int height)
     hr = device->CreateRenderTargetView(backbuf, NULL, &renderTarget);
     backbuf->Release();
 
-    ctx->OMSetRenderTargets(1, &renderTarget, NULL);
+    // Finish IMGUI setup
+    ImGui_ImplDX11_Init(device, ctx);
 }
 
 void Dx11Renderer::Update(float time, float delta)
@@ -59,7 +63,16 @@ void Dx11Renderer::Update(float time, float delta)
 void Dx11Renderer::Render()
 {
     //TODO: Clear screen
+    ctx->OMSetRenderTargets(1, &renderTarget, NULL);
     ctx->ClearRenderTargetView(renderTarget, bgColor);
+
+    // ImGUI
+    ImGui_ImplDX11_NewFrame();
+    ImGui::NewFrame();
+    ImGui::ShowDemoWindow();
+
+    ImGui::Render();
+    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
     //TODO: Collect all objs to draw on screen
     //TODO: Prepare pipeline
@@ -73,6 +86,8 @@ void Dx11Renderer::Quit()
     swapchain->Release();
     device->Release();
     ctx->Release();
+
+    ImGui_ImplDX11_Shutdown();
 
     printf("[RENDER] Done quitting Dx11\n");
 }
