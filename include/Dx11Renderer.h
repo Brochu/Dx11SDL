@@ -8,7 +8,7 @@ class Dx11Renderer
 
 public:
     void Init(HWND hWindow, int width, int height);
-    void Update(float delta);
+    void Update(float time, float delta);
     void Render();
     void Quit();
 

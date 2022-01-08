@@ -1,5 +1,6 @@
 #include <Dx11Renderer.h>
 #include <stdio.h>
+#include <cmath>
 
 #include <winnt.h>
 #include <minwinbase.h>
@@ -51,7 +52,7 @@ void Dx11Renderer::Init(HWND hWindow, int width, int height)
     ctx->OMSetRenderTargets(1, &renderTarget, NULL);
 }
 
-void Dx11Renderer::Update(float delta)
+void Dx11Renderer::Update(float time, float delta)
 {
 }
 

@@ -88,7 +88,7 @@ int Application::Tick()
     prevTicks = currentTicks;
     //printf("[APP][TIMES] Time = %f; DeltaTime = %f\n", time, deltaTime);
 
-    render->Update(deltaTime);
+    render->Update(time, deltaTime);
     render->Render();
     return 0;
 }
