@@ -7,6 +7,7 @@ set (CMAKE_CXX_STANDARD 17)
 set (headers
     ${CMAKE_CURRENT_LIST_DIR}/include/App.h
     ${CMAKE_CURRENT_LIST_DIR}/include/Dx11Renderer.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/ObjReader.h
 
     ${CMAKE_CURRENT_LIST_DIR}/imgui/imconfig.h
     ${CMAKE_CURRENT_LIST_DIR}/imgui/imgui.h
@@ -16,11 +17,17 @@ set (headers
     ${CMAKE_CURRENT_LIST_DIR}/imgui/imstb_truetype.h
     ${CMAKE_CURRENT_LIST_DIR}/imgui/imgui_impl_dx11.h
     ${CMAKE_CURRENT_LIST_DIR}/imgui/imgui_impl_sdl.h
+
+    ${CMAKE_CURRENT_LIST_DIR}/include/DirectXCollision.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/DirectXColors.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/DirectXMath.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/DirectXPackedVector.h
 )
 set (source
     ${CMAKE_CURRENT_LIST_DIR}/src/main.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/App.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/Dx11Renderer.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/ObjReader.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/imgui/imgui.cpp
     ${CMAKE_CURRENT_LIST_DIR}/imgui/imgui_demo.cpp
@@ -29,6 +36,13 @@ set (source
     ${CMAKE_CURRENT_LIST_DIR}/imgui/imgui_widgets.cpp
     ${CMAKE_CURRENT_LIST_DIR}/imgui/imgui_impl_dx11.cpp
     ${CMAKE_CURRENT_LIST_DIR}/imgui/imgui_impl_sdl.cpp
+
+    ${CMAKE_CURRENT_LIST_DIR}/src/DirectXCollision.inl
+    ${CMAKE_CURRENT_LIST_DIR}/src/DirectXMathConvert.inl
+    ${CMAKE_CURRENT_LIST_DIR}/src/DirectXMathMatrix.inl
+    ${CMAKE_CURRENT_LIST_DIR}/src/DirectXMathMisc.inl
+    ${CMAKE_CURRENT_LIST_DIR}/src/DirectXMathVector.inl
+    ${CMAKE_CURRENT_LIST_DIR}/src/DirectXPackedVector.inl
 )
 
 set (libs
