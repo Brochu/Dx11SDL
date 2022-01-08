@@ -1,8 +1,4 @@
 #include "App.h"
-#include "SDL2/SDL.h"
-#include "SDL2/SDL_events.h"
-#include "SDL2/SDL_timer.h"
-#include "SDL2/SDL_video.h"
 
 Application::Application(const std::string&& name, int w, int h)
     : isRunning(true), AppName(name), width(w), height(h)
@@ -33,8 +29,13 @@ int Application::Init()
     surface = SDL_GetWindowSurface(window);
     printf("[APP] Finished SDL initialization\n");
 
+    // Getting window raw instance to prepare Dx11
+    SDL_SysWMinfo wmInfo;
+    SDL_VERSION(&wmInfo.version);
+    SDL_GetWindowWMInfo(window, &wmInfo);
+
     render = new Dx11Renderer();
-    render->Init();
+    render->Init(wmInfo.info.win.window, width, height);
     printf("[APP] Finished Dx11 initialization\n");
     return 0;
 }
@@ -76,6 +77,8 @@ int Application::Tick()
     //TODO: Split event handling if different function
     //TODO: Collect all state changes with events to send to systems
     //TODO: Forward events to the correct systems
+
+    render->Render();
     return 0;
 }
 
