@@ -10,6 +10,7 @@ public:
     void Init(HWND hWindow, int width, int height);
     void Update(float time, float delta);
     void Render();
+    void RenderDebugUI();
     void Quit();
 
 private:

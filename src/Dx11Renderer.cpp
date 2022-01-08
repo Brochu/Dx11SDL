@@ -62,23 +62,28 @@ void Dx11Renderer::Update(float time, float delta)
 
 void Dx11Renderer::Render()
 {
-    //TODO: Clear screen
     ctx->OMSetRenderTargets(1, &renderTarget, NULL);
     ctx->ClearRenderTargetView(renderTarget, bgColor);
-
-    // ImGUI
-    ImGui_ImplDX11_NewFrame();
-    ImGui::NewFrame();
-    ImGui::ShowDemoWindow();
-
-    ImGui::Render();
-    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
     //TODO: Collect all objs to draw on screen
     //TODO: Prepare pipeline
     //TODO: Draw commands
 
+    RenderDebugUI();
     swapchain->Present(1, 0);
+}
+
+void Dx11Renderer::RenderDebugUI()
+{
+    ImGui_ImplDX11_NewFrame();
+    ImGui::NewFrame();
+
+    ImGui::Begin("Debug");
+    ImGui::ColorEdit4("ClearColor", bgColor);
+    ImGui::End();
+
+    ImGui::Render();
+    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
 
 void Dx11Renderer::Quit()
