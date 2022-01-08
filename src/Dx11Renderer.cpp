@@ -54,12 +54,12 @@ void Dx11Renderer::Init(HWND hWindow, int width, int height)
 void Dx11Renderer::Render()
 {
     //TODO: Clear screen
+    float bgColor[4] = { 0.0f, 0.2f, 0.4f, 1.0f };
+    ctx->ClearRenderTargetView(renderTarget, bgColor);
+
     //TODO: Collect all objs to draw on screen
     //TODO: Prepare pipeline
     //TODO: Draw commands
-
-    float bgColor[4] = { 0.0f, 0.2f, 0.4f, 1.0f };
-    ctx->ClearRenderTargetView(renderTarget, bgColor);
 
     swapchain->Present(1, 0);
 }
