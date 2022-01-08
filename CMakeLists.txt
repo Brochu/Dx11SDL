@@ -18,10 +18,10 @@ set (headers
     ${CMAKE_CURRENT_LIST_DIR}/imgui/imgui_impl_dx11.h
     ${CMAKE_CURRENT_LIST_DIR}/imgui/imgui_impl_sdl.h
 
-    ${CMAKE_CURRENT_LIST_DIR}/include/DirectXCollision.h
-    ${CMAKE_CURRENT_LIST_DIR}/include/DirectXColors.h
-    ${CMAKE_CURRENT_LIST_DIR}/include/DirectXMath.h
-    ${CMAKE_CURRENT_LIST_DIR}/include/DirectXPackedVector.h
+    ${CMAKE_CURRENT_LIST_DIR}/dxmath/DirectXCollision.h
+    ${CMAKE_CURRENT_LIST_DIR}/dxmath/DirectXColors.h
+    ${CMAKE_CURRENT_LIST_DIR}/dxmath/DirectXMath.h
+    ${CMAKE_CURRENT_LIST_DIR}/dxmath/DirectXPackedVector.h
 )
 set (source
     ${CMAKE_CURRENT_LIST_DIR}/src/main.cpp
@@ -37,12 +37,12 @@ set (source
     ${CMAKE_CURRENT_LIST_DIR}/imgui/imgui_impl_dx11.cpp
     ${CMAKE_CURRENT_LIST_DIR}/imgui/imgui_impl_sdl.cpp
 
-    ${CMAKE_CURRENT_LIST_DIR}/src/DirectXCollision.inl
-    ${CMAKE_CURRENT_LIST_DIR}/src/DirectXMathConvert.inl
-    ${CMAKE_CURRENT_LIST_DIR}/src/DirectXMathMatrix.inl
-    ${CMAKE_CURRENT_LIST_DIR}/src/DirectXMathMisc.inl
-    ${CMAKE_CURRENT_LIST_DIR}/src/DirectXMathVector.inl
-    ${CMAKE_CURRENT_LIST_DIR}/src/DirectXPackedVector.inl
+    ${CMAKE_CURRENT_LIST_DIR}/dxmath/DirectXCollision.inl
+    ${CMAKE_CURRENT_LIST_DIR}/dxmath/DirectXMathConvert.inl
+    ${CMAKE_CURRENT_LIST_DIR}/dxmath/DirectXMathMatrix.inl
+    ${CMAKE_CURRENT_LIST_DIR}/dxmath/DirectXMathMisc.inl
+    ${CMAKE_CURRENT_LIST_DIR}/dxmath/DirectXMathVector.inl
+    ${CMAKE_CURRENT_LIST_DIR}/dxmath/DirectXPackedVector.inl
 )
 
 set (libs
@@ -56,7 +56,12 @@ set (libs
 )
 add_executable (Dx11SDL2 ${source} ${headers})
 
-target_include_directories (Dx11SDL2 PRIVATE ${CMAKE_CURRENT_LIST_DIR}/include ${CMAKE_CURRENT_LIST_DIR}/imgui)
+target_include_directories (Dx11SDL2
+    PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/include
+    ${CMAKE_CURRENT_LIST_DIR}/imgui
+    ${CMAKE_CURRENT_LIST_DIR}/dxmath
+)
 target_link_directories (Dx11SDL2 PRIVATE ${CMAKE_CURRENT_LIST_DIR}/libs)
 
 target_link_libraries (Dx11SDL2 PRIVATE ${libs})

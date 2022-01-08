@@ -1,4 +1,5 @@
 #include <vector>
+#include <DirectXMath.h>
 
 typedef struct
 {
