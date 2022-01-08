@@ -10,6 +10,7 @@ Application::Application(const std::string&& name, int w, int h)
 
 int Application::Init()
 {
+    printf("[APP] Start Init Flow");
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
         printf("[ERROR] Could not initialize SDL2 library; error = %s\n", SDL_GetError());
@@ -31,6 +32,10 @@ int Application::Init()
 
     surface = SDL_GetWindowSurface(window);
     printf("[APP] Finished SDL initialization\n");
+
+    render = new Dx11Renderer();
+    render->Init();
+    printf("[APP] Finished Dx11 initialization\n");
     return 0;
 }
 
@@ -79,5 +84,7 @@ void Application::Close()
     SDL_DestroyWindow(window);
     SDL_Quit();
 
+    render->Quit();
+    delete render;
     printf("[APP] Done Closing\n");
 }

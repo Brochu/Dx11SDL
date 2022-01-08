@@ -3,6 +3,8 @@
 #define SDL_MAIN_HANDLED
 #include "SDL2/SDL.h"
 
+#include "Dx11Renderer.h"
+
 class Application
 {
 
@@ -22,4 +24,5 @@ private:
 
     SDL_Window* window = nullptr;
     SDL_Surface* surface = nullptr;
+    Dx11Renderer* render = nullptr;
 };
