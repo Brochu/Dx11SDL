@@ -1,6 +1,12 @@
 #include <Dx11Renderer.h>
 #include <stdio.h>
 
+#include <winnt.h>
+#include <minwinbase.h>
+
+#include <directxmath.h>
+#include <d3dcompiler.h>
+
 const char* Dx11Renderer::SHADER_PATH = "";
 
 void Dx11Renderer::Init(HWND hWindow, int width, int height)

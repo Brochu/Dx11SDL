@@ -1,18 +1,12 @@
 #include <windef.h>
-#include <winnt.h>
-#include <minwinbase.h>
 
 #include <d3d11.h>
 #include <dxgi.h>
-#include <directxmath.h>
-#include <d3dcompiler.h>
 
 class Dx11Renderer
 {
 
 public:
-    //Dx11Renderer();
-
     void Init(HWND hWindow, int width, int height);
     void Render();
     void Quit();
