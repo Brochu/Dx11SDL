@@ -66,13 +66,28 @@ bool ObjReader::ReadFromFile(const char* filepath, ModelData& outModelData)
             ss >> uvIdx[2]; ss.ignore(1);
             ss >> normIdx[2]; ss.ignore(1);
 
-            printf("[OBJ] Parsing tri: %ld/%ld/%ld ; %ld/%ld/%ld ; %ld/%ld/%ld\n",
-                vertexIdx[0], uvIdx[0], normIdx[0],
-                vertexIdx[1], uvIdx[1], normIdx[1],
-                vertexIdx[2], uvIdx[2], normIdx[2]
-            );
+            outModelData.vertices.push_back(temp_verts[vertexIdx[0]-1]);
+            outModelData.vertices.push_back(temp_verts[vertexIdx[1]-1]);
+            outModelData.vertices.push_back(temp_verts[vertexIdx[2]-1]);
+
+            outModelData.uvs.push_back(temp_uvs[uvIdx[0]-1]);
+            outModelData.uvs.push_back(temp_uvs[uvIdx[1]-1]);
+            outModelData.uvs.push_back(temp_uvs[uvIdx[2]-1]);
+
+            outModelData.normals.push_back(temp_norms[normIdx[0]-1]);
+            outModelData.normals.push_back(temp_norms[normIdx[1]-1]);
+            outModelData.normals.push_back(temp_norms[normIdx[2]-1]);
         }
     }
+
+    //for (int i = 0; i < outModelData.vertices.size(); i++)
+    //{
+    //    printf("[OBJ] (%f, %f, %f)\n",
+    //        outModelData.vertices[i].x,
+    //        outModelData.vertices[i].y,
+    //        outModelData.vertices[i].z
+    //    );
+    //}
 
     file.close();
     return true;
