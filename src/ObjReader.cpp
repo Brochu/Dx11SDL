@@ -1,6 +1,5 @@
 #include "ObjReader.h"
 
-#include <DirectXMath.h>
 #include <fstream>
 #include <sstream>
 #include <string>
