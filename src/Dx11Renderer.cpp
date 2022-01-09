@@ -1,17 +1,18 @@
-#include <Dx11Renderer.h>
+#include "Dx11Renderer.h"
+#include "ObjReader.h"
+
 #include <stdio.h>
 #include <cmath>
+#include <string>
 
-#include <winnt.h>
-#include <minwinbase.h>
-
-#include <directxmath.h>
-#include <d3dcompiler.h>
+#include "winnt.h"
+#include "minwinbase.h"
 
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
 
 const char* Dx11Renderer::SHADER_PATH = "";
+const char* Dx11Renderer::DATA_PATH = "data/";
 
 void Dx11Renderer::Init(HWND hWindow, int width, int height)
 {
@@ -54,6 +55,14 @@ void Dx11Renderer::Init(HWND hWindow, int width, int height)
 
     // Finish IMGUI setup
     ImGui_ImplDX11_Init(device, ctx);
+
+    // Test loading model data
+    ModelData model;
+    std::string modelPath = DATA_PATH;
+    modelPath += "cube.obj";
+    ObjReader::ReadFromFile(modelPath.c_str(), model);
+
+    ObjReader::DebugModelData(model);
 }
 
 void Dx11Renderer::Update(float time, float delta)

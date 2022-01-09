@@ -22,4 +22,5 @@ private:
     float bgColor[4] = { 0.2f, 0.2f, 0.4f, 1.0f };
 
     static const char* SHADER_PATH;
+    static const char* DATA_PATH;
 };
