@@ -1,15 +1,21 @@
 #include "ObjReader.h"
 
+#include <DirectXMath.h>
 #include <fstream>
 #include <sstream>
+#include <stdint.h>
 #include <string>
 
 bool ObjReader::ReadFromFile(const char* filepath, ModelData& outModelData)
 {
-    std::ifstream file(filepath);
-    if (!file.good()) return false;
-
     outModelData = {};
+
+    std::ifstream file(filepath);
+    if (!file.good() || !file.is_open() || file.bad()) return false;
+
+    std::vector<DirectX::XMFLOAT3> temp_verts;
+    std::vector<DirectX::XMFLOAT2> temp_uvs;
+    std::vector<DirectX::XMFLOAT3> temp_norms;
 
     std::string line;
     std::stringstream ss;
@@ -25,14 +31,14 @@ bool ObjReader::ReadFromFile(const char* filepath, ModelData& outModelData)
             ss >> vert.x;
             ss >> vert.y;
             ss >> vert.z;
-            outModelData.vertices.push_back(vert);
+            temp_verts.push_back(vert);
         }
         else if (type == "vt")
         {
             DirectX::XMFLOAT2 uv;
             ss >> uv.x;
             ss >> uv.y;
-            outModelData.uvs.push_back(uv);
+            temp_uvs.push_back(uv);
         }
         else if (type == "vn")
         {
@@ -40,7 +46,31 @@ bool ObjReader::ReadFromFile(const char* filepath, ModelData& outModelData)
             ss >> norm.x;
             ss >> norm.y;
             ss >> norm.z;
-            outModelData.normals.push_back(norm);
+            temp_norms.push_back(norm);
+        }
+        else if (type == "f")
+        {
+            uint64_t vertexIdx[3], uvIdx[3], normIdx[3];
+            // Tri p0
+            ss >> vertexIdx[0]; ss.ignore(1);
+            ss >> uvIdx[0]; ss.ignore(1);
+            ss >> normIdx[0]; ss.ignore(1);
+
+            // Tri p1
+            ss >> vertexIdx[1]; ss.ignore(1);
+            ss >> uvIdx[1]; ss.ignore(1);
+            ss >> normIdx[1]; ss.ignore(1);
+
+            // Tri p2
+            ss >> vertexIdx[2]; ss.ignore(1);
+            ss >> uvIdx[2]; ss.ignore(1);
+            ss >> normIdx[2]; ss.ignore(1);
+
+            printf("[OBJ] Parsing tri: %ld/%ld/%ld ; %ld/%ld/%ld ; %ld/%ld/%ld\n",
+                vertexIdx[0], uvIdx[0], normIdx[0],
+                vertexIdx[1], uvIdx[1], normIdx[1],
+                vertexIdx[2], uvIdx[2], normIdx[2]
+            );
         }
     }
 
