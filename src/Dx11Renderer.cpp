@@ -1,15 +1,8 @@
 #include "Dx11Renderer.h"
 #include "ObjReader.h"
 
-#include <stdio.h>
-#include <cmath>
 #include <string>
-
-#include "winnt.h"
-#include "minwinbase.h"
-
-#include "imgui.h"
-#include "imgui_impl_dx11.h"
+#include <imgui_impl_dx11.h>
 
 const char* Dx11Renderer::SHADER_PATH = "";
 const char* Dx11Renderer::DATA_PATH = "data/";
