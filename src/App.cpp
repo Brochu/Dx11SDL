@@ -1,8 +1,13 @@
 #include "App.h"
-#include "SDL2/SDL_timer.h"
+#include "Dx11Renderer.h"
 
-#include "imgui.h"
-#include "imgui_impl_sdl.h"
+#define SDL_MAIN_HANDLED
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_syswm.h>
+#include <SDL2/SDL_timer.h>
+
+#include <imgui.h>
+#include <imgui_impl_sdl.h>
 
 Application::Application(const std::string&& name, int w, int h)
     : isRunning(true), AppName(name), width(w), height(h)

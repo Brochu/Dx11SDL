@@ -1,11 +1,8 @@
-#include <stdint.h>
 #include <string>
 
-#define SDL_MAIN_HANDLED
-#include "SDL2/SDL.h"
-#include "SDL2/SDL_syswm.h"
-
-#include "Dx11Renderer.h"
+class SDL_Window;
+class SDL_Surface;
+class Dx11Renderer;
 
 class Application
 {
