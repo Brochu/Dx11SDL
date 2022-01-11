@@ -1,5 +1,9 @@
+#pragma once
+
 #include <d3d11.h>
 #include <dxgi.h>
+
+struct ModelData;
 
 class Dx11Renderer
 {
@@ -18,6 +22,9 @@ private:
     ID3D11RenderTargetView* renderTarget;
 
     float bgColor[4] = { 0.2f, 0.2f, 0.4f, 1.0f };
+    ModelData* cubeModel;
+    //TODO: Make sure this model works as well
+    //ModelData* houseModel;
 
     static const char* SHADER_PATH;
     static const char* DATA_PATH;

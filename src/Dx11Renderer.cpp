@@ -1,5 +1,6 @@
 #include "Dx11Renderer.h"
 #include "ObjReader.h"
+#include "ModelData.h"
 
 #include <string>
 #include <imgui_impl_dx11.h>
@@ -50,12 +51,12 @@ void Dx11Renderer::Init(HWND hWindow, int width, int height)
     ImGui_ImplDX11_Init(device, ctx);
 
     // Test loading model data
-    ModelData model;
+    cubeModel = new ModelData();
     std::string modelPath = DATA_PATH;
     modelPath += "cube.obj";
-    ObjReader::ReadFromFile(modelPath.c_str(), model);
+    ObjReader::ReadFromFile(modelPath.c_str(), *cubeModel);
 
-    ObjReader::DebugModelData(model);
+    ObjReader::DebugModelData(*cubeModel);
 }
 
 void Dx11Renderer::Update(float time, float delta)
@@ -90,9 +91,11 @@ void Dx11Renderer::RenderDebugUI()
 
 void Dx11Renderer::Quit()
 {
-    swapchain->Release();
-    device->Release();
+    delete cubeModel;
+
     ctx->Release();
+    device->Release();
+    swapchain->Release();
 
     ImGui_ImplDX11_Shutdown();
 
