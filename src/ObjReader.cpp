@@ -1,5 +1,4 @@
 #include "ObjReader.h"
-#include <ModelData.h>
 
 #include <fstream>
 #include <sstream>
@@ -80,15 +79,6 @@ bool ObjReader::ReadFromFile(const char* filepath, ModelData& outModelData)
         }
     }
 
-    //for (int i = 0; i < outModelData.vertices.size(); i++)
-    //{
-    //    printf("[OBJ] (%f, %f, %f)\n",
-    //        outModelData.vertices[i].x,
-    //        outModelData.vertices[i].y,
-    //        outModelData.vertices[i].z
-    //    );
-    //}
-
     file.close();
     return true;
 }
@@ -100,4 +90,13 @@ void ObjReader::DebugModelData(const ModelData& modelData)
         modelData.uvs.size(),
         modelData.normals.size()
     );
+
+    for (int i = 0; i < modelData.vertices.size(); i++)
+    {
+        printf("[OBJ] (%f, %f, %f)\n",
+            modelData.vertices[i].x,
+            modelData.vertices[i].y,
+            modelData.vertices[i].z
+        );
+    }
 }

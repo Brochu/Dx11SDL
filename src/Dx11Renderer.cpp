@@ -1,6 +1,5 @@
 #include "Dx11Renderer.h"
 #include "ObjReader.h"
-#include "ModelData.h"
 
 #include <string>
 #include <imgui_impl_dx11.h>
