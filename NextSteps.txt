@@ -1,0 +1,15 @@
+- Remove model data file, move to obj reader
+- Create the Vertex struct that we will use for VertexBuffers
+- Read the OBJ into the Vertex struct instead
+- Be able to sent the Vertex format to the Dx11Renderer
+- Send the model Vertex data to renderer
+
+- Implement basic shaders
+- Create pipeline
+
+- Create constant buffer with time and transform values
+- Attach buffer to shaders
+- Control transform values with ImGUI
+
+- deferred renderer
+- shadow maps
