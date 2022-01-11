@@ -1,12 +1,6 @@
-#include <vector>
-#include <DirectXMath.h>
+#pragma once
 
-typedef struct
-{
-    std::vector<DirectX::XMFLOAT3> vertices;
-    std::vector<DirectX::XMFLOAT2> uvs;
-    std::vector<DirectX::XMFLOAT3> normals;
-} ModelData;
+struct ModelData;
 
 class ObjReader
 {
