@@ -1,7 +1,6 @@
 #include "ObjReader.h"
 #include <ModelData.h>
 
-#include <DirectXMath.h>
 #include <fstream>
 #include <sstream>
 #include <stdint.h>

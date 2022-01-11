@@ -5,6 +5,8 @@
 #include <string>
 #include <imgui_impl_dx11.h>
 
+#include <DXM/DirectXMath.h>
+
 const char* Dx11Renderer::SHADER_PATH = "";
 const char* Dx11Renderer::DATA_PATH = "data/";
 
