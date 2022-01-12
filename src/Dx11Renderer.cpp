@@ -58,6 +58,15 @@ void Dx11Renderer::Init(HWND hWindow, int width, int height)
     ObjReader::ReadFromFile(modelPath.c_str(), *cubeModel);
 
     ObjReader::DebugModelData(*cubeModel);
+
+    // Create vertex buffer
+    D3D11_BUFFER_DESC bd = {0};
+    bd.ByteWidth = sizeof(Vertex) * cubeModel->verts.size();
+    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+    D3D11_SUBRESOURCE_DATA srd = { cubeModel->verts.data(), 0, 0 };
+
+    device->CreateBuffer(&bd, &srd, &vertBuf);
 }
 
 void Dx11Renderer::Update(float time, float delta)
@@ -92,6 +101,7 @@ void Dx11Renderer::RenderDebugUI()
 
 void Dx11Renderer::Quit()
 {
+    vertBuf->Release();
     delete cubeModel;
 
     ctx->Release();

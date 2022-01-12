@@ -19,7 +19,9 @@ private:
     IDXGISwapChain* swapchain;
     ID3D11Device* device;
     ID3D11DeviceContext* ctx;
+
     ID3D11RenderTargetView* renderTarget;
+    ID3D11Buffer* vertBuf;
 
     float bgColor[4] = { 0.2f, 0.2f, 0.4f, 1.0f };
     ModelData* cubeModel;
