@@ -3,11 +3,16 @@
 #include <vector>
 #include <DXM/DirectXMath.h>
 
+struct Vertex
+{
+    DirectX::XMFLOAT3 pos;
+    DirectX::XMFLOAT2 uvs;
+    DirectX::XMFLOAT3 norm;
+};
+
 struct ModelData
 {
-    std::vector<DirectX::XMFLOAT3> vertices;
-    std::vector<DirectX::XMFLOAT2> uvs;
-    std::vector<DirectX::XMFLOAT3> normals;
+    std::vector<Vertex> verts;
 };
 
 class ObjReader

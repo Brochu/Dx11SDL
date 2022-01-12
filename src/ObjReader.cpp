@@ -65,17 +65,23 @@ bool ObjReader::ReadFromFile(const char* filepath, ModelData& outModelData)
             ss >> uvIdx[2]; ss.ignore(1);
             ss >> normIdx[2]; ss.ignore(1);
 
-            outModelData.vertices.push_back(temp_verts[vertexIdx[0]-1]);
-            outModelData.vertices.push_back(temp_verts[vertexIdx[1]-1]);
-            outModelData.vertices.push_back(temp_verts[vertexIdx[2]-1]);
+            outModelData.verts.push_back({
+                temp_verts[vertexIdx[0]-1],
+                temp_uvs[uvIdx[0]-1],
+                temp_norms[normIdx[0]-1]
+            });
 
-            outModelData.uvs.push_back(temp_uvs[uvIdx[0]-1]);
-            outModelData.uvs.push_back(temp_uvs[uvIdx[1]-1]);
-            outModelData.uvs.push_back(temp_uvs[uvIdx[2]-1]);
+            outModelData.verts.push_back({
+                temp_verts[vertexIdx[1]-1],
+                temp_uvs[uvIdx[1]-1],
+                temp_norms[normIdx[1]-1]
+            });
 
-            outModelData.normals.push_back(temp_norms[normIdx[0]-1]);
-            outModelData.normals.push_back(temp_norms[normIdx[1]-1]);
-            outModelData.normals.push_back(temp_norms[normIdx[2]-1]);
+            outModelData.verts.push_back({
+                temp_verts[vertexIdx[2]-1],
+                temp_uvs[uvIdx[2]-1],
+                temp_norms[normIdx[2]-1]
+            });
         }
     }
 
@@ -85,18 +91,12 @@ bool ObjReader::ReadFromFile(const char* filepath, ModelData& outModelData)
 
 void ObjReader::DebugModelData(const ModelData& modelData)
 {
-    printf("[OBJ] vert = %ld, uvs = %ld, normals = %ld\n",
-        modelData.vertices.size(),
-        modelData.uvs.size(),
-        modelData.normals.size()
-    );
+    printf("------------------------------------------\n");
+    printf("[OBJ] %ld vertices :\n", modelData.verts.size());
 
-    for (int i = 0; i < modelData.vertices.size(); i++)
+    for (const Vertex& v : modelData.verts)
     {
-        printf("[OBJ] (%f, %f, %f)\n",
-            modelData.vertices[i].x,
-            modelData.vertices[i].y,
-            modelData.vertices[i].z
-        );
+        printf("[VERT] pos = (%f, %f, %f)\n", v.pos.x, v.pos.y, v.pos.z);
     }
+    printf("------------------------------------------\n");
 }
