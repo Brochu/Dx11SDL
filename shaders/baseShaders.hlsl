@@ -1,6 +1,8 @@
 struct vs_in
 {
-    float3 localPos : POS;
+    float3 pos : POSITION;
+    float2 uv : TEXCOORD;
+    float3 norm : NORMAL;
 };
 
 struct vs_out
@@ -12,7 +14,7 @@ struct vs_out
 vs_out vs_main(vs_in input)
 {
     vs_out output = (vs_out)0;
-    output.clipPos = float4(input.localPos, 1.0);
+    output.clipPos = float4(input.pos, 1.0);
 
     return output;
 }
