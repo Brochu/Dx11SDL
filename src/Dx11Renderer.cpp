@@ -122,6 +122,20 @@ void Dx11Renderer::Init(HWND hWindow, int width, int height)
 
     hr = device->CreatePixelShader(ps_blob->GetBufferPointer(), ps_blob->GetBufferSize(), nullptr, &pixShader);
     assert(SUCCEEDED(hr));
+
+    // Define input layouts
+    D3D11_INPUT_ELEMENT_DESC ied[] =
+    {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD0", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    };
+
+    device->CreateInputLayout(ied,
+        ARRAYSIZE(ied),
+        vs_blob->GetBufferPointer(),
+        vs_blob->GetBufferSize(),
+        &inputLayout);
 }
 
 void Dx11Renderer::Update(float time, float delta)
