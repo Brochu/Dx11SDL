@@ -147,9 +147,28 @@ void Dx11Renderer::Render()
     ctx->OMSetRenderTargets(1, &renderTarget, NULL);
     ctx->ClearRenderTargetView(renderTarget, bgColor);
 
+    ctx->VSSetShader(vertShader, nullptr, 0);
+    ctx->PSSetShader(pixShader, nullptr, 0);
+    ctx->IASetInputLayout(inputLayout);
+
+    D3D11_VIEWPORT viewport;
+    viewport.TopLeftX = 0;
+    viewport.TopLeftY = 0;
+    //TODO: Make the width and height available, saved in renderer?
+    viewport.Width = 1280;
+    viewport.Height = 720;
+    ctx->RSSetViewports(1, &viewport);
+
     //TODO: Collect all objs to draw on screen
     //TODO: Prepare pipeline
     //TODO: Draw commands
+    UINT stride = sizeof(Vertex);
+    UINT offset = 0;
+    ctx->IASetVertexBuffers(0, 1, &vertBuf, &stride, &offset);
+
+    ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    ctx->Draw(cubeModel->verts.size(), 0);
 
     RenderDebugUI();
     swapchain->Present(1, 0);
