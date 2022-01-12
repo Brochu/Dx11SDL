@@ -22,11 +22,11 @@ public:
     int height;
 
 private:
-
     SDL_Window* window = nullptr;
     SDL_Surface* surface = nullptr;
     Dx11Renderer* render = nullptr;
 
     uint64_t startTicks = 0;
     uint64_t prevTicks = 0;
+
 };

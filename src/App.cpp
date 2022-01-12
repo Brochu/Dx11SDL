@@ -46,7 +46,7 @@ int Application::Init()
     SDL_VERSION(&wmInfo.version);
     SDL_GetWindowWMInfo(window, &wmInfo);
 
-    // IMGUI setup
+    // ImGui setup
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO io = ImGui::GetIO();
