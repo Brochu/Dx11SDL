@@ -1,12 +1,14 @@
 #include "Dx11Renderer.h"
 #include "ObjReader.h"
 
+#include <debugapi.h>
 #include <string>
 #include <imgui_impl_dx11.h>
 
 #include <DXM/DirectXMath.h>
+#include <winerror.h>
 
-const char* Dx11Renderer::SHADER_PATH = "";
+const char* Dx11Renderer::SHADER_PATH = "shaders/";
 const char* Dx11Renderer::DATA_PATH = "data/";
 
 void Dx11Renderer::Init(HWND hWindow, int width, int height)
@@ -67,6 +69,59 @@ void Dx11Renderer::Init(HWND hWindow, int width, int height)
     D3D11_SUBRESOURCE_DATA srd = { cubeModel->verts.data(), 0, 0 };
 
     device->CreateBuffer(&bd, &srd, &vertBuf);
+
+    // Compile and create shaders
+    ID3DBlob* vs_blob = nullptr;
+    ID3DBlob* ps_blob = nullptr;
+    ID3DBlob* error_blob = nullptr;
+
+    hr = D3DCompileFromFile(L"shaders/baseShaders.hlsl",
+        nullptr,
+        D3D_COMPILE_STANDARD_FILE_INCLUDE,
+        "vs_main",
+        "vs_5_0",
+        0,
+        0,
+        &vs_blob,
+        &error_blob);
+
+    if (FAILED(hr))
+    {
+        if (error_blob)
+        {
+            OutputDebugStringA( (char*)error_blob->GetBufferPointer() );
+            error_blob->Release();
+        }
+        if (vs_blob) vs_blob->Release();
+        assert(false);
+    }
+
+    hr = D3DCompileFromFile(L"shaders/baseShaders.hlsl",
+        nullptr,
+        D3D_COMPILE_STANDARD_FILE_INCLUDE,
+        "ps_main",
+        "ps_5_0",
+        0,
+        0,
+        &ps_blob,
+        &error_blob);
+
+    if (FAILED(hr))
+    {
+        if (error_blob)
+        {
+            OutputDebugStringA( (char*)error_blob->GetBufferPointer() );
+            error_blob->Release();
+        }
+        if (ps_blob) ps_blob->Release();
+        assert(false);
+    }
+
+    hr = device->CreateVertexShader(vs_blob->GetBufferPointer(), vs_blob->GetBufferSize(), nullptr, &vertShader);
+    assert(SUCCEEDED(hr));
+
+    hr = device->CreatePixelShader(ps_blob->GetBufferPointer(), ps_blob->GetBufferSize(), nullptr, &pixShader);
+    assert(SUCCEEDED(hr));
 }
 
 void Dx11Renderer::Update(float time, float delta)
