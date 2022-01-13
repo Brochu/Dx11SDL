@@ -1,25 +1,23 @@
-struct vs_in
+struct VS_Input
 {
     float3 pos : POSITION;
-    float2 uv : TEXCOORD;
-    float3 norm : NORMAL;
 };
 
-struct vs_out
+struct PS_Input
 {
     float4 clipPos : SV_POSITION;
 };
 
 
-vs_out vs_main(vs_in input)
+PS_Input VS_Main(VS_Input input)
 {
-    vs_out output = (vs_out)0;
+    PS_Input output = (PS_Input)0;
     output.clipPos = float4(input.pos, 1.0);
 
     return output;
 }
 
-float4 ps_main(vs_out input) : SV_TARGET
+float4 PS_Main(PS_Input input) : SV_TARGET
 {
     return float4(1.0, 0.0, 1.0, 1.0);
 }
