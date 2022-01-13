@@ -2,7 +2,6 @@
 
 #include <d3d11.h>
 #include <dxgi.h>
-#include <d3dcompiler.h>
 
 struct ModelData;
 
@@ -22,6 +21,9 @@ private:
     ID3D11DeviceContext* ctx;
 
     ID3D11RenderTargetView* renderTarget;
+
+    ID3D11VertexShader* vShader;
+    ID3D11InputLayout* vertLayout;
 
     float bgColor[4] = { 0.2f, 0.2f, 0.4f, 1.0f };
 };

@@ -4,12 +4,35 @@
 #include <debugapi.h>
 #include <string>
 #include <imgui_impl_dx11.h>
+#include <d3dcompiler.h>
 
 #include <DXM/DirectXMath.h>
 #include <winerror.h>
 
 static const char* SHADER_PATH = "shaders/";
 static const char* DATA_PATH = "data/";
+
+static bool CompileShader(const WCHAR* szFilePath, const char* szFunc, const char* szShaderModel, ID3DBlob** buffer)
+{
+    // Compile shader
+    HRESULT hr;
+    ID3DBlob* errBuffer = 0;
+    D3DCompileFromFile(szFilePath, nullptr, nullptr, szFunc, szShaderModel, 0, 0, buffer, &errBuffer);
+
+    // Check for errors
+    if (FAILED(hr)) {
+        if (errBuffer != NULL) {
+            ::OutputDebugStringA((char*)errBuffer->GetBufferPointer());
+            errBuffer->Release();
+        }
+        return false;
+    }
+
+    // Cleanup
+    if (errBuffer != NULL)
+        errBuffer->Release( );
+    return true;
+}
 
 int Dx11Renderer::Init(HWND hWindow, int width, int height)
 {
@@ -96,14 +119,52 @@ int Dx11Renderer::Init(HWND hWindow, int width, int height)
     viewport.Width = (FLOAT)width;
     viewport.Height = (FLOAT)height;
     viewport.MinDepth = 0.0f;
-    viewport.MaxDepth = 10.0f;
+    viewport.MaxDepth = 1.0f;
     viewport.TopLeftX = 0;
     viewport.TopLeftY = 0;
     ctx->RSSetViewports(1, &viewport);
 
+    // Compile and create vertex shader
+    ID3DBlob* pVSBuffer = nullptr;
+    bool res = CompileShader(L"shaders/baseShaders.hlsl", "VS_Main", "vs_5_0", &pVSBuffer);
+    if (res == false) {
+        printf("[RENDER] Unable to load vertex shader");
+        return 1;
+    }
+    hr = device->CreateVertexShader(pVSBuffer->GetBufferPointer(), pVSBuffer->GetBufferSize(), nullptr, &vShader);
+    if (FAILED(hr))
+    {
+        printf("[RENDER] Could not create Vertex Shader object\n");
+        return 1;
+    }
+
+    D3D11_INPUT_ELEMENT_DESC layoutElements[]
+    {
+        //LPCSTR SemanticName;
+        //UINT SemanticIndex;
+        //DXGI_FORMAT Format;
+        //UINT InputSlot;
+        //UINT AlignedByteOffset;
+        //D3D11_INPUT_CLASSIFICATION InputSlotClass;
+        //UINT InstanceDataStepRate;
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+    };
+    hr = device->CreateInputLayout(layoutElements,
+        ARRAYSIZE(layoutElements),
+        (void*)pVSBuffer->GetBufferPointer(),
+        pVSBuffer->GetBufferSize(),
+        &vertLayout
+    );
+    if (FAILED(hr))
+    {
+        printf("[RENDER] Could not create Input Layout\n");
+        return 1;
+    }
+
     // Finish IMGUI setup
     ImGui_ImplDX11_Init(device, ctx);
 
+    printf("[RENDER] Finished Dx11 renderer init sequence !!\n");
     return 0;
 }
 
@@ -138,6 +199,9 @@ void Dx11Renderer::RenderDebugUI()
 
 void Dx11Renderer::Quit()
 {
+    vertLayout->Release();
+    vShader->Release();
+
     ctx->Release();
     device->Release();
     swapchain->Release();
