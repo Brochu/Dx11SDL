@@ -54,9 +54,10 @@ int Application::Init()
     ImGui_ImplSDL2_InitForD3D(window);
 
     render = new Dx11Renderer();
-    render->Init(wmInfo.info.win.window, width, height);
-    printf("[APP] Finished Dx11 initialization\n");
+    int code = render->Init(wmInfo.info.win.window, width, height);
+    if (code != 0) return code;
 
+    printf("[APP] Finished Dx11 initialization\n");
     return 0;
 }
 
