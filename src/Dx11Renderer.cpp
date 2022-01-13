@@ -8,16 +8,16 @@
 #include <DXM/DirectXMath.h>
 #include <winerror.h>
 
-const char* Dx11Renderer::SHADER_PATH = "shaders/";
-const char* Dx11Renderer::DATA_PATH = "data/";
+static const char* SHADER_PATH = "shaders/";
+static const char* DATA_PATH = "data/";
 
-void Dx11Renderer::Init(HWND hWindow, int width, int height)
+int Dx11Renderer::Init(HWND hWindow, int width, int height)
 {
     printf("[RENDER] Start init flow for Dx11\n");
 
     HRESULT hr;
 
-    // Prepare info for swap chain and device creation
+    // Create description for back buffer
     DXGI_MODE_DESC bufferDesc;
     ZeroMemory(&bufferDesc, sizeof(DXGI_MODE_DESC));
     bufferDesc.Width = width;
@@ -26,6 +26,7 @@ void Dx11Renderer::Init(HWND hWindow, int width, int height)
     bufferDesc.RefreshRate.Numerator = 60;
     bufferDesc.RefreshRate.Denominator = 1;
 
+    // Create description for swap chain
     DXGI_SWAP_CHAIN_DESC swapchainDesc;
     ZeroMemory(&swapchainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
     swapchainDesc.BufferCount = 1;
@@ -37,6 +38,7 @@ void Dx11Renderer::Init(HWND hWindow, int width, int height)
     swapchainDesc.Windowed = TRUE;
     swapchainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
+    // Prepare metadata to create swapchain, device and context
     D3D_FEATURE_LEVEL featLevel;
     D3D_FEATURE_LEVEL featLevels[] =
     {
@@ -56,7 +58,7 @@ void Dx11Renderer::Init(HWND hWindow, int width, int height)
     UINT flags = 0;
     flags |= D3D11_CREATE_DEVICE_DEBUG;
 
-    // Create the swapchain
+    // Create
     hr = D3D11CreateDeviceAndSwapChain(
             NULL,
             D3D_DRIVER_TYPE_HARDWARE,
@@ -73,6 +75,7 @@ void Dx11Renderer::Init(HWND hWindow, int width, int height)
     if (FAILED(hr))
     {
         printf("[RENDER] Could not create device and swap chain\n");
+        return 1;
     }
 
     // Get and set the render target
@@ -83,11 +86,12 @@ void Dx11Renderer::Init(HWND hWindow, int width, int height)
     if (FAILED(hr))
     {
         printf("[RENDER] Could not create render target view\n");
+        return 1;
     }
     backbuf->Release();
     ctx->OMSetRenderTargets(1, &renderTarget, nullptr);
 
-    // Set the correct viewport
+    // Set the viewport
     D3D11_VIEWPORT viewport;
     viewport.Width = (FLOAT)width;
     viewport.Height = (FLOAT)height;
@@ -97,90 +101,10 @@ void Dx11Renderer::Init(HWND hWindow, int width, int height)
     viewport.TopLeftY = 0;
     ctx->RSSetViewports(1, &viewport);
 
-    // Compile and create shaders
-    ID3DBlob* vs_blob = nullptr;
-    ID3DBlob* ps_blob = nullptr;
-    ID3DBlob* error_blob = nullptr;
-
-    hr = D3DCompileFromFile(L"shaders/baseShaders.hlsl",
-        nullptr,
-        D3D_COMPILE_STANDARD_FILE_INCLUDE,
-        "vs_main",
-        "vs_5_0",
-        0,
-        0,
-        &vs_blob,
-        &error_blob);
-
-    if (FAILED(hr))
-    {
-        if (error_blob)
-        {
-            OutputDebugStringA( (char*)error_blob->GetBufferPointer() );
-            error_blob->Release();
-        }
-        if (vs_blob) vs_blob->Release();
-        assert(false);
-    }
-
-    hr = D3DCompileFromFile(L"shaders/baseShaders.hlsl",
-        nullptr,
-        D3D_COMPILE_STANDARD_FILE_INCLUDE,
-        "ps_main",
-        "ps_5_0",
-        0,
-        0,
-        &ps_blob,
-        &error_blob);
-
-    if (FAILED(hr))
-    {
-        if (error_blob)
-        {
-            OutputDebugStringA( (char*)error_blob->GetBufferPointer() );
-            error_blob->Release();
-        }
-        if (ps_blob) ps_blob->Release();
-        assert(false);
-    }
-
-    hr = device->CreateVertexShader(vs_blob->GetBufferPointer(), vs_blob->GetBufferSize(), nullptr, &vertShader);
-    assert(SUCCEEDED(hr));
-
-    hr = device->CreatePixelShader(ps_blob->GetBufferPointer(), ps_blob->GetBufferSize(), nullptr, &pixShader);
-    assert(SUCCEEDED(hr));
-
-    // Define input layouts
-    D3D11_INPUT_ELEMENT_DESC ied[] =
-    {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-    };
-    UINT iedCount = ARRAYSIZE(ied);
-
-    device->CreateInputLayout(ied,
-        iedCount,
-        vs_blob->GetBufferPointer(),
-        vs_blob->GetBufferSize(),
-        &inputLayout);
-
-    // Test loading model data
-    cubeModel = new ModelData();
-    std::string modelPath = DATA_PATH;
-    modelPath += "cube.obj";
-    ObjReader::ReadFromFile(modelPath.c_str(), *cubeModel);
-
-    // Create vertex buffer
-    D3D11_BUFFER_DESC bd = {0};
-    bd.ByteWidth = sizeof(Vertex) * cubeModel->verts.size();
-    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-
-    D3D11_SUBRESOURCE_DATA srd = { cubeModel->verts.data(), 0, 0 };
-    device->CreateBuffer(&bd, &srd, &vertBuf);
-
     // Finish IMGUI setup
     ImGui_ImplDX11_Init(device, ctx);
+
+    return 0;
 }
 
 void Dx11Renderer::Update(float time, float delta)
@@ -191,21 +115,9 @@ void Dx11Renderer::Render()
 {
     ctx->ClearRenderTargetView(renderTarget, bgColor);
 
-    UINT stride = sizeof(Vertex);
-    UINT offset = 0;
-
-    ctx->IASetInputLayout(inputLayout);
-    ctx->IASetVertexBuffers(0, 1, &vertBuf, &stride, &offset);
-    ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-    ctx->VSSetShader(vertShader, nullptr, 0);
-    ctx->PSSetShader(pixShader, nullptr, 0);
-
     //TODO: Collect all objs to draw on screen
     //TODO: Prepare pipeline
     //TODO: Draw commands
-
-    ctx->Draw(cubeModel->verts.size(), 0);
 
     RenderDebugUI();
     swapchain->Present(0, 0);
@@ -226,13 +138,6 @@ void Dx11Renderer::RenderDebugUI()
 
 void Dx11Renderer::Quit()
 {
-    delete cubeModel;
-
-    vertShader->Release();
-    pixShader->Release();
-
-    vertBuf->Release();
-
     ctx->Release();
     device->Release();
     swapchain->Release();
