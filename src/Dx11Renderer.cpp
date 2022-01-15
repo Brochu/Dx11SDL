@@ -1,34 +1,13 @@
 #include "Dx11Renderer.h"
 #include "ObjReader.h"
 
+#include <debugapi.h>
 #include <dxgi.h>
 #include <d3dcompiler.h>
 #include <DXM/DirectXMath.h>
 
 #include <cstdio>
 #include <winerror.h>
-
-static bool CompileShader(const WCHAR* szFilePath, const char* szFunc, const char* szShaderModel, ID3DBlob** buffer)
-{
-    // Compile shader
-    HRESULT hr;
-    ID3DBlob* errBuffer = 0;
-    D3DCompileFromFile(szFilePath, nullptr, nullptr, szFunc, szShaderModel, 0, 0, buffer, &errBuffer);
-
-    // Check for errors
-    if (FAILED(hr)) {
-        if (errBuffer != NULL) {
-            ::OutputDebugStringA((char*)errBuffer->GetBufferPointer());
-            errBuffer->Release();
-        }
-        return false;
-    }
-
-    // Cleanup
-    if (errBuffer != NULL)
-        errBuffer->Release( );
-    return true;
-}
 
 ID3D11Device* pDevice = nullptr;
 ID3D11DeviceContext* pCtx = nullptr;
@@ -76,6 +55,56 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
     hr = pDevice->CreateRenderTargetView(backBuffer, 0, &pRenderTarget);
     assert( SUCCEEDED(hr) );
     backBuffer->Release();
+
+    UINT cmpFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+#if defined( DEBUG ) || defined( _DEBUG )
+    cmpFlags |= D3DCOMPILE_DEBUG;
+#endif
+    ID3DBlob *pVs = NULL, *pPs = NULL, *pError = NULL;
+
+    // VERTEX SHADER
+    hr = D3DCompileFromFile(
+        L"shaders/baseShaders.hlsl",
+        nullptr,
+        D3D_COMPILE_STANDARD_FILE_INCLUDE,
+        "VS_Main",
+        "vs_5_0",
+        cmpFlags,
+        0,
+        &pVs,
+        &pError);
+    if (FAILED(hr))
+    {
+        if (pError)
+        {
+            OutputDebugStringA((char*) pError->GetBufferPointer());
+            pError->Release();
+        }
+        if (pVs) { pVs->Release(); }
+        assert(false);
+    }
+
+    // PIXEL SHADEr
+    hr = D3DCompileFromFile(
+        L"shaders/baseShaders.hlsl",
+        nullptr,
+        D3D_COMPILE_STANDARD_FILE_INCLUDE,
+        "PS_Main",
+        "ps_5_0",
+        cmpFlags,
+        0,
+        &pPs,
+        &pError);
+    if (FAILED(hr))
+    {
+        if (pError)
+        {
+            OutputDebugStringA((char*) pError->GetBufferPointer());
+            pError->Release();
+        }
+        if (pVs) { pVs->Release(); }
+        assert(false);
+    }
 
     printf("[RENDER] Done init Dx11\n");
     return 0;
