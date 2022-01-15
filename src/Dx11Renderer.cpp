@@ -119,7 +119,7 @@ int Dx11Renderer::Init(HWND hWindow, int width, int height)
     viewport.Width = (FLOAT)width;
     viewport.Height = (FLOAT)height;
     viewport.MinDepth = 0.0f;
-    viewport.MaxDepth = 1.0f;
+    viewport.MaxDepth = 1.1f;
     viewport.TopLeftX = 0;
     viewport.TopLeftY = 0;
     ctx->RSSetViewports(1, &viewport);
@@ -191,8 +191,8 @@ int Dx11Renderer::Init(HWND hWindow, int width, int height)
     // Define vertices
     std::vector<DirectX::XMFLOAT3> verts = {
         {  0.0f,  0.5f, 1.0f },
-        { -0.5f, -0.5f, 1.0f },
         {  0.5f, -0.5f, 1.0f },
+        { -0.5f, -0.5f, 1.0f },
     };
     D3D11_BUFFER_DESC vertexDesc;
     ZeroMemory(&vertexDesc, sizeof(vertexDesc));
@@ -226,6 +226,20 @@ void Dx11Renderer::Update(float time, float delta)
 void Dx11Renderer::Render()
 {
     ctx->ClearRenderTargetView(renderTarget, bgColor);
+
+    UINT stride = sizeof(DirectX::XMFLOAT3);
+    UINT offset = 0;
+
+    // Set vertex buffer
+    ctx->IASetInputLayout(vertLayout);
+    ctx->IASetVertexBuffers(0, 1, &vertexBuf, &stride, &offset);
+    ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    // Set shaders
+    ctx->VSSetShader(vertShader, 0, 0);
+    ctx->PSSetShader(pixShader, 0, 0);
+
+    ctx->Draw(3, 0);
 
     //TODO: Collect all objs to draw on screen
     //TODO: Prepare pipeline
