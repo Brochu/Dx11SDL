@@ -166,6 +166,7 @@ int Dx11Renderer::Init(HWND hWindow, int width, int height)
         return 1;
     }
     pVSBuffer->Release();
+    pVSBuffer = nullptr;
 
     // Compile and create vertex shader
     ID3DBlob* pPSBuffer = nullptr;
@@ -184,6 +185,8 @@ int Dx11Renderer::Init(HWND hWindow, int width, int height)
         printf("[RENDER] Could not create Pixel Shader object\n");
         return 1;
     }
+    pPSBuffer->Release();
+    pPSBuffer = nullptr;
 
     // Finish IMGUI setup
     ImGui_ImplDX11_Init(device, ctx);
