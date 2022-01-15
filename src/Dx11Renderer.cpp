@@ -1,16 +1,12 @@
 #include "Dx11Renderer.h"
 #include "ObjReader.h"
 
-#include <debugapi.h>
-#include <string>
-#include <imgui_impl_dx11.h>
+#include <dxgi.h>
 #include <d3dcompiler.h>
-
 #include <DXM/DirectXMath.h>
-#include <winerror.h>
 
-static const char* SHADER_PATH = "shaders/";
-static const char* DATA_PATH = "data/";
+#include <cstdio>
+#include <winerror.h>
 
 static bool CompileShader(const WCHAR* szFilePath, const char* szFunc, const char* szShaderModel, ID3DBlob** buffer)
 {
@@ -34,188 +30,54 @@ static bool CompileShader(const WCHAR* szFilePath, const char* szFunc, const cha
     return true;
 }
 
-int Dx11Renderer::Init(HWND hWindow, int width, int height)
+ID3D11Device* pDevice = nullptr;
+ID3D11DeviceContext* pCtx = nullptr;
+IDXGISwapChain* pSwapchain = nullptr;
+ID3D11RenderTargetView* pRenderTarget;
+
+int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
 {
-    printf("[RENDER] Start init flow for Dx11\n");
+    DXGI_SWAP_CHAIN_DESC scDesc = {0};
+    scDesc.BufferDesc.RefreshRate.Numerator = 0;
+    scDesc.BufferDesc.RefreshRate.Denominator = 1;
+    scDesc.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+    scDesc.SampleDesc.Count = 1;
+    scDesc.SampleDesc.Quality = 0;
+    scDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    scDesc.BufferCount = 1;
+    scDesc.OutputWindow = hWindow;
+    scDesc.Windowed = true;
 
-    HRESULT hr;
-
-    // Create description for back buffer
-    DXGI_MODE_DESC bufferDesc;
-    ZeroMemory(&bufferDesc, sizeof(DXGI_MODE_DESC));
-    bufferDesc.Width = width;
-    bufferDesc.Height = height;
-    bufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    bufferDesc.RefreshRate.Numerator = 60;
-    bufferDesc.RefreshRate.Denominator = 1;
-
-    // Create description for swap chain
-    DXGI_SWAP_CHAIN_DESC swapchainDesc;
-    ZeroMemory(&swapchainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
-    swapchainDesc.BufferCount = 1;
-    swapchainDesc.BufferDesc = bufferDesc;
-    swapchainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    swapchainDesc.OutputWindow = hWindow;
-    swapchainDesc.SampleDesc.Count = 1;
-    swapchainDesc.SampleDesc.Quality = 0;
-    swapchainDesc.Windowed = TRUE;
-    swapchainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-
-    // Prepare metadata to create swapchain, device and context
     D3D_FEATURE_LEVEL featLevel;
-    D3D_FEATURE_LEVEL featLevels[] =
-    {
-        D3D_FEATURE_LEVEL_11_0,
-        D3D_FEATURE_LEVEL_10_1,
-        D3D_FEATURE_LEVEL_10_0
-    };
-    UINT numFeatLevels = ARRAYSIZE(featLevels);
-
-    D3D_DRIVER_TYPE driverTypes[] =
-    {
-        D3D_DRIVER_TYPE_HARDWARE, D3D_DRIVER_TYPE_WARP,
-        D3D_DRIVER_TYPE_REFERENCE, D3D_DRIVER_TYPE_SOFTWARE
-    };
-    UINT numDriverTypes = ARRAYSIZE(driverTypes);
-
-    UINT flags = 0;
+    UINT flags = D3D11_CREATE_DEVICE_SINGLETHREADED;
+#if defined( DEBUG ) || defined( _DEBUG )
     flags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
 
-    // Create
-    hr = D3D11CreateDeviceAndSwapChain(
-            NULL,
-            D3D_DRIVER_TYPE_HARDWARE,
-            NULL,
-            flags,
-            featLevels,
-            numFeatLevels,
-            D3D11_SDK_VERSION,
-            &swapchainDesc,
-            &swapchain,
-            &device,
-            &featLevel,
-            &ctx);
-    if (FAILED(hr))
-    {
-        printf("[RENDER] Could not create device and swap chain\n");
-        return 1;
-    }
+    HRESULT hr = D3D11CreateDeviceAndSwapChain(
+        NULL,
+        D3D_DRIVER_TYPE_HARDWARE,
+        NULL,
+        flags,
+        NULL,
+        0,
+        D3D11_SDK_VERSION,
+        &scDesc,
+        &pSwapchain,
+        &pDevice,
+        &featLevel,
+        &pCtx);
+    assert( hr == S_OK && pSwapchain && pDevice && pCtx );
 
-    // Get and set the render target
-    ID3D11Texture2D* backbuf;
-    swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backbuf);
+    ID3D11Texture2D* backBuffer;
+    hr = pSwapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
+    assert( SUCCEEDED(hr) );
 
-    hr = device->CreateRenderTargetView(backbuf, NULL, &renderTarget);
-    if (FAILED(hr))
-    {
-        printf("[RENDER] Could not create render target view\n");
-        return 1;
-    }
-    backbuf->Release();
-    ctx->OMSetRenderTargets(1, &renderTarget, nullptr);
+    hr = pDevice->CreateRenderTargetView(backBuffer, 0, &pRenderTarget);
+    assert( SUCCEEDED(hr) );
+    backBuffer->Release();
 
-    // Set the viewport
-    D3D11_VIEWPORT viewport;
-    viewport.Width = (FLOAT)width;
-    viewport.Height = (FLOAT)height;
-    viewport.MinDepth = 0.0f;
-    viewport.MaxDepth = 1.1f;
-    viewport.TopLeftX = 0;
-    viewport.TopLeftY = 0;
-    ctx->RSSetViewports(1, &viewport);
-
-    // Compile and create vertex shader
-    ID3DBlob* pVSBuffer = nullptr;
-    bool res = CompileShader(L"shaders/baseShaders.hlsl", "VS_Main", "vs_5_0", &pVSBuffer);
-    if (res == false) {
-        printf("[RENDER] Unable to load vertex shader");
-        return 1;
-    }
-    hr = device->CreateVertexShader(pVSBuffer->GetBufferPointer(),
-        pVSBuffer->GetBufferSize(),
-        nullptr,
-        &vertShader
-    );
-    if (FAILED(hr))
-    {
-        printf("[RENDER] Could not create Vertex Shader object\n");
-        return 1;
-    }
-
-    // Create vertex input layout
-    D3D11_INPUT_ELEMENT_DESC layoutElements[]
-    {
-        //LPCSTR SemanticName;
-        //UINT SemanticIndex;
-        //DXGI_FORMAT Format;
-        //UINT InputSlot;
-        //UINT AlignedByteOffset;
-        //D3D11_INPUT_CLASSIFICATION InputSlotClass;
-        //UINT InstanceDataStepRate;
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-    };
-    hr = device->CreateInputLayout(layoutElements,
-        ARRAYSIZE(layoutElements),
-        (void*)pVSBuffer->GetBufferPointer(),
-        pVSBuffer->GetBufferSize(),
-        &vertLayout
-    );
-    if (FAILED(hr))
-    {
-        printf("[RENDER] Could not create Input Layout\n");
-        return 1;
-    }
-    pVSBuffer->Release();
-    pVSBuffer = nullptr;
-
-    // Compile and create vertex shader
-    ID3DBlob* pPSBuffer = nullptr;
-    res = CompileShader(L"shaders/baseShaders.hlsl", "PS_Main", "ps_5_0", &pPSBuffer);
-    if (res == false) {
-        printf("[RENDER] Unable to load pixel shader");
-        return 1;
-    }
-    hr = device->CreatePixelShader(pPSBuffer->GetBufferPointer(),
-        pPSBuffer->GetBufferSize(),
-        nullptr,
-        &pixShader
-    );
-    if (FAILED(hr))
-    {
-        printf("[RENDER] Could not create Pixel Shader object\n");
-        return 1;
-    }
-    pPSBuffer->Release();
-    pPSBuffer = nullptr;
-
-    // Define vertices
-    std::vector<DirectX::XMFLOAT3> verts = {
-        {  0.0f,  0.5f, 1.0f },
-        {  0.5f, -0.5f, 1.0f },
-        { -0.5f, -0.5f, 1.0f },
-    };
-    D3D11_BUFFER_DESC vertexDesc;
-    ZeroMemory(&vertexDesc, sizeof(vertexDesc));
-    vertexDesc.Usage = D3D11_USAGE_DEFAULT;
-    vertexDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    vertexDesc.ByteWidth = sizeof(DirectX::XMFLOAT3) * 3;
-
-    D3D11_SUBRESOURCE_DATA resourceData;
-    ZeroMemory(&resourceData, sizeof(resourceData));
-    resourceData.pSysMem = static_cast<void*>(verts.data());
-    resourceData.SysMemPitch = sizeof(DirectX::XMFLOAT3);
-
-    hr = device->CreateBuffer(&vertexDesc, &resourceData, &vertexBuf);
-    if (FAILED(hr))
-    {
-        printf("[RENDER] Could not create Vertex Buffer\n");
-        return 1;
-    }
-
-    // Finish IMGUI setup
-    ImGui_ImplDX11_Init(device, ctx);
-
-    printf("[RENDER] Finished Dx11 renderer init sequence !!\n");
+    printf("[RENDER] Done init Dx11\n");
     return 0;
 }
 
@@ -225,57 +87,9 @@ void Dx11Renderer::Update(float time, float delta)
 
 void Dx11Renderer::Render()
 {
-    ctx->ClearRenderTargetView(renderTarget, bgColor);
-
-    UINT stride = sizeof(DirectX::XMFLOAT3);
-    UINT offset = 0;
-
-    // Set vertex buffer
-    ctx->IASetInputLayout(vertLayout);
-    ctx->IASetVertexBuffers(0, 1, &vertexBuf, &stride, &offset);
-    ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-    // Set shaders
-    ctx->VSSetShader(vertShader, 0, 0);
-    ctx->PSSetShader(pixShader, 0, 0);
-
-    ctx->Draw(3, 0);
-
-    //TODO: Collect all objs to draw on screen
-    //TODO: Prepare pipeline
-    //TODO: Draw commands
-
-    RenderDebugUI();
-    swapchain->Present(0, 0);
-}
-
-void Dx11Renderer::RenderDebugUI()
-{
-    ImGui_ImplDX11_NewFrame();
-    ImGui::NewFrame();
-
-    ImGui::Begin("Debug");
-    ImGui::Text("Framerate: %.2f", ImGui::GetIO().Framerate);
-    ImGui::ColorEdit4("ClearColor", bgColor);
-    ImGui::End();
-
-    ImGui::Render();
-    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
 
 void Dx11Renderer::Quit()
 {
-    vertexBuf->Release();
-
-    pixShader->Release();
-    vertLayout->Release();
-    vertShader->Release();
-
-    ctx->Release();
-    device->Release();
-    swapchain->Release();
-
-    ImGui_ImplDX11_Shutdown();
-
     printf("[RENDER] Done quitting Dx11\n");
 }
