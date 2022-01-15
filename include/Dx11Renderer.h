@@ -26,5 +26,7 @@ private:
     ID3D11InputLayout* vertLayout;
     ID3D11PixelShader* pixShader;
 
+    ID3D11Buffer* vertexBuf;
+
     float bgColor[4] = { 0.2f, 0.2f, 0.4f, 1.0f };
 };

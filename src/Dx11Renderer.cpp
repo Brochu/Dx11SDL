@@ -188,6 +188,30 @@ int Dx11Renderer::Init(HWND hWindow, int width, int height)
     pPSBuffer->Release();
     pPSBuffer = nullptr;
 
+    // Define vertices
+    std::vector<DirectX::XMFLOAT3> verts = {
+        {  0.0f,  0.5f, 1.0f },
+        { -0.5f, -0.5f, 1.0f },
+        {  0.5f, -0.5f, 1.0f },
+    };
+    D3D11_BUFFER_DESC vertexDesc;
+    ZeroMemory(&vertexDesc, sizeof(vertexDesc));
+    vertexDesc.Usage = D3D11_USAGE_DEFAULT;
+    vertexDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    vertexDesc.ByteWidth = sizeof(DirectX::XMFLOAT3) * 3;
+
+    D3D11_SUBRESOURCE_DATA resourceData;
+    ZeroMemory(&resourceData, sizeof(resourceData));
+    resourceData.pSysMem = static_cast<void*>(verts.data());
+    resourceData.SysMemPitch = sizeof(DirectX::XMFLOAT3);
+
+    hr = device->CreateBuffer(&vertexDesc, &resourceData, &vertexBuf);
+    if (FAILED(hr))
+    {
+        printf("[RENDER] Could not create Vertex Buffer\n");
+        return 1;
+    }
+
     // Finish IMGUI setup
     ImGui_ImplDX11_Init(device, ctx);
 
@@ -217,6 +241,7 @@ void Dx11Renderer::RenderDebugUI()
     ImGui::NewFrame();
 
     ImGui::Begin("Debug");
+    ImGui::Text("Framerate: %.2f", ImGui::GetIO().Framerate);
     ImGui::ColorEdit4("ClearColor", bgColor);
     ImGui::End();
 
@@ -226,6 +251,8 @@ void Dx11Renderer::RenderDebugUI()
 
 void Dx11Renderer::Quit()
 {
+    vertexBuf->Release();
+
     pixShader->Release();
     vertLayout->Release();
     vertShader->Release();
