@@ -22,8 +22,9 @@ private:
 
     ID3D11RenderTargetView* renderTarget;
 
-    ID3D11VertexShader* vShader;
+    ID3D11VertexShader* vertShader;
     ID3D11InputLayout* vertLayout;
+    ID3D11PixelShader* pixShader;
 
     float bgColor[4] = { 0.2f, 0.2f, 0.4f, 1.0f };
 };

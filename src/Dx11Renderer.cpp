@@ -131,13 +131,18 @@ int Dx11Renderer::Init(HWND hWindow, int width, int height)
         printf("[RENDER] Unable to load vertex shader");
         return 1;
     }
-    hr = device->CreateVertexShader(pVSBuffer->GetBufferPointer(), pVSBuffer->GetBufferSize(), nullptr, &vShader);
+    hr = device->CreateVertexShader(pVSBuffer->GetBufferPointer(),
+        pVSBuffer->GetBufferSize(),
+        nullptr,
+        &vertShader
+    );
     if (FAILED(hr))
     {
         printf("[RENDER] Could not create Vertex Shader object\n");
         return 1;
     }
 
+    // Create vertex input layout
     D3D11_INPUT_ELEMENT_DESC layoutElements[]
     {
         //LPCSTR SemanticName;
@@ -158,6 +163,25 @@ int Dx11Renderer::Init(HWND hWindow, int width, int height)
     if (FAILED(hr))
     {
         printf("[RENDER] Could not create Input Layout\n");
+        return 1;
+    }
+    pVSBuffer->Release();
+
+    // Compile and create vertex shader
+    ID3DBlob* pPSBuffer = nullptr;
+    res = CompileShader(L"shaders/baseShaders.hlsl", "PS_Main", "ps_5_0", &pPSBuffer);
+    if (res == false) {
+        printf("[RENDER] Unable to load pixel shader");
+        return 1;
+    }
+    hr = device->CreatePixelShader(pPSBuffer->GetBufferPointer(),
+        pPSBuffer->GetBufferSize(),
+        nullptr,
+        &pixShader
+    );
+    if (FAILED(hr))
+    {
+        printf("[RENDER] Could not create Pixel Shader object\n");
         return 1;
     }
 
@@ -199,8 +223,9 @@ void Dx11Renderer::RenderDebugUI()
 
 void Dx11Renderer::Quit()
 {
+    pixShader->Release();
     vertLayout->Release();
-    vShader->Release();
+    vertShader->Release();
 
     ctx->Release();
     device->Release();
