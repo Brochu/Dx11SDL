@@ -1,7 +1,6 @@
 #pragma once
 
 #include <d3d11.h>
-#include <dxgi.h>
 
 struct ModelData;
 
@@ -16,6 +15,6 @@ public:
     void Quit();
 
 private:
-    float bgColor[4] = { 0.2f, 0.2f, 0.4f, 1.0f };
+    float bgColor[4] = { 0x64 / 255.f, 0x95 / 255.f, 0xed / 255.f, 1.f };
 
 };
