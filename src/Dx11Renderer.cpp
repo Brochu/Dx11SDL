@@ -6,6 +6,9 @@
 #include <d3dcompiler.h>
 #include <DXM/DirectXMath.h>
 
+#include <imgui.h>
+#include <imgui_impl_dx11.h>
+
 #include <cstdio>
 #include <winerror.h>
 
@@ -154,6 +157,9 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
         assert(SUCCEEDED(hr));
     }
 
+    // ImGui Init
+    ImGui_ImplDX11_Init(pDevice,pCtx);
+
     printf("[RENDER] Done init Dx11\n");
     return 0;
 }
@@ -186,10 +192,26 @@ void Dx11Renderer::Render()
     // DRAW
     pCtx->Draw(vertCount, 0);
 
+    RenderDebugUI();
     pSwapchain->Present(1, 0);
+}
+
+void Dx11Renderer::RenderDebugUI()
+{
+    ImGui_ImplDX11_NewFrame();
+    ImGui::NewFrame();
+
+    ImGui::Begin("Debug");
+    ImGui::Text("Frame Rate = %.01f", ImGui::GetIO().Framerate);
+    ImGui::ColorEdit4("Clear Color", bgColor);
+    ImGui::End();
+
+    ImGui::Render();
+    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
 
 void Dx11Renderer::Quit()
 {
+    ImGui_ImplDX11_Shutdown();
     printf("[RENDER] Done quitting Dx11\n");
 }
