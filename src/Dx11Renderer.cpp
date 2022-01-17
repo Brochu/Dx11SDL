@@ -137,10 +137,10 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
     assert(SUCCEEDED(hr));
 
     // VERTEX BUFFER DESCRIPTION AND CREATION
-    float vertData[] = {
-         0.0f,  0.5f,  0.0f,
-         0.5f, -0.5f,  0.0f,
-        -0.5f, -0.5f,  0.0f,
+    DirectX::XMFLOAT3 vertData[] = {
+        { 0.0f,  0.5f,  0.0f },
+        { 0.5f, -0.5f,  0.0f },
+        {-0.5f, -0.5f,  0.0f },
     };
 
     {
@@ -195,7 +195,7 @@ void Dx11Renderer::Render()
 
     // INPUT ASSEMLBLER
     //TODO: Maybe move these values at class level?
-    UINT vertStride = 3 * sizeof(float);
+    UINT vertStride = sizeof(DirectX::XMFLOAT3);
     UINT vertOffset = 0;
 
     pCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
