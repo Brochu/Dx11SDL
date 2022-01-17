@@ -243,6 +243,7 @@ void Dx11Renderer::Quit()
     pVertShader->Release();
 
     pRenderTarget->Release();
+
     pCtx->Release();
     pDevice->Release();
     pSwapchain->Release();
