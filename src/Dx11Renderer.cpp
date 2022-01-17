@@ -26,6 +26,11 @@ UINT vertStride = 3 * sizeof(float);
 UINT vertOffset = 0;
 UINT vertCount = 3;
 
+UINT frameTimeIdx;
+float frameTimes[10];
+float frameRates[10];
+
+
 int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
 {
     DXGI_SWAP_CHAIN_DESC scDesc = {0};
@@ -166,6 +171,10 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
 
 void Dx11Renderer::Update(float time, float delta)
 {
+    // Update frame times
+    frameTimes[frameTimeIdx] = delta;
+    frameRates[frameTimeIdx] = ImGui::GetIO().Framerate;
+    frameTimeIdx = (frameTimeIdx + 1) % ARRAYSIZE(frameTimes);
 }
 
 void Dx11Renderer::Render()
@@ -202,7 +211,9 @@ void Dx11Renderer::RenderDebugUI()
     ImGui::NewFrame();
 
     ImGui::Begin("Debug");
-    ImGui::Text("Frame Rate = %.01f", ImGui::GetIO().Framerate);
+    ImGui::PlotLines("Frame Rates", frameRates, ARRAYSIZE(frameRates));
+    ImGui::PlotLines("Frame Times", frameTimes, ARRAYSIZE(frameTimes));
+    ImGui::Separator();
     ImGui::ColorEdit4("Clear Color", bgColor);
     ImGui::End();
 
