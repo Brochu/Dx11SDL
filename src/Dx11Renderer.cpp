@@ -84,14 +84,14 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
     assert( SUCCEEDED(hr) );
     backBuffer->Release();
 
-    ID3DBlob *pVs = NULL, *pPs = NULL;
-
+    ID3DBlob *pVs = NULL;
     // VERTEX SHADER
     if (!compileShader(L"shaders/baseShaders.hlsl", "VS_Main", "vs_5_0", &pVs))
         return 1;
     hr = pDevice->CreateVertexShader(pVs->GetBufferPointer(), pVs->GetBufferSize(), NULL, &pVertShader);
     assert(SUCCEEDED(hr));
 
+    ID3DBlob *pPs = NULL;
     // PIXEL SHADER
     if (!compileShader(L"shaders/baseShaders.hlsl", "PS_Main", "ps_5_0", &pPs))
         return 1;
