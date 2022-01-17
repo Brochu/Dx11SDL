@@ -15,6 +15,6 @@ public:
     void Quit();
 
 private:
-    float bgColor[4] = { 0x64 / 255.f, 0x95 / 255.f, 0xed / 255.f, 1.f };
+    float bgColor[4] = { 0.f / 255.f, 100.f / 255.f, 130.f / 255.f, 1.f };
 
 };
