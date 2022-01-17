@@ -12,9 +12,9 @@
 #include <cstdio>
 #include <winerror.h>
 
+IDXGISwapChain* pSwapchain = nullptr;
 ID3D11Device* pDevice = nullptr;
 ID3D11DeviceContext* pCtx = nullptr;
-IDXGISwapChain* pSwapchain = nullptr;
 ID3D11RenderTargetView* pRenderTarget = nullptr;
 ID3D11InputLayout* pInputLayout = nullptr;
 ID3D11Buffer* pVertBuf = nullptr;
@@ -116,7 +116,7 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
             OutputDebugStringA((char*) pError->GetBufferPointer());
             pError->Release();
         }
-        if (pVs) { pVs->Release(); }
+        if (pPs) { pPs->Release(); }
         assert(false);
     }
 
@@ -135,6 +135,9 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
         pVs->GetBufferSize(),
         &pInputLayout);
     assert(SUCCEEDED(hr));
+
+    pVs->Release();
+    pPs->Release();
 
     // VERTEX BUFFER DESCRIPTION AND CREATION
     DirectX::XMFLOAT3 vertData[] = {
@@ -233,5 +236,16 @@ void Dx11Renderer::RenderDebugUI()
 void Dx11Renderer::Quit()
 {
     ImGui_ImplDX11_Shutdown();
+    pVertBuf->Release();
+    pInputLayout->Release();
+
+    pPixShader->Release();
+    pVertShader->Release();
+
+    pRenderTarget->Release();
+    pCtx->Release();
+    pDevice->Release();
+    pSwapchain->Release();
+
     printf("[RENDER] Done quitting Dx11\n");
 }
