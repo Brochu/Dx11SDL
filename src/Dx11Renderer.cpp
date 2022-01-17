@@ -189,6 +189,19 @@ void Dx11Renderer::Update(float time, float delta)
     frameTimes[frameTimeIdx] = delta;
     frameRates[frameTimeIdx] = ImGui::GetIO().Framerate;
     frameTimeIdx = (frameTimeIdx + 1) % ARRAYSIZE(frameTimes);
+
+    // Update constant buffer
+    D3D11_MAPPED_SUBRESOURCE mapped = {};
+    pCtx->Map(pConstBuf, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+
+    PerFrameData newData = {};
+    newData.time.x = time / 2;
+    newData.time.y = time / 10;
+    newData.time.z = delta;
+    newData.time.w = delta * 2;
+    memcpy(mapped.pData, &newData, sizeof(PerFrameData));
+
+    pCtx->Unmap(pConstBuf, 0);
 }
 
 void Dx11Renderer::Render()
