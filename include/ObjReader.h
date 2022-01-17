@@ -7,7 +7,7 @@ struct Vertex
 {
     DirectX::XMFLOAT3 pos;
     DirectX::XMFLOAT2 uvs;
-    DirectX::XMFLOAT3 norm;
+    //DirectX::XMFLOAT3 norm;
 };
 
 struct ModelData

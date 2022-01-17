@@ -68,19 +68,19 @@ bool ObjReader::ReadFromFile(const char* filepath, ModelData& outModelData)
             outModelData.verts.push_back({
                 temp_verts[vertexIdx[0]-1],
                 temp_uvs[uvIdx[0]-1],
-                temp_norms[normIdx[0]-1]
+                //temp_norms[normIdx[0]-1]
             });
 
             outModelData.verts.push_back({
                 temp_verts[vertexIdx[1]-1],
                 temp_uvs[uvIdx[1]-1],
-                temp_norms[normIdx[1]-1]
+                //temp_norms[normIdx[1]-1]
             });
 
             outModelData.verts.push_back({
                 temp_verts[vertexIdx[2]-1],
                 temp_uvs[uvIdx[2]-1],
-                temp_norms[normIdx[2]-1]
+                //temp_norms[normIdx[2]-1]
             });
         }
     }

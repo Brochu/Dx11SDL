@@ -100,6 +100,7 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
 
     D3D11_INPUT_ELEMENT_DESC inputElems[] = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
     };
     hr = pDevice->CreateInputLayout(
         inputElems,
@@ -113,10 +114,10 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
     pPs->Release();
 
     // VERTEX BUFFER DESCRIPTION AND CREATION
-    DirectX::XMFLOAT3 vertData[] = {
-        { 0.0f,  0.5f,  0.0f },
-        { 0.5f, -0.5f,  0.0f },
-        {-0.5f, -0.5f,  0.0f },
+    Vertex vertData[] = {
+        { { 0.0f,  0.5f,  0.0f }, {0.5f, 1.0f} },
+        { { 0.5f, -0.5f,  0.0f }, {1.0f, 0.0f} },
+        { {-0.5f, -0.5f,  0.0f }, {0.0f, 0.0f} }
     };
 
     {
@@ -174,7 +175,7 @@ void Dx11Renderer::Render()
 
     // INPUT ASSEMLBLER
     //TODO: Maybe move these values at class level?
-    UINT vertStride = sizeof(DirectX::XMFLOAT3);
+    UINT vertStride = sizeof(Vertex);
     UINT vertOffset = 0;
 
     pCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
