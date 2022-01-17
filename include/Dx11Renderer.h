@@ -26,6 +26,7 @@ private:
 
     ID3D11InputLayout* pInputLayout = nullptr;
     ID3D11Buffer* pVertBuf = nullptr;
+    ID3D11Buffer* pConstBuf = nullptr;
 
     D3D11_VIEWPORT viewport;
 

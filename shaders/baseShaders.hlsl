@@ -1,3 +1,8 @@
+cbuffer PerFrameData : register(b0)
+{
+    float4 timeValues;
+};
+
 struct VS_Input
 {
     float3 pos : POSITION;

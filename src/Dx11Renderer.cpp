@@ -10,6 +10,11 @@
 #include <cstdio>
 #include <winerror.h>
 
+struct PerFrameData
+{
+    DirectX::XMFLOAT4 time;
+};
+
 static bool compileShader(const WCHAR* filepath, const char* entry, const char* target, ID3DBlob** outShader)
 {
     UINT cmpFlags = D3DCOMPILE_ENABLE_STRICTNESS;
@@ -136,6 +141,30 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
         assert(SUCCEEDED(hr));
     }
 
+    // CONSTANT BUFFER DESCRIPTION AND CREATION
+    {
+        PerFrameData perFrame = {};
+
+        D3D11_BUFFER_DESC perFrameDesc = {};
+        perFrameDesc.ByteWidth = sizeof(perFrame);
+        perFrameDesc.Usage = D3D11_USAGE_DYNAMIC;
+        perFrameDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        perFrameDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        perFrameDesc.MiscFlags = 0;
+        perFrameDesc.StructureByteStride = 0;
+
+        D3D11_SUBRESOURCE_DATA pfData = {0};
+        pfData.pSysMem = &perFrame;
+        pfData.SysMemPitch = 0;
+        pfData.SysMemSlicePitch = 0;
+
+        hr = pDevice->CreateBuffer(
+            &perFrameDesc,
+            &pfData,
+            &pConstBuf);
+        assert(SUCCEEDED(hr));
+    }
+
     //TODO: Create constant buffer
     //Will hold time data (time + delta) and transform matrices (view, model and projection)
 
@@ -184,6 +213,8 @@ void Dx11Renderer::Render()
 
     // SHADERS
     pCtx->VSSetShader(pVertShader, NULL, 0);
+    pCtx->VSSetConstantBuffers(0, 1, &pConstBuf);
+
     pCtx->PSSetShader(pPixShader, NULL, 0);
 
     // DRAW
