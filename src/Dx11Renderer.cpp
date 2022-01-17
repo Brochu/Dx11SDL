@@ -22,14 +22,11 @@ ID3D11Buffer* pVertBuf = nullptr;
 ID3D11VertexShader* pVertShader = NULL;
 ID3D11PixelShader* pPixShader = NULL;
 
-UINT vertStride = 3 * sizeof(float);
-UINT vertOffset = 0;
-UINT vertCount = 3;
+D3D11_VIEWPORT viewport;
 
 UINT frameTimeIdx;
 float frameTimes[10];
 float frameRates[10];
-
 
 int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
 {
@@ -162,6 +159,14 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
         assert(SUCCEEDED(hr));
     }
 
+    viewport = {};
+    viewport.TopLeftX = 0.f;
+    viewport.TopLeftY = 0.f;
+    viewport.Width = (float) width;
+    viewport.Height = (float) height;
+    viewport.MinDepth = 0.f;
+    viewport.MaxDepth = 1.f;
+
     // ImGui Init
     ImGui_ImplDX11_Init(pDevice,pCtx);
 
@@ -183,13 +188,16 @@ void Dx11Renderer::Render()
     pCtx->ClearRenderTargetView(pRenderTarget, bgColor);
 
     // RASTER STATE
-    D3D11_VIEWPORT viewport = { 0.0f, 0.0f, 1280.f, 720.f, 0.0f, 1.0f };
     pCtx->RSSetViewports(1, &viewport);
 
     // OUTPUT MERGER
     pCtx->OMSetRenderTargets(1, &pRenderTarget, nullptr);
 
     // INPUT ASSEMLBLER
+    //TODO: Maybe move these values at class level?
+    UINT vertStride = 3 * sizeof(float);
+    UINT vertOffset = 0;
+
     pCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     pCtx->IASetInputLayout(pInputLayout);
     pCtx->IASetVertexBuffers(0, 1, &pVertBuf, &vertStride, &vertOffset);
@@ -199,6 +207,7 @@ void Dx11Renderer::Render()
     pCtx->PSSetShader(pPixShader, NULL, 0);
 
     // DRAW
+    UINT vertCount = 3;
     pCtx->Draw(vertCount, 0);
 
     RenderDebugUI();
