@@ -13,6 +13,10 @@
 struct PerFrameData
 {
     DirectX::XMFLOAT4 time;
+
+    DirectX::XMFLOAT4X4 model;
+    DirectX::XMFLOAT4X4 view;
+    DirectX::XMFLOAT4X4 projection;
 };
 
 static bool compileShader(const WCHAR* filepath, const char* entry, const char* target, ID3DBlob** outShader)
@@ -209,6 +213,11 @@ void Dx11Renderer::Update(float time, float delta)
     //DirectX::XMMatrixLookAtLH(FXMVECTOR EyePosition, FXMVECTOR FocusPosition, FXMVECTOR UpDirection);
     //DirectX::XMStoreFloat4x4(XMFLOAT4X4 *pDestination, FXMMATRIX M)
     //DirectX::XMLoadFloat4x4(const XMFLOAT4X4 *pSource);
+
+    //TODO: Deal with model transform
+    //DirectX::XMMatrixTranslation(float OffsetX, float OffsetY, float OffsetZ);
+    //DirectX::XMMatrixRotationRollPitchYaw(float Pitch, float Yaw, float Roll)
+    //DirectX::XMMatrixScaling(float ScaleX, float ScaleY, float ScaleZ);
 }
 
 void Dx11Renderer::Render()
