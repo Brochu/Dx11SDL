@@ -195,13 +195,17 @@ void Dx11Renderer::Update(float time, float delta)
     pCtx->Map(pConstBuf, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
 
     PerFrameData newData = {};
-    newData.time.x = time / 2;
+    newData.time.x = time;
     newData.time.y = time / 10;
     newData.time.z = delta;
     newData.time.w = delta * 2;
     memcpy(mapped.pData, &newData, sizeof(PerFrameData));
 
     pCtx->Unmap(pConstBuf, 0);
+
+    //TODO: Deal with transforms to send to shaders
+    //DirectX::XMMatrixPerspectiveFovLH(float FovAngleY, float AspectRatio, float NearZ, float FarZ);
+    //DirectX::XMMatrixLookAtLH(FXMVECTOR EyePosition, FXMVECTOR FocusPosition, FXMVECTOR UpDirection);
 }
 
 void Dx11Renderer::Render()
@@ -242,14 +246,18 @@ void Dx11Renderer::RenderDebugUI()
 {
     ImGui_ImplDX11_NewFrame();
     ImGui::NewFrame();
-
     ImGui::Begin("Debug");
+
+    ImGui::Text("Info:");
+    ImGui::Separator();
     ImGui::PlotLines("Frame Rates", frameRates, ARRAYSIZE(frameRates));
     ImGui::PlotLines("Frame Times", frameTimes, ARRAYSIZE(frameTimes));
+
+    ImGui::Text("Defaults:");
     ImGui::Separator();
     ImGui::ColorEdit4("Clear Color", bgColor);
-    ImGui::End();
 
+    ImGui::End();
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
