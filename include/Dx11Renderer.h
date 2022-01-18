@@ -15,6 +15,7 @@ public:
 
 private:
 
+    // Dx11 objects
     IDXGISwapChain* pSwapchain = nullptr;
     ID3D11Device* pDevice = nullptr;
     ID3D11DeviceContext* pCtx = nullptr;
@@ -30,8 +31,19 @@ private:
 
     D3D11_VIEWPORT viewport;
 
+    // Default Values
     float bgColor[4] = { 0.f / 255.f, 100.f / 255.f, 130.f / 255.f, 1.f };
 
+    float fovAngleY = 80.f;
+    float aspectRatio;
+    float nearZ = 0.01;
+    float farZ = 100.f;
+
+    float eyePos[3] = { 0.f, 1.f, -5.f };
+    float lookPos[3] = { 0.f, 0.f, 0.f };
+    float upDir[3] = { 0.f, 1.f, 0.f };
+
+    // Debug Values
     UINT frameTimeIdx;
     float frameTimes[10];
     float frameRates[10];

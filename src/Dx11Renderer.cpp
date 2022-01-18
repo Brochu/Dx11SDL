@@ -175,6 +175,7 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
     viewport.Height = (float) height;
     viewport.MinDepth = 0.f;
     viewport.MaxDepth = 1.f;
+    aspectRatio = viewport.Width / viewport.Height;
 
     // ImGui Init
     ImGui_ImplDX11_Init(pDevice,pCtx);
@@ -206,6 +207,8 @@ void Dx11Renderer::Update(float time, float delta)
     //TODO: Deal with transforms to send to shaders
     //DirectX::XMMatrixPerspectiveFovLH(float FovAngleY, float AspectRatio, float NearZ, float FarZ);
     //DirectX::XMMatrixLookAtLH(FXMVECTOR EyePosition, FXMVECTOR FocusPosition, FXMVECTOR UpDirection);
+    //DirectX::XMStoreFloat4x4(XMFLOAT4X4 *pDestination, FXMMATRIX M)
+    //DirectX::XMLoadFloat4x4(const XMFLOAT4X4 *pSource);
 }
 
 void Dx11Renderer::Render()
@@ -256,6 +259,14 @@ void Dx11Renderer::RenderDebugUI()
     ImGui::Text("Defaults:");
     ImGui::Separator();
     ImGui::ColorEdit4("Clear Color", bgColor);
+
+    ImGui::DragFloat("Fov Angle Y", &fovAngleY, 0.5f, 25.f, 180.f);
+    ImGui::DragFloat("Near Z", &nearZ, 0.01f, 0.01f, 20.f);
+    ImGui::DragFloat("Far Z", &farZ, 0.01f, 100.f, 150.f);
+
+    ImGui::DragFloat3("Eye Position", eyePos, 1.f, -100.f, 100.f);
+    ImGui::DragFloat3("Look Position", lookPos, 1.f, -100.f, 100.f);
+    ImGui::DragFloat3("Up Direction", upDir, 1.f, -100.f, 100.f);
 
     ImGui::End();
     ImGui::Render();
