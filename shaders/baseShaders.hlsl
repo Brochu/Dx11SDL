@@ -1,6 +1,10 @@
 cbuffer PerFrameData : register(b0)
 {
     float4 timeValues;
+
+    float4x4 view;
+    float4x4 model;
+    float4x4 projection;
 };
 
 struct VS_Input
@@ -19,13 +23,16 @@ struct PS_Input
 PS_Input VS_Main(VS_Input input)
 {
     PS_Input output = (PS_Input)0;
-    output.clipPos = float4(input.pos, 1.0);
-    output.uv = timeValues.xx * input.uv;
+    //output.clipPos = float4(input.pos, 1.0);
+    output.clipPos = mul(float4(input.pos, 1.0), view);
+
+    output.uv.x = abs(sin(timeValues.x * input.uv.x));
+    output.uv.y = abs(sin(timeValues.x * input.uv.y));
 
     return output;
 }
 
 float4 PS_Main(PS_Input input) : SV_TARGET
 {
-    return float4(frac(input.uv.x), frac(input.uv.y), 0.0, 1.0);
+    return float4(input.uv.x, input.uv.y, 0.0, 1.0);
 }

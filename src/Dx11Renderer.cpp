@@ -14,8 +14,8 @@ struct PerFrameData
 {
     DirectX::XMFLOAT4 time;
 
-    DirectX::XMFLOAT4X4 model;
     DirectX::XMFLOAT4X4 view;
+    DirectX::XMFLOAT4X4 model;
     DirectX::XMFLOAT4X4 projection;
 };
 
@@ -195,29 +195,37 @@ void Dx11Renderer::Update(float time, float delta)
     frameRates[frameTimeIdx] = ImGui::GetIO().Framerate;
     frameTimeIdx = (frameTimeIdx + 1) % ARRAYSIZE(frameTimes);
 
-    // Update constant buffer
-    D3D11_MAPPED_SUBRESOURCE mapped = {};
-    pCtx->Map(pConstBuf, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
-
+    // Create new struct to hold const buffer new data
     PerFrameData newData = {};
     newData.time.x = time;
     newData.time.y = time / 10;
     newData.time.z = delta;
     newData.time.w = delta * 2;
-    memcpy(mapped.pData, &newData, sizeof(PerFrameData));
 
-    pCtx->Unmap(pConstBuf, 0);
-
+    // Update transform matrices
+    DirectX::XMFLOAT4 eye { eyePos[0], eyePos[1], eyePos[2], 1.f };
+    DirectX::XMFLOAT4 look { lookPos[0], lookPos[1], lookPos[2], 1.f };
+    DirectX::XMFLOAT4 up { upDir[0], upDir[1], upDir[2], 1.f };
+    DirectX::XMStoreFloat4x4(&newData.view, DirectX::XMMatrixLookAtLH(
+        DirectX::XMLoadFloat4(&eye),
+        DirectX::XMLoadFloat4(&look),
+        DirectX::XMLoadFloat4(&up)
+    ));
     //TODO: Deal with transforms to send to shaders
     //DirectX::XMMatrixPerspectiveFovLH(float FovAngleY, float AspectRatio, float NearZ, float FarZ);
-    //DirectX::XMMatrixLookAtLH(FXMVECTOR EyePosition, FXMVECTOR FocusPosition, FXMVECTOR UpDirection);
     //DirectX::XMStoreFloat4x4(XMFLOAT4X4 *pDestination, FXMMATRIX M)
-    //DirectX::XMLoadFloat4x4(const XMFLOAT4X4 *pSource);
+    //DirectX::XMMATRIX test = DirectX::XMLoadFloat4x4(&newData.view);
 
     //TODO: Deal with model transform
     //DirectX::XMMatrixTranslation(float OffsetX, float OffsetY, float OffsetZ);
     //DirectX::XMMatrixRotationRollPitchYaw(float Pitch, float Yaw, float Roll)
     //DirectX::XMMatrixScaling(float ScaleX, float ScaleY, float ScaleZ);
+
+    // Update constant buffer
+    D3D11_MAPPED_SUBRESOURCE mapped = {};
+    pCtx->Map(pConstBuf, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+    memcpy(mapped.pData, &newData, sizeof(PerFrameData));
+    pCtx->Unmap(pConstBuf, 0);
 }
 
 void Dx11Renderer::Render()
@@ -271,7 +279,7 @@ void Dx11Renderer::RenderDebugUI()
 
     ImGui::DragFloat("Fov Angle Y", &fovAngleY, 0.5f, 25.f, 180.f);
     ImGui::DragFloat("Near Z", &nearZ, 0.01f, 0.01f, 20.f);
-    ImGui::DragFloat("Far Z", &farZ, 0.01f, 100.f, 150.f);
+    ImGui::DragFloat("Far Z", &farZ, 1.f, 100.f, 1000.f);
 
     ImGui::DragFloat3("Eye Position", eyePos, 1.f, -100.f, 100.f);
     ImGui::DragFloat3("Look Position", lookPos, 1.f, -100.f, 100.f);

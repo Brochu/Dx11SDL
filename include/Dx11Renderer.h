@@ -37,7 +37,7 @@ private:
     float fovAngleY = 80.f;
     float aspectRatio;
     float nearZ = 0.01;
-    float farZ = 100.f;
+    float farZ = 1000.f;
 
     float eyePos[3] = { 0.f, 1.f, -5.f };
     float lookPos[3] = { 0.f, 0.f, 0.f };
