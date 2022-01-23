@@ -25,6 +25,7 @@ PS_Input VS_Main(VS_Input input)
     PS_Input output = (PS_Input)0;
     output.clipPos = float4(input.pos, 1.0);
     output.clipPos = mul(output.clipPos, view);
+    //output.clipPos = mul(output.clipPos, projection);
     output.clipPos = mul(output.clipPos, model);
 
     output.uv.x = abs(sin(timeValues.x * input.uv.x));
