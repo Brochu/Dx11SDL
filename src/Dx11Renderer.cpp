@@ -123,20 +123,19 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
     pPs->Release();
 
     // VERTEX BUFFER DESCRIPTION AND CREATION
-    Vertex vertData[] = {
-        { { 0.0f,  0.5f,  0.0f }, {0.5f, 1.0f} },
-        { { 0.5f, -0.5f,  0.0f }, {1.0f, 0.0f} },
-        { {-0.5f, -0.5f,  0.0f }, {0.0f, 0.0f} }
-    };
+    std::vector<Vertex> vertData;
+    vertData.push_back({ { 0.0f,  0.5f,  0.0f }, { 0.5f, 1.0f } });
+    vertData.push_back({ { 0.5f, -0.5f,  0.0f }, { 1.0f, 0.0f } });
+    vertData.push_back({ {-0.5f, -0.5f,  0.0f }, { 0.0f, 0.0f } });
 
     {
         D3D11_BUFFER_DESC vbufDesc = {};
-        vbufDesc.ByteWidth = sizeof(vertData);
+        vbufDesc.ByteWidth = sizeof(Vertex) * 3;
         vbufDesc.Usage = D3D11_USAGE_DEFAULT;
         vbufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
         D3D11_SUBRESOURCE_DATA srData = {0};
-        srData.pSysMem = vertData;
+        srData.pSysMem = vertData.data();
 
         hr = pDevice->CreateBuffer(
             &vbufDesc,
