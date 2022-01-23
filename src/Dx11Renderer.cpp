@@ -15,8 +15,8 @@ struct PerFrameData
     DirectX::XMFLOAT4 time;
 
     DirectX::XMFLOAT4X4 view;
-    DirectX::XMFLOAT4X4 model;
     DirectX::XMFLOAT4X4 projection;
+    DirectX::XMFLOAT4X4 model;
 };
 
 static bool compileShader(const WCHAR* filepath, const char* entry, const char* target, ID3DBlob** outShader)
@@ -211,15 +211,20 @@ void Dx11Renderer::Update(float time, float delta)
         DirectX::XMLoadFloat4(&look),
         DirectX::XMLoadFloat4(&up)
     ));
-    //TODO: Deal with transforms to send to shaders
-    //DirectX::XMMatrixPerspectiveFovLH(float FovAngleY, float AspectRatio, float NearZ, float FarZ);
-    //DirectX::XMStoreFloat4x4(XMFLOAT4X4 *pDestination, FXMMATRIX M)
-    //DirectX::XMMATRIX test = DirectX::XMLoadFloat4x4(&newData.view);
+
+    DirectX::XMStoreFloat4x4(&newData.projection, DirectX::XMMatrixPerspectiveFovLH(
+        fovAngleY,
+        aspectRatio,
+        nearZ,
+        farZ
+    ));
 
     //TODO: Deal with model transform
-    //DirectX::XMMatrixTranslation(float OffsetX, float OffsetY, float OffsetZ);
-    //DirectX::XMMatrixRotationRollPitchYaw(float Pitch, float Yaw, float Roll)
-    //DirectX::XMMatrixScaling(float ScaleX, float ScaleY, float ScaleZ);
+    DirectX::XMMATRIX transform = DirectX::XMMatrixIdentity();
+    //transform *= DirectX::XMMatrixTranslation(translation[0], translation[1], translation[2]);
+    //transform *= DirectX::XMMatrixRotationRollPitchYaw(rotation[0], rotation[1], rotation[2]);
+    transform *= DirectX::XMMatrixScaling(scale[0], scale[1], scale[2]);
+    DirectX::XMStoreFloat4x4(&newData.model, transform);
 
     // Update constant buffer
     D3D11_MAPPED_SUBRESOURCE mapped = {};
@@ -277,13 +282,23 @@ void Dx11Renderer::RenderDebugUI()
     ImGui::Separator();
     ImGui::ColorEdit4("Clear Color", bgColor);
 
+    ImGui::Text("Projection:");
+    ImGui::Separator();
     ImGui::DragFloat("Fov Angle Y", &fovAngleY, 0.5f, 25.f, 180.f);
     ImGui::DragFloat("Near Z", &nearZ, 0.01f, 0.01f, 20.f);
     ImGui::DragFloat("Far Z", &farZ, 1.f, 100.f, 1000.f);
 
+    ImGui::Text("View:");
+    ImGui::Separator();
     ImGui::DragFloat3("Eye Position", eyePos, 1.f, -100.f, 100.f);
     ImGui::DragFloat3("Look Position", lookPos, 1.f, -100.f, 100.f);
     ImGui::DragFloat3("Up Direction", upDir, 1.f, -100.f, 100.f);
+
+    ImGui::Text("Transform:");
+    ImGui::Separator();
+    ImGui::DragFloat3("Translate", translation, 0.1f, -100.f, 100.f);
+    ImGui::DragFloat3("Rotate", rotation, 1.f, 0.f, 359.f);
+    ImGui::DragFloat3("Scale", scale, 0.1f, -100.f, 100.f);
 
     ImGui::End();
     ImGui::Render();
