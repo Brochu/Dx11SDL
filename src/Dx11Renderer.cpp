@@ -221,8 +221,8 @@ void Dx11Renderer::Update(float time, float delta)
 
     //TODO: Deal with model transform
     DirectX::XMMATRIX transform = DirectX::XMMatrixIdentity();
-    //transform *= DirectX::XMMatrixTranslation(translation[0], translation[1], translation[2]);
-    //transform *= DirectX::XMMatrixRotationRollPitchYaw(rotation[0], rotation[1], rotation[2]);
+    transform *= DirectX::XMMatrixTranslation(translation[0], translation[1], translation[2]);
+    transform *= DirectX::XMMatrixRotationRollPitchYaw(rotation[0], rotation[1], rotation[2]);
     transform *= DirectX::XMMatrixScaling(scale[0], scale[1], scale[2]);
     DirectX::XMStoreFloat4x4(&newData.model, transform);
 
@@ -296,8 +296,8 @@ void Dx11Renderer::RenderDebugUI()
 
     ImGui::Text("Transform:");
     ImGui::Separator();
-    ImGui::DragFloat3("Translate", translation, 0.1f, -100.f, 100.f);
-    ImGui::DragFloat3("Rotate", rotation, 1.f, 0.f, 359.f);
+    ImGui::DragFloat3("Translate", translation, 0.1f, -10.f, 10.f);
+    ImGui::DragFloat3("Rotate", rotation, 0.1f, 0.f, 10.f);
     ImGui::DragFloat3("Scale", scale, 0.1f, -100.f, 100.f);
 
     ImGui::End();
