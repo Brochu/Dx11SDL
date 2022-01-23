@@ -169,9 +169,6 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
         assert(SUCCEEDED(hr));
     }
 
-    //TODO: Create constant buffer
-    //Will hold time data (time + delta) and transform matrices (view, model and projection)
-
     viewport = {};
     viewport.TopLeftX = 0.f;
     viewport.TopLeftY = 0.f;
