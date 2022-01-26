@@ -3,6 +3,8 @@
 #include <d3d11.h>
 #include <dxgi.h>
 
+struct ModelData;
+
 class Dx11Renderer
 {
 
@@ -39,13 +41,15 @@ private:
     float nearZ = 0.01;
     float farZ = 1000.f;
 
-    float eyePos[3] = { 0.f, 1.f, -5.f };
+    float eyePos[3] = { 0.f, 0.f, 1.f };
     float lookPos[3] = { 0.f, 0.f, 0.f };
     float upDir[3] = { 0.f, 1.f, 0.f };
 
     float translation[3] = { 0.f, 0.f, 0.f };
     float rotation[3] = { 0.f, 0.f, 0.f };
     float scale[3] = { 1.f, 1.f, 1.f };
+
+    ModelData* model;
 
     // Debug Values
     UINT frameTimeIdx;

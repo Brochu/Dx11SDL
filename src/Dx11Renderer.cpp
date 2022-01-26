@@ -123,6 +123,9 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
     pPs->Release();
 
     // VERTEX BUFFER DESCRIPTION AND CREATION
+    model = new ModelData();
+    ObjReader::ReadFromFile("data/Cube.obj", *model);
+
     std::vector<Vertex> vertData;
     vertData.push_back({ { 0.0f,  0.5f,  0.0f }, { 0.5f, 1.0f } });
     vertData.push_back({ { 0.5f, -0.5f,  0.0f }, { 1.0f, 0.0f } });
@@ -130,12 +133,12 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
 
     {
         D3D11_BUFFER_DESC vbufDesc = {};
-        vbufDesc.ByteWidth = sizeof(Vertex) * 3;
+        vbufDesc.ByteWidth = sizeof(Vertex) * model->verts.size();
         vbufDesc.Usage = D3D11_USAGE_DEFAULT;
         vbufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
         D3D11_SUBRESOURCE_DATA srData = {0};
-        srData.pSysMem = vertData.data();
+        srData.pSysMem = model->verts.data();
 
         hr = pDevice->CreateBuffer(
             &vbufDesc,
@@ -201,14 +204,14 @@ void Dx11Renderer::Update(float time, float delta)
     // Update transform matrices
     DirectX::XMFLOAT4 eye { eyePos[0], eyePos[1], eyePos[2], 1.f };
     DirectX::XMFLOAT4 look { lookPos[0], lookPos[1], lookPos[2], 1.f };
-    DirectX::XMFLOAT4 up { upDir[0], upDir[1], upDir[2], 1.f };
-    DirectX::XMStoreFloat4x4(&newData.view, DirectX::XMMatrixLookAtLH(
+    DirectX::XMFLOAT4 up { upDir[0], upDir[1], upDir[2], 0.f };
+    DirectX::XMStoreFloat4x4(&newData.view, DirectX::XMMatrixLookAtRH(
         DirectX::XMLoadFloat4(&eye),
         DirectX::XMLoadFloat4(&look),
         DirectX::XMLoadFloat4(&up)
     ));
 
-    DirectX::XMStoreFloat4x4(&newData.projection, DirectX::XMMatrixPerspectiveFovLH(
+    DirectX::XMStoreFloat4x4(&newData.projection, DirectX::XMMatrixPerspectiveFovRH(
         fovAngleY,
         aspectRatio,
         nearZ,
@@ -256,7 +259,7 @@ void Dx11Renderer::Render()
     pCtx->PSSetShader(pPixShader, NULL, 0);
 
     // DRAW
-    UINT vertCount = 3;
+    UINT vertCount = model->verts.size();
     pCtx->Draw(vertCount, 0);
 
     RenderDebugUI();
@@ -316,5 +319,6 @@ void Dx11Renderer::Quit()
     pDevice->Release();
     pSwapchain->Release();
 
+    delete model;
     printf("[RENDER] Done quitting Dx11\n");
 }
