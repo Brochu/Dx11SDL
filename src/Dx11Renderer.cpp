@@ -126,11 +126,6 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
     model = new ModelData();
     ObjReader::ReadFromFile("data/Cube.obj", *model);
 
-    std::vector<Vertex> vertData;
-    vertData.push_back({ { 0.0f,  0.5f,  0.0f }, { 0.5f, 1.0f } });
-    vertData.push_back({ { 0.5f, -0.5f,  0.0f }, { 1.0f, 0.0f } });
-    vertData.push_back({ {-0.5f, -0.5f,  0.0f }, { 0.0f, 0.0f } });
-
     {
         D3D11_BUFFER_DESC vbufDesc = {};
         vbufDesc.ByteWidth = sizeof(Vertex) * model->verts.size();
