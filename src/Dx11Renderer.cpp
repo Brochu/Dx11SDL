@@ -125,7 +125,6 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
     // VERTEX BUFFER DESCRIPTION AND CREATION
     model = new ModelData();
     ObjReader::ReadFromFile("data/Cube.obj", *model);
-
     {
         D3D11_BUFFER_DESC vbufDesc = {};
         vbufDesc.ByteWidth = sizeof(Vertex) * model->verts.size();
