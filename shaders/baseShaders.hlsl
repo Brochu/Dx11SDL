@@ -11,12 +11,14 @@ struct VS_Input
 {
     float3 pos : POSITION;
     float2 uv : TEXCOORD0;
+    float3 norm : NORMAL0;
 };
 
 struct PS_Input
 {
     float4 clipPos : SV_POSITION;
     float2 uv : TEXCOORD0;
+    float3 norm : NORMAL0;
 };
 
 
@@ -28,13 +30,16 @@ PS_Input VS_Main(VS_Input input)
     output.clipPos = mul(view, output.clipPos);
     output.clipPos = mul(projection, output.clipPos);
 
-    output.uv.x = abs(sin(timeValues.x * input.uv.x));
-    output.uv.y = abs(sin(timeValues.x * input.uv.y));
+    //output.uv.x = abs(sin(timeValues.x * input.uv.x));
+    //output.uv.y = abs(sin(timeValues.x * input.uv.y));
+    output.uv = input.uv;
 
+    output.norm = input.norm;
     return output;
 }
 
 float4 PS_Main(PS_Input input) : SV_TARGET
 {
-    return float4(input.uv.x, input.uv.y, 0.0, 1.0);
+    float3 n = input.norm;
+    return float4(n.x, n.y, n.z, 1.0);
 }
