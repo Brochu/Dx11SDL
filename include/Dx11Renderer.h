@@ -41,7 +41,7 @@ private:
     float nearZ = 0.01;
     float farZ = 1000.f;
 
-    float eyePos[3] = { 2.f, 3.f, 10.f };
+    float eyePos[3] = { 0.f, 0.f, -5.f };
     float lookPos[3] = { 0.f, 0.f, 0.f };
     float upDir[3] = { 0.f, 1.f, 0.f };
 

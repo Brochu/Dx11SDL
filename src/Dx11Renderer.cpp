@@ -184,36 +184,6 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
     ImGui_ImplDX11_Init(pDevice,pCtx);
 
     printf("[RENDER] Done init Dx11\n");
-
-    //TODO: remove this, only debugging the values used for view transform
-    DirectX::XMFLOAT4 point (0.f, 0.f, 0.f, 1.f);
-    printf("base point: (%f, %f, %f, %f)\n", point.x, point.y, point.z, point.w);
-    DirectX::XMVECTOR p = DirectX::XMLoadFloat4(&point);
-
-    DirectX::XMFLOAT4 eye { eyePos[0], eyePos[1], eyePos[2], 0.f };
-    DirectX::XMFLOAT4 look { lookPos[0], lookPos[1], lookPos[2], 0.f };
-    DirectX::XMFLOAT4 up { upDir[0], upDir[1], upDir[2], 0.f };
-    DirectX::XMMATRIX view = DirectX::XMMatrixLookAtRH(
-        DirectX::XMLoadFloat4(&eye),
-        DirectX::XMLoadFloat4(&look),
-        DirectX::XMLoadFloat4(&up)
-    );
-    //printf("--------------------\n");
-    //for (int i = 0; i < 4; i++)
-    //{
-    //    for (int j = 0; j < 4; j++)
-    //    {
-    //        printf("| %f |", output.m[i][j]);
-    //    }
-    //    printf("\n");
-    //}
-    //printf("--------------------\n");
-
-    DirectX::XMVECTOR result = DirectX::XMVector4Transform(p, view);
-    DirectX::XMFLOAT4 prime;
-    DirectX::XMStoreFloat4(&prime, result);
-    printf("transformed point: (%f, %f, %f, %f)\n", prime.x, prime.y, prime.z, prime.w);
-
     return 0;
 }
 
@@ -232,7 +202,7 @@ void Dx11Renderer::Update(float time, float delta)
     newData.time.w = delta * 2;
 
     // Update transform matrices
-    DirectX::XMFLOAT4 eye { eyePos[0], eyePos[1], eyePos[2], 1.f };
+    DirectX::XMFLOAT4 eye { eyePos[0], eyePos[1], eyePos[2], 0.f };
     DirectX::XMFLOAT4 look { lookPos[0], lookPos[1], lookPos[2], 0.f };
     DirectX::XMFLOAT4 up { upDir[0], upDir[1], upDir[2], 0.f };
     DirectX::XMStoreFloat4x4(&newData.view, DirectX::XMMatrixLookAtRH(
