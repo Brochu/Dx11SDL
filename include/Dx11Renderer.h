@@ -36,13 +36,13 @@ private:
     // Default Values
     float bgColor[4] = { 0.f / 255.f, 100.f / 255.f, 130.f / 255.f, 1.f };
 
-    float fovAngleY = 80.f;
+    float fovAngleY = 45.f;
     float aspectRatio;
-    float nearZ = 0.01;
+    float nearZ = 0.1;
     float farZ = 1000.f;
 
     float eyePos[3] = { 0.f, 0.f, -5.f };
-    float lookPos[3] = { 0.f, 0.f, 0.f };
+    float focusPos[3] = { 0.f, 0.f, 0.f }; // Needs to be converted to look direction
     float upDir[3] = { 0.f, 1.f, 0.f };
 
     float translation[3] = { 0.f, 0.f, 0.f };
