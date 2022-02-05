@@ -40,6 +40,5 @@ PS_Input VS_Main(VS_Input input)
 
 float4 PS_Main(PS_Input input) : SV_TARGET
 {
-    float3 n = input.norm;
-    return float4(n.x, n.y, n.z, 1.0);
+    return float4(input.norm.xyz, 1.0);
 }
