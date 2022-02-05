@@ -49,6 +49,7 @@ bool ObjReader::ReadFromFile(const char* filepath, ModelData& outModelData)
         }
         else if (type == "f")
         {
+            //TODO: Add capacity to read more than 3 vertex per faces, translate to triangles ?
             uint64_t vertexIdx[3], uvIdx[3], normIdx[3];
             // Tri p0
             ss >> vertexIdx[0]; ss.ignore(1);
