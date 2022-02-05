@@ -198,12 +198,17 @@ void Dx11Renderer::Update(float time, float delta)
 
     // Update transform matrices
     //TODO: Add some more logic to make sure the vectors are normalized
-    DirectX::XMFLOAT4 eye { eyePos[0], eyePos[1], eyePos[2], 0.f };
-    DirectX::XMFLOAT4 focus { focusPos[0], focusPos[1], focusPos[2], 0.f };
+    DirectX::XMFLOAT4 eye { eyePos[0], eyePos[1], eyePos[2], 1.f };
+
+    DirectX::XMFLOAT4 lookDir { eyePos[0] - focusPos[0], eyePos[1] - focusPos[1], eyePos[2] - focusPos[2], 0.f };
+    DirectX::XMVECTOR look = DirectX::XMLoadFloat4(&lookDir);
+    look = DirectX::XMVector4Normalize(look);
+    DirectX::XMStoreFloat4(&lookDir, look);
+
     DirectX::XMFLOAT4 up { upDir[0], upDir[1], upDir[2], 0.f };
     DirectX::XMStoreFloat4x4(&newData.view, DirectX::XMMatrixLookAtLH(
         DirectX::XMLoadFloat4(&eye),
-        DirectX::XMLoadFloat4(&focus),
+        DirectX::XMLoadFloat4(&lookDir),
         DirectX::XMLoadFloat4(&up)
     ));
 
@@ -214,7 +219,6 @@ void Dx11Renderer::Update(float time, float delta)
         farZ
     ));
 
-    //TODO: Deal with model transform
     DirectX::XMMATRIX transform = DirectX::XMMatrixIdentity();
     transform *= DirectX::XMMatrixTranslation(translation[0], translation[1], translation[2]);
     transform *= DirectX::XMMatrixRotationRollPitchYaw(rotation[0], rotation[1], rotation[2]);
