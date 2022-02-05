@@ -279,15 +279,15 @@ void Dx11Renderer::RenderDebugUI()
 
     ImGui::Text("Projection:");
     ImGui::Separator();
-    ImGui::DragFloat("Fov Angle Y", &fovAngleY, 0.5f, 25.f, 180.f);
-    ImGui::DragFloat("Near Z", &nearZ, 0.01f, 0.01f, 20.f);
-    ImGui::DragFloat("Far Z", &farZ, 1.f, 100.f, 1000.f);
+    ImGui::DragFloat("Fov Angle Y", &fovAngleY, 0.2f, 15.f, 85.f);
+    ImGui::DragFloat("Near Z", &nearZ, 0.01f, 0.1f, 1.f);
+    ImGui::DragFloat("Far Z", &farZ, 10.f, 1000.f, 10000.f);
 
     ImGui::Text("View:");
     ImGui::Separator();
     ImGui::DragFloat3("Eye Position", eyePos, 1.f, -100.f, 100.f);
-    ImGui::DragFloat3("Look Position", lookPos, 1.f, -100.f, 100.f);
-    ImGui::DragFloat3("Up Direction", upDir, 1.f, -100.f, 100.f);
+    ImGui::DragFloat3("Look Position", focusPos, 1.f, -100.f, 100.f);
+    ImGui::DragFloat3("Up Direction", upDir, 0.01f, -1.f, 1.f); //TODO: Change this to a drop down with 8 axis
 
     ImGui::Text("Transform:");
     ImGui::Separator();
