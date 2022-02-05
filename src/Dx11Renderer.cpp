@@ -197,16 +197,17 @@ void Dx11Renderer::Update(float time, float delta)
     newData.time.w = delta * 2;
 
     // Update transform matrices
+    //TODO: Add some more logic to make sure the vectors are normalized
     DirectX::XMFLOAT4 eye { eyePos[0], eyePos[1], eyePos[2], 0.f };
-    DirectX::XMFLOAT4 look { lookPos[0], lookPos[1], lookPos[2], 0.f };
+    DirectX::XMFLOAT4 focus { focusPos[0], focusPos[1], focusPos[2], 0.f };
     DirectX::XMFLOAT4 up { upDir[0], upDir[1], upDir[2], 0.f };
-    DirectX::XMStoreFloat4x4(&newData.view, DirectX::XMMatrixLookAtRH(
+    DirectX::XMStoreFloat4x4(&newData.view, DirectX::XMMatrixLookAtLH(
         DirectX::XMLoadFloat4(&eye),
-        DirectX::XMLoadFloat4(&look),
+        DirectX::XMLoadFloat4(&focus),
         DirectX::XMLoadFloat4(&up)
     ));
 
-    DirectX::XMStoreFloat4x4(&newData.projection, DirectX::XMMatrixPerspectiveFovRH(
+    DirectX::XMStoreFloat4x4(&newData.projection, DirectX::XMMatrixPerspectiveFovLH(
         fovAngleY,
         aspectRatio,
         nearZ,
