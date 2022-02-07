@@ -51,7 +51,8 @@ bool ObjReader::ReadFromFile(const char* filepath, ModelData& outModelData)
         {
             printf("[OBJ][PARSING] face line = %s\n", line.c_str());
             //TODO: Add capacity to read more than 3 vertex per faces, translate to triangles ?
-            std::vector<uint64_t> vertexIdx, uvIdx, normIdx;
+            uint64_t vertexIdx[3] ,uvIdx[3], normIdx[3];
+            //std::vector<uint64_t> vertexIdx, uvIdx, normIdx;
             // Tri p0
             ss >> vertexIdx[0]; ss.ignore(1);
             ss >> uvIdx[0]; ss.ignore(1);
