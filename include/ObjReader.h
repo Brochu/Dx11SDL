@@ -3,6 +3,13 @@
 #include <vector>
 #include <DXM/DirectXMath.h>
 
+struct TempBuffers
+{
+    std::vector<DirectX::XMFLOAT3> positions;
+    std::vector<DirectX::XMFLOAT2> uvs;
+    std::vector<DirectX::XMFLOAT3> norms;
+};
+
 struct Vertex
 {
     DirectX::XMFLOAT3 pos;

@@ -5,6 +5,13 @@
 #include <stdint.h>
 #include <string>
 
+// Helpers methods - Start
+static void AddVertex(TempBuffers& bufs, uint64_t pIdx, uint64_t uIdx, uint64_t nIdx, ModelData& out)
+{
+    out.verts.push_back({ bufs.positions[pIdx], bufs.uvs[uIdx], bufs.norms[nIdx] });
+}
+// Helpers methods - End
+
 bool ObjReader::ReadFromFile(const char* filepath, ModelData& outModelData)
 {
     outModelData = {};
@@ -12,10 +19,7 @@ bool ObjReader::ReadFromFile(const char* filepath, ModelData& outModelData)
     std::ifstream file(filepath);
     if (!file.good() || !file.is_open() || file.bad()) return false;
 
-    std::vector<DirectX::XMFLOAT3> temp_verts;
-    std::vector<DirectX::XMFLOAT2> temp_uvs;
-    std::vector<DirectX::XMFLOAT3> temp_norms;
-
+    TempBuffers bufs;
     std::string line;
     std::stringstream ss;
     while (getline(file, line))
@@ -30,14 +34,14 @@ bool ObjReader::ReadFromFile(const char* filepath, ModelData& outModelData)
             ss >> vert.x;
             ss >> vert.y;
             ss >> vert.z;
-            temp_verts.push_back(vert);
+            bufs.positions.push_back(vert);
         }
         else if (type == "vt")
         {
             DirectX::XMFLOAT2 uv;
             ss >> uv.x;
             ss >> uv.y;
-            temp_uvs.push_back(uv);
+            bufs.uvs.push_back(uv);
         }
         else if (type == "vn")
         {
@@ -45,46 +49,45 @@ bool ObjReader::ReadFromFile(const char* filepath, ModelData& outModelData)
             ss >> norm.x;
             ss >> norm.y;
             ss >> norm.z;
-            temp_norms.push_back(norm);
+            bufs.norms.push_back(norm);
         }
         else if (type == "f")
         {
-            printf("[OBJ][PARSING] face line = %s\n", line.c_str());
-            //TODO: Add capacity to read more than 3 vertex per faces, translate to triangles ?
-            uint64_t vertexIdx[3] ,uvIdx[3], normIdx[3];
-            //std::vector<uint64_t> vertexIdx, uvIdx, normIdx;
-            // Tri p0
-            ss >> vertexIdx[0]; ss.ignore(1);
-            ss >> uvIdx[0]; ss.ignore(1);
-            ss >> normIdx[0]; ss.ignore(1);
+            std::vector<uint64_t> pIdx, uIdx, nIdx;
+            while (ss.rdbuf()->in_avail() > 0)
+            {
+                // Handle one set of ids
+                uint64_t p, u, n;
+                ss >> p; ss.ignore(1);
+                ss >> u; ss.ignore(1);
+                ss >> n; ss.ignore(1);
 
-            // Tri p1
-            ss >> vertexIdx[1]; ss.ignore(1);
-            ss >> uvIdx[1]; ss.ignore(1);
-            ss >> normIdx[1]; ss.ignore(1);
+                pIdx.push_back(p);
+                uIdx.push_back(u);
+                nIdx.push_back(n);
+            }
 
-            // Tri p2
-            ss >> vertexIdx[2]; ss.ignore(1);
-            ss >> uvIdx[2]; ss.ignore(1);
-            ss >> normIdx[2]; ss.ignore(1);
+            //TODO: Look into some winding order issues, we can see through the Pagoda model
+            if (pIdx.size() == 3)
+            {
+                // One tri case
+                AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, outModelData);
+                AddVertex(bufs, pIdx[1]-1, uIdx[1]-1, nIdx[1]-1, outModelData);
+                AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, outModelData);
+            }
+            else if (pIdx.size() == 4)
+            {
+                // One quad case
+                // First Tri
+                AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, outModelData);
+                AddVertex(bufs, pIdx[1]-1, uIdx[1]-1, nIdx[1]-1, outModelData);
+                AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, outModelData);
 
-            outModelData.verts.push_back({
-                temp_verts[vertexIdx[0]-1],
-                temp_uvs[uvIdx[0]-1],
-                temp_norms[normIdx[0]-1]
-            });
-
-            outModelData.verts.push_back({
-                temp_verts[vertexIdx[1]-1],
-                temp_uvs[uvIdx[1]-1],
-                temp_norms[normIdx[1]-1]
-            });
-
-            outModelData.verts.push_back({
-                temp_verts[vertexIdx[2]-1],
-                temp_uvs[uvIdx[2]-1],
-                temp_norms[normIdx[2]-1]
-            });
+                // Second Tri
+                AddVertex(bufs, pIdx[3]-1, uIdx[3]-1, nIdx[3]-1, outModelData);
+                AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, outModelData);
+                AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, outModelData);
+            }
         }
     }
 
