@@ -79,14 +79,14 @@ bool ObjReader::ReadFromFile(const char* filepath, ModelData& outModelData)
             {
                 // One quad case
                 // First Tri
-                AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, outModelData);
-                AddVertex(bufs, pIdx[1]-1, uIdx[1]-1, nIdx[1]-1, outModelData);
                 AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, outModelData);
+                AddVertex(bufs, pIdx[1]-1, uIdx[1]-1, nIdx[1]-1, outModelData);
+                AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, outModelData);
 
                 // Second Tri
-                AddVertex(bufs, pIdx[3]-1, uIdx[3]-1, nIdx[3]-1, outModelData);
-                AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, outModelData);
                 AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, outModelData);
+                AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, outModelData);
+                AddVertex(bufs, pIdx[3]-1, uIdx[3]-1, nIdx[3]-1, outModelData);
             }
         }
     }
