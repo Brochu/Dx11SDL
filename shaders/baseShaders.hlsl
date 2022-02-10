@@ -5,6 +5,9 @@ cbuffer PerFrameData : register(b0)
     float4x4 view;
     float4x4 projection;
     float4x4 model;
+
+    //TODO: Move this to separate CB for binding to frag shader
+    float4 lightDir;
 };
 
 struct VS_Input
@@ -19,6 +22,7 @@ struct PS_Input
     float4 clipPos : SV_POSITION;
     float2 uv : TEXCOORD0;
     float3 norm : NORMAL0;
+    float3 color : NORMAL1;
 };
 
 
@@ -30,16 +34,17 @@ PS_Input VS_Main(VS_Input input)
     output.clipPos = mul(view, output.clipPos);
     output.clipPos = mul(projection, output.clipPos);
 
-    //output.uv.x = abs(sin(timeValues.x * input.uv.x));
-    //output.uv.y = abs(sin(timeValues.x * input.uv.y));
     output.uv = input.uv;
 
     output.norm = input.norm;
+
+    output.color = lightDir.xyz;
     return output;
 }
 
 float4 PS_Main(PS_Input input) : SV_TARGET
 {
     //return float4(input.norm.xyz, 1.0);
-    return float4(input.uv.xxy, 1.0);
+    //return float4(input.uv.xxy, 1.0);
+    return float4(input.color, 1.0);
 }

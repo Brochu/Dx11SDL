@@ -17,6 +17,9 @@ struct PerFrameData
     DirectX::XMFLOAT4X4 view;
     DirectX::XMFLOAT4X4 projection;
     DirectX::XMFLOAT4X4 model;
+
+    //TODO: Create new constant buffer struct for light information
+    DirectX::XMFLOAT4 lightDir;
 };
 
 static bool compileShader(const WCHAR* filepath, const char* entry, const char* target, ID3DBlob** outShader)
@@ -197,7 +200,6 @@ void Dx11Renderer::Update(float time, float delta)
     newData.time.w = delta * 2;
 
     // Update transform matrices
-    //TODO: Add some more logic to make sure the vectors are normalized
     DirectX::XMFLOAT4 eye { eyePos[0], eyePos[1], eyePos[2], 1.f };
 
     DirectX::XMFLOAT4 lookDir { eyePos[0] - focusPos[0], eyePos[1] - focusPos[1], eyePos[2] - focusPos[2], 0.f };
@@ -224,6 +226,13 @@ void Dx11Renderer::Update(float time, float delta)
     transform *= DirectX::XMMatrixRotationRollPitchYaw(rotation[0], rotation[1], rotation[2]);
     transform *= DirectX::XMMatrixScaling(scale[0], scale[1], scale[2]);
     DirectX::XMStoreFloat4x4(&newData.model, transform);
+
+    // Update directional light direction
+    //TODO: This should be in a separate constant buffer to map to pixel shader instead
+    DirectX::XMFLOAT4 dir { lightDirection[0], lightDirection[1], lightDirection[2], 1.f };
+    DirectX::XMVECTOR dirVector = DirectX::XMLoadFloat4(&dir);
+    dirVector = DirectX::XMVector4Normalize(dirVector);
+    DirectX::XMStoreFloat4(&newData.lightDir, dirVector);
 
     // Update constant buffer
     D3D11_MAPPED_SUBRESOURCE mapped = {};
@@ -256,6 +265,7 @@ void Dx11Renderer::Render()
     pCtx->VSSetShader(pVertShader, NULL, 0);
     pCtx->VSSetConstantBuffers(0, 1, &pConstBuf);
 
+    //TODO: Bind light information constant buffer here
     pCtx->PSSetShader(pPixShader, NULL, 0);
 
     // DRAW
@@ -298,6 +308,10 @@ void Dx11Renderer::RenderDebugUI()
     ImGui::DragFloat3("Translate", translation, 0.1f, -10.f, 10.f);
     ImGui::DragFloat3("Rotate", rotation, 0.1f, 0.f, 10.f);
     ImGui::DragFloat3("Scale", scale, 0.1f, -100.f, 100.f);
+
+    ImGui::Text("Directional Light:");
+    ImGui::Separator();
+    ImGui::DragFloat3("Direction", lightDirection, 0.01f, 0.f, 1.f);
 
     ImGui::End();
     ImGui::Render();
