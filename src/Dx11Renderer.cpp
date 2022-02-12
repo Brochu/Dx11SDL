@@ -14,11 +14,14 @@ struct PerFrameData
 {
     DirectX::XMFLOAT4 time;
 
+    // Maybe try to combine the transforms on CPU side
     DirectX::XMFLOAT4X4 view;
     DirectX::XMFLOAT4X4 projection;
     DirectX::XMFLOAT4X4 model;
+};
 
-    //TODO: Create new constant buffer struct for light information
+struct LightData
+{
     DirectX::XMFLOAT4 lightDir;
 };
 
@@ -145,6 +148,7 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
         assert(SUCCEEDED(hr));
     }
 
+    // Split off the handling and creation of constant buffer to other class?
     // CONSTANT BUFFER DESCRIPTION AND CREATION
     {
         PerFrameData perFrame = {};
@@ -166,6 +170,27 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
             &perFrameDesc,
             &pfData,
             &pConstBuf);
+        assert(SUCCEEDED(hr));
+    }
+
+    // LIGHT DATA CONSTANT BUFFER
+    {
+        LightData light = {};
+
+        D3D11_BUFFER_DESC lightDesc = {};
+        lightDesc.ByteWidth = sizeof(light);
+        lightDesc.Usage = D3D11_USAGE_DYNAMIC;
+        lightDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        lightDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        lightDesc.MiscFlags = 0;
+        lightDesc.StructureByteStride = 0;
+
+        D3D11_SUBRESOURCE_DATA data = {0};
+        data.pSysMem = &light;
+        data.SysMemPitch = 0;
+        data.SysMemSlicePitch = 0;
+
+        hr = pDevice->CreateBuffer(&lightDesc, &data, &pLightBuf);
         assert(SUCCEEDED(hr));
     }
 
@@ -227,18 +252,23 @@ void Dx11Renderer::Update(float time, float delta)
     transform *= DirectX::XMMatrixScaling(scale[0], scale[1], scale[2]);
     DirectX::XMStoreFloat4x4(&newData.model, transform);
 
-    // Update directional light direction
-    //TODO: This should be in a separate constant buffer to map to pixel shader instead
+    // Update directional light direction (light data)
+    LightData newLightData = {};
     DirectX::XMFLOAT4 dir { lightDirection[0], lightDirection[1], lightDirection[2], 1.f };
     DirectX::XMVECTOR dirVector = DirectX::XMLoadFloat4(&dir);
     dirVector = DirectX::XMVector4Normalize(dirVector);
-    DirectX::XMStoreFloat4(&newData.lightDir, dirVector);
+    DirectX::XMStoreFloat4(&newLightData.lightDir, dirVector);
 
-    // Update constant buffer
+    // Update constant buffers
     D3D11_MAPPED_SUBRESOURCE mapped = {};
     pCtx->Map(pConstBuf, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
     memcpy(mapped.pData, &newData, sizeof(PerFrameData));
     pCtx->Unmap(pConstBuf, 0);
+
+    D3D11_MAPPED_SUBRESOURCE lightMapped = {};
+    pCtx->Map(pLightBuf, 0, D3D11_MAP_WRITE_DISCARD, 0, &lightMapped);
+    memcpy(lightMapped.pData, &newLightData, sizeof(LightData));
+    pCtx->Unmap(pLightBuf, 0);
 }
 
 void Dx11Renderer::Render()
@@ -253,7 +283,6 @@ void Dx11Renderer::Render()
     pCtx->OMSetRenderTargets(1, &pRenderTarget, nullptr);
 
     // INPUT ASSEMLBLER
-    //TODO: Maybe move these values at class level?
     UINT vertStride = sizeof(Vertex);
     UINT vertOffset = 0;
 
@@ -265,8 +294,8 @@ void Dx11Renderer::Render()
     pCtx->VSSetShader(pVertShader, NULL, 0);
     pCtx->VSSetConstantBuffers(0, 1, &pConstBuf);
 
-    //TODO: Bind light information constant buffer here
     pCtx->PSSetShader(pPixShader, NULL, 0);
+    pCtx->PSSetConstantBuffers(1, 1, &pLightBuf);
 
     // DRAW
     UINT vertCount = model->verts.size();
