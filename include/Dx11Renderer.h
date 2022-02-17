@@ -23,6 +23,7 @@ private:
     ID3D11DeviceContext* pCtx = nullptr;
 
     ID3D11RenderTargetView* pRenderTarget = nullptr;
+    ID3D11DepthStencilView* pDepthTarget = nullptr;
 
     ID3D11VertexShader* pVertShader = NULL;
     ID3D11PixelShader* pPixShader = NULL;

@@ -91,6 +91,7 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
         &pCtx);
     assert( hr == S_OK && pSwapchain && pDevice && pCtx );
 
+    // Create main render target view
     ID3D11Texture2D* backBuffer;
     hr = pSwapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
     assert( SUCCEEDED(hr) );
@@ -98,6 +99,28 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
     hr = pDevice->CreateRenderTargetView(backBuffer, 0, &pRenderTarget);
     assert( SUCCEEDED(hr) );
     backBuffer->Release();
+
+    // Create depth target view
+    ID3D11Texture2D* depthBuffer = nullptr;
+    D3D11_TEXTURE2D_DESC depthDesc = {0};
+    depthDesc.Width = width;
+    depthDesc.Height = height;
+    depthDesc.MipLevels = 1;
+    depthDesc.ArraySize = 1;
+    depthDesc.Format = DXGI_FORMAT_D32_FLOAT;
+    depthDesc.SampleDesc.Count = 1;
+    depthDesc.SampleDesc.Quality = 0;
+    depthDesc.Usage = D3D11_USAGE_DEFAULT;
+    depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE; // Preview depth result later
+    depthDesc.CPUAccessFlags = 0;
+    depthDesc.MiscFlags = 0;
+    hr = pDevice->CreateTexture2D(&depthDesc, nullptr, &depthBuffer);
+
+    D3D11_DEPTH_STENCIL_VIEW_DESC depthViewDesc = {};
+    depthViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
+    depthViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    depthViewDesc.Texture2D.MipSlice = 0;
+    hr = pDevice->CreateDepthStencilView(depthBuffer, &depthViewDesc, &pDepthTarget);
 
     ID3DBlob *pVs = NULL;
     // VERTEX SHADER
