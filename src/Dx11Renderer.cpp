@@ -115,12 +115,15 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
     depthDesc.CPUAccessFlags = 0;
     depthDesc.MiscFlags = 0;
     hr = pDevice->CreateTexture2D(&depthDesc, nullptr, &depthBuffer);
+    assert (SUCCEEDED(hr) );
 
     D3D11_DEPTH_STENCIL_VIEW_DESC depthViewDesc = {};
     depthViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
     depthViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
     depthViewDesc.Texture2D.MipSlice = 0;
     hr = pDevice->CreateDepthStencilView(depthBuffer, &depthViewDesc, &pDepthTarget);
+    assert (SUCCEEDED(hr) );
+    depthBuffer->Release();
 
     ID3DBlob *pVs = NULL;
     // VERTEX SHADER
