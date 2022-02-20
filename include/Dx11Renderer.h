@@ -33,6 +33,8 @@ private:
     ID3D11Buffer* pConstBuf = nullptr;
     ID3D11Buffer* pLightBuf = nullptr;
 
+    ID3D11DepthStencilState* depthState;
+
     D3D11_VIEWPORT viewport;
 
     // Default Values
