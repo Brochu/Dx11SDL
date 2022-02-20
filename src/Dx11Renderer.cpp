@@ -102,7 +102,7 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
 
     // Create depth target view
     ID3D11Texture2D* depthBuffer = nullptr;
-    D3D11_TEXTURE2D_DESC depthDesc = {0};
+    D3D11_TEXTURE2D_DESC depthDesc = {};
     depthDesc.Width = width;
     depthDesc.Height = height;
     depthDesc.MipLevels = 1;
@@ -111,7 +111,7 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
     depthDesc.SampleDesc.Count = 1;
     depthDesc.SampleDesc.Quality = 0;
     depthDesc.Usage = D3D11_USAGE_DEFAULT;
-    depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE; // Preview depth result later
+    depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
     depthDesc.CPUAccessFlags = 0;
     depthDesc.MiscFlags = 0;
     hr = pDevice->CreateTexture2D(&depthDesc, nullptr, &depthBuffer);
@@ -231,7 +231,7 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
     aspectRatio = viewport.Width / viewport.Height;
 
     // Create depth state
-    D3D11_DEPTH_STENCIL_DESC dsDesc;
+    D3D11_DEPTH_STENCIL_DESC dsDesc = {};
     dsDesc.DepthEnable = true;
     dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
     dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
