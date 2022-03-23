@@ -24,6 +24,7 @@ private:
 
     ID3D11RenderTargetView* pRenderTarget = nullptr;
     ID3D11DepthStencilView* pDepthTarget = nullptr;
+    ID3D11ShaderResourceView* pDepthShaderView = nullptr; //TODO: Also create a view for shader use for depth
 
     ID3D11VertexShader* pVertShader = NULL;
     ID3D11PixelShader* pPixShader = NULL;
