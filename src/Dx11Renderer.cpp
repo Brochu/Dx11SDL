@@ -107,11 +107,11 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
     depthDesc.Height = height;
     depthDesc.MipLevels = 1;
     depthDesc.ArraySize = 1;
-    depthDesc.Format = DXGI_FORMAT_D32_FLOAT;
+    depthDesc.Format = DXGI_FORMAT_R32_TYPELESS;
     depthDesc.SampleDesc.Count = 1;
     depthDesc.SampleDesc.Quality = 0;
     depthDesc.Usage = D3D11_USAGE_DEFAULT;
-    depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
     depthDesc.CPUAccessFlags = 0;
     depthDesc.MiscFlags = 0;
     hr = pDevice->CreateTexture2D(&depthDesc, nullptr, &depthBuffer);
