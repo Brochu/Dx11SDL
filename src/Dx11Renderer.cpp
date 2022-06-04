@@ -232,7 +232,7 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
 
     // Create depth state
     D3D11_DEPTH_STENCIL_DESC dsDesc = {};
-    dsDesc.DepthEnable = true;
+    dsDesc.DepthEnable = false;
     dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
     dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
     dsDesc.StencilEnable = true;
@@ -326,7 +326,8 @@ void Dx11Renderer::Render()
     pCtx->RSSetViewports(1, &viewport);
 
     // OUTPUT MERGER
-    pCtx->OMSetRenderTargets(1, &pRenderTarget, nullptr);
+    pCtx->OMSetRenderTargets(1, &pRenderTarget, pDepthTarget);
+    pCtx->OMSetDepthStencilState(depthState, 0);
 
     // INPUT ASSEMLBLER
     UINT vertStride = sizeof(Vertex);
