@@ -338,9 +338,12 @@ void Dx11Renderer::Render()
     // CLEAR
     pCtx->ClearRenderTargetView(pRenderTarget, bgColor);
     pCtx->ClearDepthStencilView(pDepthTarget, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+    pCtx->ClearDepthStencilView(pShadowTarget, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
     // RASTER STATE
     pCtx->RSSetViewports(1, &viewport);
+
+    //TODO: Setup pass for shadow map rendering
 
     // OUTPUT MERGER
     pCtx->OMSetRenderTargets(1, &pRenderTarget, pDepthTarget);
