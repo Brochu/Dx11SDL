@@ -22,9 +22,14 @@ private:
     ID3D11Device* pDevice = nullptr;
     ID3D11DeviceContext* pCtx = nullptr;
 
+    // Base render pass targets
     ID3D11RenderTargetView* pRenderTarget = nullptr;
     ID3D11DepthStencilView* pDepthTarget = nullptr;
-    ID3D11ShaderResourceView* pDepthShaderView = nullptr; //TODO: Also create a view for shader use for depth
+    ID3D11ShaderResourceView* pDepthShaderView = nullptr;
+
+    // Shadow map targets
+    ID3D11DepthStencilView* pShadowTarget = nullptr;
+    ID3D11ShaderResourceView* pShadowShaderView = nullptr;
 
     ID3D11VertexShader* pVertShader = NULL;
     ID3D11PixelShader* pPixShader = NULL;

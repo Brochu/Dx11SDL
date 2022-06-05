@@ -102,6 +102,8 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
 
     // Create depth target view
     ID3D11Texture2D* depthBuffer = nullptr;
+    ID3D11Texture2D* shadowBuffer = nullptr;
+
     D3D11_TEXTURE2D_DESC depthDesc = {};
     depthDesc.Width = width;
     depthDesc.Height = height;
@@ -117,13 +119,24 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
     hr = pDevice->CreateTexture2D(&depthDesc, nullptr, &depthBuffer);
     assert (SUCCEEDED(hr) );
 
+    // Also create the shdadow map target texture
+    //TODO: Look into the need of creating shadow map with variable resolution
+    hr = pDevice->CreateTexture2D(&depthDesc, nullptr, &shadowBuffer);
+    assert (SUCCEEDED(hr) );
+
     D3D11_DEPTH_STENCIL_VIEW_DESC depthViewDesc = {};
     depthViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
     depthViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
     depthViewDesc.Texture2D.MipSlice = 0;
+
     hr = pDevice->CreateDepthStencilView(depthBuffer, &depthViewDesc, &pDepthTarget);
     assert (SUCCEEDED(hr) );
+
+    hr = pDevice->CreateDepthStencilView(shadowBuffer, &depthViewDesc, &pShadowTarget);
+    assert (SUCCEEDED(hr) );
+
     depthBuffer->Release();
+    shadowBuffer->Release();
 
     ID3DBlob *pVs = NULL;
     // VERTEX SHADER
