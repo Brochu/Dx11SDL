@@ -315,6 +315,11 @@ void Dx11Renderer::Update(float time, float delta)
     DirectX::XMStoreFloat4x4(&newData.model, transform);
 
     // Update directional light direction (light data)
+    //TODO: Look into changing this to use fake pos + look at to place the light direction
+    // Use this for main render pass to test the changes
+    // Be able to send light data for shadow render pass
+    // LightData should hold matrix transforms to render from light's perspective
+    // Also use orthographic proj since it's a directional light
     LightData newLightData = {};
     DirectX::XMFLOAT4 dir { lightDirection[0], lightDirection[1], lightDirection[2], 1.f };
     DirectX::XMVECTOR dirVector = DirectX::XMLoadFloat4(&dir);
