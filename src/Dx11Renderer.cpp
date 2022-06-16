@@ -241,6 +241,17 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
     return 0;
 }
 
+void Dx11Renderer::PrepareBasePass()
+{
+    // Move resources creation here, do not bind in advance
+}
+
+void Dx11Renderer::PrepareShadowPass()
+{
+    // Move resources creation here, do not bind in advance
+    // DO we need a different depth state?
+}
+
 void Dx11Renderer::Update(float time, float delta)
 {
     // Update frame times

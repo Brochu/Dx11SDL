@@ -10,6 +10,10 @@ class Dx11Renderer
 
 public:
     int Init(HWND hWindow, UINT width, UINT height);
+    void PrepareBasePass(); //TODO: Complete this to init the needed resources
+    void PrepareShadowPass(); //TODO: Complete this to init the needed resources
+    //TODO: Make sure to move generic resource creation to Utils
+
     void Update(float time, float delta);
     void Render();
     void RenderDebugUI();
