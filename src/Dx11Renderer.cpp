@@ -1,5 +1,6 @@
 #include "Dx11Renderer.h"
 #include "ObjReader.h"
+#include "RendererUtils.h"
 
 #include <d3dcompiler.h>
 #include <DXM/DirectXMath.h>
@@ -24,38 +25,6 @@ struct LightData
 {
     DirectX::XMFLOAT4 lightDir;
 };
-
-static bool compileShader(const WCHAR* filepath, const char* entry, const char* target, ID3DBlob** outShader)
-{
-    UINT cmpFlags = D3DCOMPILE_ENABLE_STRICTNESS;
-#if defined( DEBUG ) || defined( _DEBUG )
-    cmpFlags |= D3DCOMPILE_DEBUG;
-#endif
-    ID3DBlob* pError = nullptr;
-
-    HRESULT hr = D3DCompileFromFile(
-        filepath,
-        nullptr,
-        D3D_COMPILE_STANDARD_FILE_INCLUDE,
-        entry,
-        target,
-        cmpFlags,
-        0,
-        outShader,
-        &pError);
-    if (FAILED(hr))
-    {
-        if (pError)
-        {
-            OutputDebugStringA((char*) pError->GetBufferPointer());
-            pError->Release();
-        }
-        if ((*outShader) != nullptr) { (*outShader)->Release(); }
-        assert(false);
-        return false;
-    }
-    return true;
-}
 
 int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
 {
@@ -140,14 +109,14 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
 
     ID3DBlob *pVs = NULL;
     // VERTEX SHADER
-    if (!compileShader(L"shaders/baseShaders.hlsl", "VS_Main", "vs_5_0", &pVs))
+    if (!Utils::compileShader(L"shaders/baseShaders.hlsl", "VS_Main", "vs_5_0", &pVs))
         return 1;
     hr = pDevice->CreateVertexShader(pVs->GetBufferPointer(), pVs->GetBufferSize(), NULL, &pVertShader);
     assert(SUCCEEDED(hr));
 
     ID3DBlob *pPs = NULL;
     // PIXEL SHADER
-    if (!compileShader(L"shaders/baseShaders.hlsl", "PS_Main", "ps_5_0", &pPs))
+    if (!Utils::compileShader(L"shaders/baseShaders.hlsl", "PS_Main", "ps_5_0", &pPs))
         return 1;
     hr = pDevice->CreatePixelShader(pPs->GetBufferPointer(), pPs->GetBufferSize(), NULL, &pPixShader);
     assert(SUCCEEDED(hr));
