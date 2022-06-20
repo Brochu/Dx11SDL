@@ -10,8 +10,9 @@ class Dx11Renderer
 
 public:
     int Init(HWND hWindow, UINT width, UINT height);
+    void PrepareBaseObjects(HWND hWindow);
     void PrepareBasePass(); //TODO: Complete this to init the needed resources
-    void PrepareShadowPass(); //TODO: Complete this to init the needed resources
+    void PrepareShadowPass();
     //TODO: Make sure to move generic resource creation to Utils
 
     void Update(float time, float delta);
@@ -66,6 +67,10 @@ private:
     float lightDirection[3] = { 1.f, 0.f, 0.f };
 
     ModelData* model;
+
+    // Shadow map resolution
+    UINT shadowWidth = 512;
+    UINT shadowHeight = 512;
 
     // Debug Values
     UINT frameTimeIdx;

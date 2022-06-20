@@ -28,50 +28,17 @@ struct LightData
 
 int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
 {
-    DXGI_SWAP_CHAIN_DESC scDesc = {0};
-    scDesc.BufferDesc.RefreshRate.Numerator = 0;
-    scDesc.BufferDesc.RefreshRate.Denominator = 1;
-    scDesc.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-    scDesc.SampleDesc.Count = 1;
-    scDesc.SampleDesc.Quality = 0;
-    scDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    scDesc.BufferCount = 1;
-    scDesc.OutputWindow = hWindow;
-    scDesc.Windowed = true;
+    // This makes sure we have a swapchain, a device and a context
+    PrepareBaseObjects(hWindow);
 
-    D3D_FEATURE_LEVEL featLevel;
-    UINT flags = D3D11_CREATE_DEVICE_SINGLETHREADED;
-#if defined( DEBUG ) || defined( _DEBUG )
-    flags |= D3D11_CREATE_DEVICE_DEBUG;
-#endif
+    // Make sure we have all we need to generate shadows in main pass
+    PrepareShadowPass();
 
-    HRESULT hr = D3D11CreateDeviceAndSwapChain(
-        NULL,
-        D3D_DRIVER_TYPE_HARDWARE,
-        NULL,
-        flags,
-        NULL,
-        0,
-        D3D11_SDK_VERSION,
-        &scDesc,
-        &pSwapchain,
-        &pDevice,
-        &featLevel,
-        &pCtx);
-    assert( hr == S_OK && pSwapchain && pDevice && pCtx );
-
-    // Create main render target view
-    ID3D11Texture2D* backBuffer;
-    hr = pSwapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
-    assert( SUCCEEDED(hr) );
-
-    hr = pDevice->CreateRenderTargetView(backBuffer, 0, &pRenderTarget);
-    assert( SUCCEEDED(hr) );
-    backBuffer->Release();
+    // Prep all needed resources for main pass
+    PrepareBasePass();
 
     // Create depth target view
     ID3D11Texture2D* depthBuffer = nullptr;
-    ID3D11Texture2D* shadowBuffer = nullptr;
 
     D3D11_TEXTURE2D_DESC depthDesc = {};
     depthDesc.Width = width;
@@ -85,12 +52,7 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
     depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
     depthDesc.CPUAccessFlags = 0;
     depthDesc.MiscFlags = 0;
-    hr = pDevice->CreateTexture2D(&depthDesc, nullptr, &depthBuffer);
-    assert (SUCCEEDED(hr) );
-
-    // Also create the shdadow map target texture
-    //TODO: Look into the need of creating shadow map with variable resolution
-    hr = pDevice->CreateTexture2D(&depthDesc, nullptr, &shadowBuffer);
+    HRESULT hr = pDevice->CreateTexture2D(&depthDesc, nullptr, &depthBuffer);
     assert (SUCCEEDED(hr) );
 
     D3D11_DEPTH_STENCIL_VIEW_DESC depthViewDesc = {};
@@ -101,11 +63,7 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
     hr = pDevice->CreateDepthStencilView(depthBuffer, &depthViewDesc, &pDepthTarget);
     assert (SUCCEEDED(hr) );
 
-    hr = pDevice->CreateDepthStencilView(shadowBuffer, &depthViewDesc, &pShadowTarget);
-    assert (SUCCEEDED(hr) );
-
     depthBuffer->Release();
-    shadowBuffer->Release();
 
     ID3DBlob *pVs = NULL;
     // VERTEX SHADER
@@ -128,7 +86,7 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
     };
     hr = pDevice->CreateInputLayout(
         inputElems,
-        ARRAYSIZE(inputElems),
+       ARRAYSIZE(inputElems),
         pVs->GetBufferPointer(),
         pVs->GetBufferSize(),
         &pInputLayout);
@@ -241,15 +199,91 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
     return 0;
 }
 
+void Dx11Renderer::PrepareBaseObjects(HWND hWindow)
+{
+    DXGI_SWAP_CHAIN_DESC scDesc = {0};
+    scDesc.BufferDesc.RefreshRate.Numerator = 0;
+    scDesc.BufferDesc.RefreshRate.Denominator = 1;
+    scDesc.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+    scDesc.SampleDesc.Count = 1;
+    scDesc.SampleDesc.Quality = 0;
+    scDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    scDesc.BufferCount = 1;
+    scDesc.OutputWindow = hWindow;
+    scDesc.Windowed = true;
+
+    D3D_FEATURE_LEVEL featLevel;
+    UINT flags = D3D11_CREATE_DEVICE_SINGLETHREADED;
+#if defined( DEBUG ) || defined( _DEBUG )
+    flags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
+
+    HRESULT hr = D3D11CreateDeviceAndSwapChain(
+        NULL,
+        D3D_DRIVER_TYPE_HARDWARE,
+        NULL,
+        flags,
+        NULL,
+        0,
+        D3D11_SDK_VERSION,
+        &scDesc,
+        &pSwapchain,
+        &pDevice,
+        &featLevel,
+        &pCtx);
+    assert( hr == S_OK && pSwapchain && pDevice && pCtx );
+}
+
 void Dx11Renderer::PrepareBasePass()
 {
     // Move resources creation here, do not bind in advance
+
+    // Create main render target view
+    ID3D11Texture2D* backBuffer;
+    HRESULT hr = pSwapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
+    assert( SUCCEEDED(hr) );
+
+    hr = pDevice->CreateRenderTargetView(backBuffer, 0, &pRenderTarget);
+    assert( SUCCEEDED(hr) );
+    backBuffer->Release();
 }
 
 void Dx11Renderer::PrepareShadowPass()
 {
     // Move resources creation here, do not bind in advance
     // DO we need a different depth state?
+
+    ID3D11Texture2D* shadowBuffer = nullptr;
+
+    D3D11_TEXTURE2D_DESC depthDesc = {};
+    depthDesc.Width = shadowWidth;
+    depthDesc.Height = shadowHeight;
+    depthDesc.MipLevels = 1;
+    depthDesc.ArraySize = 1;
+    depthDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+    depthDesc.SampleDesc.Count = 1;
+    depthDesc.SampleDesc.Quality = 0;
+    depthDesc.Usage = D3D11_USAGE_DEFAULT;
+    depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+    depthDesc.CPUAccessFlags = 0;
+    depthDesc.MiscFlags = 0;
+
+    // Also create the shdadow map target texture
+    HRESULT hr = pDevice->CreateTexture2D(&depthDesc, nullptr, &shadowBuffer);
+    assert (SUCCEEDED(hr) );
+
+    D3D11_DEPTH_STENCIL_VIEW_DESC depthViewDesc = {};
+    depthViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
+    depthViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    depthViewDesc.Texture2D.MipSlice = 0;
+
+    hr = pDevice->CreateDepthStencilView(shadowBuffer, &depthViewDesc, &pShadowTarget);
+    assert (SUCCEEDED(hr) );
+
+    //TODO: Maybe add a shder resource view to view debug shadow information
+    //TODO: Need to also prepare vertex shader to run the shadow pass
+
+    shadowBuffer->Release();
 }
 
 void Dx11Renderer::Update(float time, float delta)
