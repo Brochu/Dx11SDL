@@ -24,6 +24,7 @@ struct PerFrameData
 struct LightData
 {
     DirectX::XMFLOAT4 lightDir;
+    DirectX::XMFLOAT4X4 objectToLight;
 };
 
 int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
@@ -347,11 +348,19 @@ void Dx11Renderer::Update(float time, float delta)
     // Be able to send light data for shadow render pass
     // LightData should hold matrix transforms to render from light's perspective
     // Also use orthographic proj since it's a directional light
+    //DirectX::XMMatrixOrthographicLH(float ViewWidth, float ViewHeight, float NearZ, float FarZ)
     LightData newLightData = {};
     DirectX::XMFLOAT4 dir { lightDirection[0], lightDirection[1], lightDirection[2], 1.f };
     DirectX::XMVECTOR dirVector = DirectX::XMLoadFloat4(&dir);
     dirVector = DirectX::XMVector4Normalize(dirVector);
     DirectX::XMStoreFloat4(&newLightData.lightDir, dirVector);
+    DirectX::XMStoreFloat4x4(&newLightData.objectToLight, DirectX::XMMatrixOrthographicLH(
+        shadowWidth, //TODO: Check if this makes any sense
+        shadowHeight, //TODO: Check if this makes any sense
+        nearZ,
+        farZ
+    ));
+
 
     // Update constant buffers
     D3D11_MAPPED_SUBRESOURCE mapped = {};
