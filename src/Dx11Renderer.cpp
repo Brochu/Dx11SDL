@@ -376,39 +376,50 @@ void Dx11Renderer::Update(float time, float delta)
 
 void Dx11Renderer::Render()
 {
-    // CLEAR
+    // Clear render targets
     pCtx->ClearRenderTargetView(pRenderTarget, bgColor);
     pCtx->ClearDepthStencilView(pDepthTarget, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     pCtx->ClearDepthStencilView(pShadowTarget, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-    // RASTER STATE
-    pCtx->RSSetViewports(1, &viewport);
-
-    //TODO: Setup pass for shadow map rendering
-
-    // OUTPUT MERGER
-    pCtx->OMSetRenderTargets(1, &pRenderTarget, pDepthTarget);
-    pCtx->OMSetDepthStencilState(depthState, 0);
-
-    // INPUT ASSEMLBLER
-    UINT vertStride = sizeof(Vertex);
-    UINT vertOffset = 0;
-
+    // General setup for all passes
     pCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     pCtx->IASetInputLayout(pInputLayout);
+    pCtx->RSSetViewports(1, &viewport);
+    pCtx->OMSetDepthStencilState(depthState, 0);
+
+    //TODO: Move this to model data
+    UINT vertStride = sizeof(Vertex);
+    UINT vertOffset = 0;
+    UINT vertCount = model->verts.size();
+
     pCtx->IASetVertexBuffers(0, 1, &pVertBuf, &vertStride, &vertOffset);
 
-    // SHADERS
+    // Shadow Pass
+    pCtx->OMSetRenderTargets(1, nullptr, pShadowTarget);
+
+    //pCtx->VSSetShader(pVertShader, NULL, 0);
+    //pCtx->VSSetConstantBuffers(0, 1, &pConstBuf);
+
+    pCtx->PSSetShader(nullptr, NULL, 0); // Empty pixel shader for shadow pass
+    pCtx->PSSetConstantBuffers(1, 1, nullptr);
+
+    //pCtx->Draw(vertCount, 0);
+    //--------------------
+
+    // Base Pass
+    pCtx->OMSetRenderTargets(1, &pRenderTarget, pDepthTarget);
+
+
     pCtx->VSSetShader(pVertShader, NULL, 0);
     pCtx->VSSetConstantBuffers(0, 1, &pConstBuf);
 
     pCtx->PSSetShader(pPixShader, NULL, 0);
     pCtx->PSSetConstantBuffers(1, 1, &pLightBuf);
 
-    // DRAW
-    UINT vertCount = model->verts.size();
     pCtx->Draw(vertCount, 0);
+    //--------------------
 
+    // UI Pass
     RenderDebugUI();
     pSwapchain->Present(1, 0);
 }
