@@ -37,6 +37,7 @@ private:
     ID3D11DepthStencilView* pShadowTarget = nullptr;
     ID3D11ShaderResourceView* pShadowShaderView = nullptr;
 
+    ID3D11VertexShader* pShadowShader = NULL;
     ID3D11VertexShader* pVertShader = NULL;
     ID3D11PixelShader* pPixShader = NULL;
 

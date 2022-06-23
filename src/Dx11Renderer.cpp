@@ -241,8 +241,14 @@ int Dx11Renderer::PrepareShadowPass()
     assert (SUCCEEDED(hr) );
 
     //TODO: Maybe add a shder resource view to view debug shadow information
-    //TODO: Need to also prepare vertex shader to run the shadow pass
+    ID3DBlob *pVs = NULL;
+    // VERTEX SHADER
+    if (!Utils::compileShader(L"shaders/shadowPass.hlsl", "VS_Main_Shadow", "vs_5_0", &pVs))
+        return 1;
+    hr = pDevice->CreateVertexShader(pVs->GetBufferPointer(), pVs->GetBufferSize(), NULL, &pShadowShader);
+    assert(SUCCEEDED(hr));
 
+    pVs->Release();
     shadowBuffer->Release();
 
     return 0;
@@ -472,6 +478,7 @@ void Dx11Renderer::Quit()
 
     pPixShader->Release();
     pVertShader->Release();
+    pShadowShader->Release();
 
     pRenderTarget->Release();
 
