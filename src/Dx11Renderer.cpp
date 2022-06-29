@@ -371,6 +371,11 @@ void Dx11Renderer::Update(float time, float delta)
     );
     //DirectX::XMStoreFloat4x4(&newLightData.objectToLight, DirectX::XMMatrixLookAtLH(
 
+    DirectX::XMFLOAT4 lightLookDir { lightPosition[0] - lightFocus[0], lightPosition[1] - lightFocus[1], lightPosition[2] - lightFocus[2], 0.f };
+    DirectX::XMVECTOR lightLook = DirectX::XMLoadFloat4(&lightLookDir);
+    DirectX::XMVector4Normalize(lightLook);
+    DirectX::XMStoreFloat4(&newLightData.lightDir, lightLook);
+
     // Update constant buffers
     D3D11_MAPPED_SUBRESOURCE mapped = {};
     pCtx->Map(pConstBuf, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
@@ -466,7 +471,7 @@ void Dx11Renderer::RenderDebugUI()
 
     ImGui::Text("Directional Light:");
     ImGui::Separator();
-    ImGui::DragFloat3("Direction", lightDirection, 0.01f, 0.f, 1.f);
+    //TODO: Add debug values to test different light directions
 
     ImGui::End();
     ImGui::Render();
