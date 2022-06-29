@@ -10,6 +10,7 @@ cbuffer PerFrameData : register(b0)
 cbuffer LightData : register(b1)
 {
     float4 lightDir;
+    float4x4 objectToLight;
 }
 
 struct VS_Input
