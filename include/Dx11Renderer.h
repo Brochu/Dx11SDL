@@ -66,7 +66,9 @@ private:
     float rotation[3] = { 0.f, 0.f, 0.f };
     float scale[3] = { 1.f, 1.f, 1.f };
 
-    float lightDirection[3] = { 1.f, 0.f, 0.f };
+    float lightPosition[3] = { 1.f, 1.f, 0.f };
+    float lightFocus[3] = { 0.f, 0.f, 0.f };
+    float lightUp[3] = { 0.f, 1.f, 0.f };
 
     ModelData* model;
 
