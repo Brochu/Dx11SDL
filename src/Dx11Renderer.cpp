@@ -348,28 +348,26 @@ void Dx11Renderer::Update(float time, float delta)
     transform *= DirectX::XMMatrixScaling(scale[0], scale[1], scale[2]);
     DirectX::XMStoreFloat4x4(&newData.model, transform);
 
-    // Update directional light direction (light data)
-    // Use this for main render pass to test the changes
-    // Be able to send light data for shadow render pass
-    // LightData should hold matrix transforms to render from light's perspective
-    LightData newLightData = {};
+    // Update light position transformation info
     DirectX::XMFLOAT4 lightPosVec { lightPosition[0], lightPosition[1], lightPosition[2], 1.f };
     DirectX::XMFLOAT4 lightFocusVec { lightFocus[0], lightFocus[1], lightFocus[2], 0.f };
     DirectX::XMFLOAT4 lightUpVec { lightUp[0], lightUp[1], lightUp[2], 0.f };
+
     DirectX::XMMATRIX lightView = DirectX::XMMatrixLookAtLH(
         DirectX::XMLoadFloat4(&lightPosVec),
         DirectX::XMLoadFloat4(&lightFocusVec),
         DirectX::XMLoadFloat4(&lightUpVec)
     );
-
-    //TODO: Find a way to combine both ortho transform and view transform for light
     DirectX::XMMATRIX lightPersp = DirectX::XMMatrixOrthographicLH(
         shadowWidth, //TODO: Check if this makes any sense
         shadowHeight, //TODO: Check if this makes any sense
         nearZ,
         farZ
     );
-    //DirectX::XMStoreFloat4x4(&newLightData.objectToLight, DirectX::XMMatrixLookAtLH(
+    DirectX::XMMATRIX final = DirectX::XMMatrixMultiply(lightView, lightPersp); // Combine
+
+    LightData newLightData = {};
+    DirectX::XMStoreFloat4x4(&newLightData.objectToLight, DirectX::XMMatrixIdentity());
 
     DirectX::XMFLOAT4 lightLookDir { lightPosition[0] - lightFocus[0], lightPosition[1] - lightFocus[1], lightPosition[2] - lightFocus[2], 0.f };
     DirectX::XMVECTOR lightLook = DirectX::XMLoadFloat4(&lightLookDir);
