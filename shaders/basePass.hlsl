@@ -45,6 +45,7 @@ PS_Input VS_Main(VS_Input input)
 
 float4 PS_Main(PS_Input input) : SV_TARGET
 {
+    return float4(1.0f, 1.0f, 1.0f, 1.0f);
     float factor = dot(input.norm, lightDir.xyz); // Light influence
     factor += 0.4; // Ambient factor
 

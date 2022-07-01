@@ -359,15 +359,15 @@ void Dx11Renderer::Update(float time, float delta)
         DirectX::XMLoadFloat4(&lightUpVec)
     );
     DirectX::XMMATRIX lightPersp = DirectX::XMMatrixOrthographicLH(
-        shadowWidth, //TODO: Check if this makes any sense
-        shadowHeight, //TODO: Check if this makes any sense
+        128,
+        128,
         nearZ,
         farZ
     );
     DirectX::XMMATRIX final = DirectX::XMMatrixMultiply(lightView, lightPersp); // Combine
 
     LightData newLightData = {};
-    DirectX::XMStoreFloat4x4(&newLightData.objectToLight, DirectX::XMMatrixIdentity());
+    DirectX::XMStoreFloat4x4(&newLightData.objectToLight, lightPersp);
 
     DirectX::XMFLOAT4 lightLookDir { lightPosition[0] - lightFocus[0], lightPosition[1] - lightFocus[1], lightPosition[2] - lightFocus[2], 0.f };
     DirectX::XMVECTOR lightLook = DirectX::XMLoadFloat4(&lightLookDir);
@@ -407,26 +407,28 @@ void Dx11Renderer::Render()
     pCtx->IASetVertexBuffers(0, 1, &pVertBuf, &vertStride, &vertOffset);
 
     // Shadow Pass
-    pCtx->OMSetRenderTargets(0, nullptr, pShadowTarget);
+    pCtx->OMSetRenderTargets(1, &pRenderTarget, pDepthTarget);
+
+    pCtx->VSSetShader(pShadowShader, NULL, 0);
+    pCtx->VSSetConstantBuffers(0, 1, &pConstBuf);
+    pCtx->VSSetConstantBuffers(1, 1, &pLightBuf);
+
+    pCtx->PSSetShader(pPixShader, NULL, 0); // Empty pixel shader for shadow pass //TEMP TEST
+
+    pCtx->Draw(vertCount, 0);
+    //TODO: Bring back normals and uvs for shadow pass vertex shader... debug in renderdoc again
+    //--------------------
+
+    // Base Pass
+    //pCtx->OMSetRenderTargets(1, &pRenderTarget, pDepthTarget);
 
     //pCtx->VSSetShader(pVertShader, NULL, 0);
     //pCtx->VSSetConstantBuffers(0, 1, &pConstBuf);
 
-    pCtx->PSSetShader(nullptr, NULL, 0); // Empty pixel shader for shadow pass
+    //pCtx->PSSetShader(pPixShader, NULL, 0);
+    //pCtx->PSSetConstantBuffers(1, 1, &pLightBuf);
 
     //pCtx->Draw(vertCount, 0);
-    //--------------------
-
-    // Base Pass
-    pCtx->OMSetRenderTargets(1, &pRenderTarget, pDepthTarget);
-
-    pCtx->VSSetShader(pVertShader, NULL, 0);
-    pCtx->VSSetConstantBuffers(0, 1, &pConstBuf);
-
-    pCtx->PSSetShader(pPixShader, NULL, 0);
-    pCtx->PSSetConstantBuffers(1, 1, &pLightBuf);
-
-    pCtx->Draw(vertCount, 0);
     //--------------------
 
     // UI Pass
