@@ -66,15 +66,14 @@ private:
     float rotation[3] = { 0.f, 0.f, 0.f };
     float scale[3] = { 1.f, 1.f, 1.f };
 
-    float lightPosition[3] = { 1.f, 1.f, 0.f };
-    float lightFocus[3] = { 0.f, 0.f, 0.f };
+    float lightDir[3] = { 1.f, 1.f, 0.f };
     float lightUp[3] = { 0.f, 1.f, 0.f };
 
     ModelData* model;
 
     // Shadow map resolution
-    UINT shadowWidth = 512;
-    UINT shadowHeight = 512;
+    UINT shadowWidth = 1280;
+    UINT shadowHeight = 720;
 
     // Debug Values
     UINT frameTimeIdx;

@@ -349,30 +349,30 @@ void Dx11Renderer::Update(float time, float delta)
     DirectX::XMStoreFloat4x4(&newData.model, transform);
 
     // Update light position transformation info
-    DirectX::XMFLOAT4 lightPosVec { lightPosition[0], lightPosition[1], lightPosition[2], 1.f };
-    DirectX::XMFLOAT4 lightFocusVec { lightFocus[0], lightFocus[1], lightFocus[2], 0.f };
-    DirectX::XMFLOAT4 lightUpVec { lightUp[0], lightUp[1], lightUp[2], 0.f };
+    DirectX::XMFLOAT4 lDir { lightDir[0], lightDir[1], lightDir[2], 0.f };
+    DirectX::XMVECTOR lightLook = DirectX::XMLoadFloat4(&lDir);
+    DirectX::XMVector4Normalize(lightLook);
+    DirectX::XMStoreFloat4(&lDir, lightLook);
+
+    DirectX::XMFLOAT4 lPos { -lightDir[0], -lightDir[1], -lightDir[2], 1.f };
+    DirectX::XMFLOAT4 lUp { lightUp[0], lightUp[1], lightUp[2], 0.f };
 
     DirectX::XMMATRIX lightView = DirectX::XMMatrixLookAtLH(
-        DirectX::XMLoadFloat4(&lightPosVec),
-        DirectX::XMLoadFloat4(&lightFocusVec),
-        DirectX::XMLoadFloat4(&lightUpVec)
+        DirectX::XMLoadFloat4(&lPos),
+        DirectX::XMLoadFloat4(&lDir),
+        DirectX::XMLoadFloat4(&lUp)
     );
     DirectX::XMMATRIX lightPersp = DirectX::XMMatrixOrthographicLH(
         128,
         128,
-        nearZ,
-        farZ
+        -100,
+        100
     );
     DirectX::XMMATRIX final = DirectX::XMMatrixMultiply(lightView, lightPersp); // Combine
 
     LightData newLightData = {};
-    DirectX::XMStoreFloat4x4(&newLightData.objectToLight, lightPersp);
-
-    DirectX::XMFLOAT4 lightLookDir { lightPosition[0] - lightFocus[0], lightPosition[1] - lightFocus[1], lightPosition[2] - lightFocus[2], 0.f };
-    DirectX::XMVECTOR lightLook = DirectX::XMLoadFloat4(&lightLookDir);
-    DirectX::XMVector4Normalize(lightLook);
-    DirectX::XMStoreFloat4(&newLightData.lightDir, lightLook);
+    DirectX::XMStoreFloat4x4(&newLightData.objectToLight, final);
+    newLightData.lightDir = lDir;
 
     // Update constant buffers
     D3D11_MAPPED_SUBRESOURCE mapped = {};
@@ -407,28 +407,27 @@ void Dx11Renderer::Render()
     pCtx->IASetVertexBuffers(0, 1, &pVertBuf, &vertStride, &vertOffset);
 
     // Shadow Pass
-    pCtx->OMSetRenderTargets(1, &pRenderTarget, pDepthTarget);
+    pCtx->OMSetRenderTargets(0, nullptr, pShadowTarget);
 
     pCtx->VSSetShader(pShadowShader, NULL, 0);
     pCtx->VSSetConstantBuffers(0, 1, &pConstBuf);
     pCtx->VSSetConstantBuffers(1, 1, &pLightBuf);
 
-    pCtx->PSSetShader(pPixShader, NULL, 0); // Empty pixel shader for shadow pass //TEMP TEST
+    pCtx->PSSetShader(nullptr, NULL, 0); // Empty pixel shader for shadow pass
 
     pCtx->Draw(vertCount, 0);
-    //TODO: Bring back normals and uvs for shadow pass vertex shader... debug in renderdoc again
     //--------------------
 
     // Base Pass
-    //pCtx->OMSetRenderTargets(1, &pRenderTarget, pDepthTarget);
+    pCtx->OMSetRenderTargets(1, &pRenderTarget, pDepthTarget);
 
-    //pCtx->VSSetShader(pVertShader, NULL, 0);
-    //pCtx->VSSetConstantBuffers(0, 1, &pConstBuf);
+    pCtx->VSSetShader(pVertShader, NULL, 0);
+    pCtx->VSSetConstantBuffers(0, 1, &pConstBuf);
 
-    //pCtx->PSSetShader(pPixShader, NULL, 0);
-    //pCtx->PSSetConstantBuffers(1, 1, &pLightBuf);
+    pCtx->PSSetShader(pPixShader, NULL, 0);
+    pCtx->PSSetConstantBuffers(1, 1, &pLightBuf);
 
-    //pCtx->Draw(vertCount, 0);
+    pCtx->Draw(vertCount, 0);
     //--------------------
 
     // UI Pass
