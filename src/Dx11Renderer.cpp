@@ -252,6 +252,19 @@ int Dx11Renderer::PrepareShadowPass()
 
     D3D11_SAMPLER_DESC samplerDesc;
     memset(&samplerDesc, 0, sizeof(samplerDesc));
+    samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+    samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+    samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+    samplerDesc.MipLODBias = 0.f;
+    samplerDesc.MaxAnisotropy = 1;
+    samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+    samplerDesc.BorderColor[0] = 0;
+    samplerDesc.BorderColor[1] = 0;
+    samplerDesc.BorderColor[2] = 0;
+    samplerDesc.BorderColor[3] = 0;
+    samplerDesc.MinLOD = 0;
+    samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
     hr = pDevice->CreateSamplerState(&samplerDesc, &pShadowSampler);
     assert (SUCCEEDED(hr) );
 
@@ -502,7 +515,18 @@ void Dx11Renderer::Quit()
     pVertShader->Release();
     pShadowShader->Release();
 
+    depthState->Release();
+
     pRenderTarget->Release();
+    pDepthTarget->Release();
+    pDepthShaderView->Release();
+
+    pShadowTarget->Release();
+    pShadowSampler->Release();
+    pShadowShaderView->Release();
+
+    pConstBuf->Release();
+    pLightBuf->Release();;
 
     pCtx->Release();
     pDevice->Release();
