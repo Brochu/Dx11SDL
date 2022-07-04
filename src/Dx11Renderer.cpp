@@ -250,6 +250,11 @@ int Dx11Renderer::PrepareShadowPass()
     hr = pDevice->CreateShaderResourceView(shadowBuffer, &srvDesc, &pShadowShaderView);
     assert (SUCCEEDED(hr) );
 
+    D3D11_SAMPLER_DESC samplerDesc;
+    memset(&samplerDesc, 0, sizeof(samplerDesc));
+    hr = pDevice->CreateSamplerState(&samplerDesc, &pShadowSampler);
+    assert (SUCCEEDED(hr) );
+
     ID3DBlob *pVs = NULL;
     // VERTEX SHADER
     if (!Utils::compileShader(L"shaders/shadowPass.hlsl", "VS_Main_Shadow", "vs_5_0", &pVs))

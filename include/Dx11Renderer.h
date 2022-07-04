@@ -35,6 +35,7 @@ private:
 
     // Shadow map targets
     ID3D11DepthStencilView* pShadowTarget = nullptr;
+    ID3D11SamplerState* pShadowSampler = nullptr;
     ID3D11ShaderResourceView* pShadowShaderView = nullptr;
 
     ID3D11VertexShader* pShadowShader = NULL;
@@ -46,7 +47,7 @@ private:
     ID3D11Buffer* pConstBuf = nullptr;
     ID3D11Buffer* pLightBuf = nullptr;
 
-    ID3D11DepthStencilState* depthState;
+    ID3D11DepthStencilState* depthState = nullptr;
 
     D3D11_VIEWPORT viewport;
 
