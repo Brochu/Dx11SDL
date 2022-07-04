@@ -240,7 +240,16 @@ int Dx11Renderer::PrepareShadowPass()
     hr = pDevice->CreateDepthStencilView(shadowBuffer, &depthViewDesc, &pShadowTarget);
     assert (SUCCEEDED(hr) );
 
-    //TODO: Maybe add a shder resource view to view debug shadow information
+    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+    memset(&srvDesc, 0, sizeof(srvDesc));
+    srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
+    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    srvDesc.Texture2D.MipLevels = 1;
+    srvDesc.Texture2D.MostDetailedMip = 0;
+
+    hr = pDevice->CreateShaderResourceView(shadowBuffer, &srvDesc, &pShadowShaderView);
+    assert (SUCCEEDED(hr) );
+
     ID3DBlob *pVs = NULL;
     // VERTEX SHADER
     if (!Utils::compileShader(L"shaders/shadowPass.hlsl", "VS_Main_Shadow", "vs_5_0", &pVs))
