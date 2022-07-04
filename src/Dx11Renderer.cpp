@@ -426,6 +426,7 @@ void Dx11Renderer::Render()
 
     pCtx->PSSetShader(pPixShader, NULL, 0);
     pCtx->PSSetConstantBuffers(1, 1, &pLightBuf);
+    //TODO: Add texture+sample to sample shadow map in pixel shader for base pass
 
     pCtx->Draw(vertCount, 0);
     //--------------------
