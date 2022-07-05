@@ -1,15 +1,23 @@
-- Remove model data file, move to obj reader
-- Create the Vertex struct that we will use for VertexBuffers
-- Read the OBJ into the Vertex struct instead
-- Be able to sent the Vertex format to the Dx11Renderer
-- Send the model Vertex data to renderer
+- (OK) Remove model data file, move to obj reader
+- (OK)Create the Vertex struct that we will use for VertexBuffers
+- (OK) Read the OBJ into the Vertex struct instead
+- (OK) Be able to sent the Vertex format to the Dx11Renderer
+- (OK) Send the model Vertex data to renderer
 
-- Implement basic shaders
-- Create pipeline
+- (OK) Implement basic shaders
+- (OK) Create pipeline
 
-- Create constant buffer with time and transform values
-- Attach buffer to shaders
-- Control transform values with ImGUI
+- (OK) Create constant buffer with time and transform values
+- (OK) Attach buffer to shaders
+- (OK) Control transform values with ImGUI
+
+- (IN PROGRESS) shadow maps
+    - (OK) Depth only pass for shadow map
+    - (OK) Bind shadow map to base pass shaders
+    - Reconstruct light space vertex positions
+    - Check light space pos with depth sampled from shadow map
+    - Shade light and shadows properly
 
 - deferred renderer
-- shadow maps
+    - Render GBuffer with multiple render targets
+    - Resolve GBuffer pass afterwards
