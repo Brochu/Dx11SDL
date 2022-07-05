@@ -13,6 +13,9 @@ cbuffer LightData : register(b1)
     float4x4 objectToLight;
 }
 
+Texture2D shadowmap: register(t0);
+sampler shadowSampler: register(s0);
+
 struct VS_Input
 {
     float3 pos : POSITION;
@@ -45,6 +48,9 @@ PS_Input VS_Main(VS_Input input)
 
 float4 PS_Main(PS_Input input) : SV_TARGET
 {
+    // Testing shadow sample
+    float depth = shadowmap.Sample(shadowSampler, input.uv);
+
     float factor = dot(input.norm, lightDir.xyz); // Light influence
     factor += 0.4; // Ambient factor
 
