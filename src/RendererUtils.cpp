@@ -3,6 +3,7 @@
 #include <d3dcompiler.h>
 
 #include <assert.h>
+#include <stdio.h>
 #include <winerror.h>
 
 bool Utils::compileShader(const WCHAR *filepath, const char *entry, const char *target, ID3DBlob **outShader)
@@ -28,6 +29,7 @@ bool Utils::compileShader(const WCHAR *filepath, const char *entry, const char *
         if (pError)
         {
             OutputDebugStringA((char*) pError->GetBufferPointer());
+            printf("%s\n", pError->GetBufferPointer());
             pError->Release();
         }
         if ((*outShader) != nullptr) { (*outShader)->Release(); }
