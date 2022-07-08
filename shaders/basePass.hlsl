@@ -28,6 +28,7 @@ struct PS_Input
     float4 clipPos : SV_POSITION;
     float2 uv : TEXCOORD0;
     float3 norm : NORMAL0;
+    float4 lightViewPos : TEXCOORD1;
 };
 
 
@@ -42,6 +43,10 @@ PS_Input VS_Main(VS_Input input)
     output.uv = input.uv;
 
     output.norm = input.norm;
+
+    output.lightViewPos = float4(input.pos, 1.0);
+    output.lightViewPos = mul(model, output.clipPos);
+    output.lightViewPos = mul(objectToLight, output.clipPos);
 
     return output;
 }

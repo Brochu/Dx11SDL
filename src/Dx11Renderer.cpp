@@ -450,8 +450,7 @@ void Dx11Renderer::Render()
 
     pCtx->VSSetShader(pVertShader, NULL, 0);
     pCtx->VSSetConstantBuffers(0, 1, &pConstBuf);
-    //TODO: Add light info to vertex buffer, keep track of light space pos
-    //pCtx->VSSetConstantBuffers(1, 1, &pLightBuf);
+    //TODO: Add light info to vertex buffer, keep track of light space pos?
 
     pCtx->PSSetShader(pPixShader, NULL, 0);
     pCtx->PSSetConstantBuffers(1, 1, &pLightBuf);
