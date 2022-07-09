@@ -53,11 +53,25 @@ PS_Input VS_Main(VS_Input input)
 
 float4 PS_Main(PS_Input input) : SV_TARGET
 {
-    // Testing shadow sample
-    float depth = shadowmap.Sample(shadowSampler, input.uv);
+    float4 color = float4(0.0f, 0.0f, 0.0f, 1.0f);
 
-    float factor = dot(input.norm, lightDir.xyz); // Light influence
-    factor += 0.4; // Ambient factor
+    // Calculate the light projected UVs
+    float2 projectTexCoord;
 
-    return float4(factor, factor, factor, 1.0f);
+    projectTexCoord.x = input.lightViewPos.x / input.lightViewPos.w / 2.0f + 0.5f;
+    projectTexCoord.y = -input.lightViewPos.y / input.lightViewPos.w / 2.0f + 0.5f;
+    if ((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y))
+    {
+        // Projected texture coordinate is in range of the shadow map
+        float depth = shadowmap.Sample(shadowSampler, input.uv);
+        //TODO: Add check against light space position's depth to know if the fragment is in shadows
+    }
+
+    float factor = saturate(dot(input.norm, lightDir.xyz)); // Light influence
+
+    // Ambient influence
+    factor += 0.1;
+
+    color = float4(factor, factor, factor, 1.0f);
+    return color;
 }
