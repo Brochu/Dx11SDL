@@ -187,9 +187,13 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height)
     pPs->Release();
 
     // VERTEX BUFFER DESCRIPTION AND CREATION
-    model = new ObjReader::ModelData();
-    ObjReader::ReadFromFile("data/Pagoda.obj", *model);
     {
+        if (!ObjReader::ReadFromFile("data/Pagoda.obj", &model))
+        {
+            // Could not read the model file
+            return 1;
+        }
+
         D3D11_BUFFER_DESC vbufDesc = {};
         vbufDesc.ByteWidth = sizeof(ObjReader::Vertex) * model->verts.size();
         vbufDesc.Usage = D3D11_USAGE_DEFAULT;

@@ -17,6 +17,6 @@ namespace ObjReader
         std::vector<Vertex> verts;
     };
 
-    bool ReadFromFile(const char* filepath, ModelData& outModelData);
+    bool ReadFromFile(const char* filepath, ModelData** outModelData);
     void DebugModelData(const ModelData& modelData);
 };

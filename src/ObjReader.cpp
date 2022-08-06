@@ -15,15 +15,15 @@ namespace ObjReader
     };
 
     // Helpers methods - Start
-    static void AddVertex(TempBuffers& bufs, uint64_t pIdx, uint64_t uIdx, uint64_t nIdx, ModelData& out)
+    void AddVertex(TempBuffers& bufs, uint64_t pIdx, uint64_t uIdx, uint64_t nIdx, ModelData* out)
     {
-        out.verts.push_back({ bufs.positions[pIdx], bufs.uvs[uIdx], bufs.norms[nIdx] });
+        out->verts.push_back({ bufs.positions[pIdx], bufs.uvs[uIdx], bufs.norms[nIdx] });
     }
     // Helpers methods - End
 
-    bool ReadFromFile(const char* filepath, ModelData& outModelData)
+    bool ReadFromFile(const char* filepath, ModelData** outModelData)
     {
-        outModelData = {};
+        *outModelData = new ModelData();
 
         std::ifstream file(filepath);
         if (!file.good() || !file.is_open() || file.bad()) return false;
@@ -80,22 +80,22 @@ namespace ObjReader
                 if (pIdx.size() == 3)
                 {
                     // One tri case
-                    AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, outModelData);
-                    AddVertex(bufs, pIdx[1]-1, uIdx[1]-1, nIdx[1]-1, outModelData);
-                    AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, outModelData);
+                    AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, *outModelData);
+                    AddVertex(bufs, pIdx[1]-1, uIdx[1]-1, nIdx[1]-1, *outModelData);
+                    AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, *outModelData);
                 }
                 else if (pIdx.size() == 4)
                 {
                     // One quad case
                     // First Tri
-                    AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, outModelData);
-                    AddVertex(bufs, pIdx[1]-1, uIdx[1]-1, nIdx[1]-1, outModelData);
-                    AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, outModelData);
+                    AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, *outModelData);
+                    AddVertex(bufs, pIdx[1]-1, uIdx[1]-1, nIdx[1]-1, *outModelData);
+                    AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, *outModelData);
 
                     // Second Tri
-                    AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, outModelData);
-                    AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, outModelData);
-                    AddVertex(bufs, pIdx[3]-1, uIdx[3]-1, nIdx[3]-1, outModelData);
+                    AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, *outModelData);
+                    AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, *outModelData);
+                    AddVertex(bufs, pIdx[3]-1, uIdx[3]-1, nIdx[3]-1, *outModelData);
                 }
             }
         }
