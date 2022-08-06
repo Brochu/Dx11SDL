@@ -3,7 +3,10 @@
 #include <d3d11.h>
 #include <dxgi.h>
 
-struct ModelData;
+namespace ObjReader
+{
+    struct ModelData;
+};
 
 class Dx11Renderer
 {
@@ -70,7 +73,7 @@ private:
     float lightDir[3] = { 1.f, 1.f, 0.f };
     float lightUp[3] = { 0.f, 1.f, 0.f };
 
-    ModelData* model;
+    ObjReader::ModelData* model;
 
     // Shadow map resolution
     UINT shadowWidth = 1280;

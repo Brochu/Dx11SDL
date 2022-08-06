@@ -187,11 +187,11 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height)
     pPs->Release();
 
     // VERTEX BUFFER DESCRIPTION AND CREATION
-    model = new ModelData();
+    model = new ObjReader::ModelData();
     ObjReader::ReadFromFile("data/Pagoda.obj", *model);
     {
         D3D11_BUFFER_DESC vbufDesc = {};
-        vbufDesc.ByteWidth = sizeof(Vertex) * model->verts.size();
+        vbufDesc.ByteWidth = sizeof(ObjReader::Vertex) * model->verts.size();
         vbufDesc.Usage = D3D11_USAGE_DEFAULT;
         vbufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
@@ -427,7 +427,7 @@ void Dx11Renderer::Render()
     pCtx->OMSetDepthStencilState(depthState, 0);
 
     //TODO: Move this to model data
-    UINT vertStride = sizeof(Vertex);
+    UINT vertStride = sizeof(ObjReader::Vertex);
     UINT vertOffset = 0;
     UINT vertCount = model->verts.size();
 
