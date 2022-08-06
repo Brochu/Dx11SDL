@@ -15,15 +15,15 @@ namespace ObjReader
     };
 
     // Helpers methods - Start
-    void AddVertex(TempBuffers& bufs, uint64_t pIdx, uint64_t uIdx, uint64_t nIdx, ModelData* out)
+    void AddVertex(TempBuffers& bufs, uint64_t pIdx, uint64_t uIdx, uint64_t nIdx, MeshData* out)
     {
         out->verts.push_back({ bufs.positions[pIdx], bufs.uvs[uIdx], bufs.norms[nIdx] });
     }
     // Helpers methods - End
 
-    bool ReadFromFile(const char* filepath, ModelData** outModelData)
+    bool ReadSingleMeshFromFile(const char* filepath, MeshData** outMeshData)
     {
-        *outModelData = new ModelData();
+        *outMeshData = new MeshData();
 
         std::ifstream file(filepath);
         if (!file.good() || !file.is_open() || file.bad()) return false;
@@ -80,22 +80,22 @@ namespace ObjReader
                 if (pIdx.size() == 3)
                 {
                     // One tri case
-                    AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, *outModelData);
-                    AddVertex(bufs, pIdx[1]-1, uIdx[1]-1, nIdx[1]-1, *outModelData);
-                    AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, *outModelData);
+                    AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, *outMeshData);
+                    AddVertex(bufs, pIdx[1]-1, uIdx[1]-1, nIdx[1]-1, *outMeshData);
+                    AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, *outMeshData);
                 }
                 else if (pIdx.size() == 4)
                 {
                     // One quad case
                     // First Tri
-                    AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, *outModelData);
-                    AddVertex(bufs, pIdx[1]-1, uIdx[1]-1, nIdx[1]-1, *outModelData);
-                    AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, *outModelData);
+                    AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, *outMeshData);
+                    AddVertex(bufs, pIdx[1]-1, uIdx[1]-1, nIdx[1]-1, *outMeshData);
+                    AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, *outMeshData);
 
                     // Second Tri
-                    AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, *outModelData);
-                    AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, *outModelData);
-                    AddVertex(bufs, pIdx[3]-1, uIdx[3]-1, nIdx[3]-1, *outModelData);
+                    AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, *outMeshData);
+                    AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, *outMeshData);
+                    AddVertex(bufs, pIdx[3]-1, uIdx[3]-1, nIdx[3]-1, *outMeshData);
                 }
             }
         }
@@ -104,14 +104,33 @@ namespace ObjReader
         return true;
     }
 
-    void DebugModelData(const ModelData& modelData)
+    bool ReadModelObjectFromFile(const char* filepath, ModelObject** outObjectData)
+    {
+        //TODO: Implement this
+        // Read list of meshes to make a complete object
+        return false;
+    }
+
+    void DebugMeshData(const MeshData& meshData)
     {
         printf("------------------------------------------\n");
-        printf("[OBJ] %ld vertices :\n", modelData.verts.size());
+        printf("[MESH] %ld vertices :\n", meshData.verts.size());
 
-        for (const Vertex& v : modelData.verts)
+        for (const Vertex& v : meshData.verts)
         {
             printf("[VERT] pos = (%f, %f, %f)\n", v.pos.x, v.pos.y, v.pos.z);
+        }
+        printf("------------------------------------------\n");
+    }
+
+    void DebugModelData(const ModelObject& objectData)
+    {
+        printf("------------------------------------------\n");
+        printf("[OBJ] %ld meshes :\n", objectData.meshes.size());
+
+        for (const MeshData& m : objectData.meshes)
+        {
+            DebugMeshData(m);
         }
         printf("------------------------------------------\n");
     }

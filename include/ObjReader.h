@@ -12,11 +12,19 @@ namespace ObjReader
         DirectX::XMFLOAT3 norm;
     };
 
-    struct ModelData
+    struct MeshData
     {
         std::vector<Vertex> verts;
     };
 
-    bool ReadFromFile(const char* filepath, ModelData** outModelData);
-    void DebugModelData(const ModelData& modelData);
+    struct ModelObject
+    {
+        std::vector<MeshData> meshes;
+    };
+
+    bool ReadSingleMeshFromFile(const char* filepath, MeshData** outMeshData);
+    bool ReadModelObjectFromFile(const char* filepath, ModelObject** outObjectData);
+
+    void DebugMeshData(const MeshData& meshData);
+    void DebugModelData(const ModelObject& objectData);
 };

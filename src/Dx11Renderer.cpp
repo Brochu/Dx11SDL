@@ -188,13 +188,13 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height)
 
     // VERTEX BUFFER DESCRIPTION AND CREATION
     {
-        ObjReader::ModelData *model;
-        if (!ObjReader::ReadFromFile("data/Pagoda.obj", &model))
+        ObjReader::MeshData *mesh;
+        if (!ObjReader::ReadSingleMeshFromFile("data/Pagoda.obj", &mesh))
         {
             // Could not read the model file
             return 1;
         }
-        vertexCount = model->verts.size();
+        vertexCount = mesh->verts.size();
 
         D3D11_BUFFER_DESC vbufDesc = {};
         vbufDesc.ByteWidth = sizeof(ObjReader::Vertex) * vertexCount;
@@ -202,7 +202,7 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height)
         vbufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
         D3D11_SUBRESOURCE_DATA srData = {0};
-        srData.pSysMem = model->verts.data();
+        srData.pSysMem = mesh->verts.data();
 
         hr = pDevice->CreateBuffer(
             &vbufDesc,
@@ -210,7 +210,7 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height)
             &pVertBuf);
 
         assert(SUCCEEDED(hr));
-        delete model;
+        delete mesh;
     }
 
     return 0;
