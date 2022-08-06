@@ -188,14 +188,16 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height)
 
     // VERTEX BUFFER DESCRIPTION AND CREATION
     {
+        ObjReader::ModelData *model;
         if (!ObjReader::ReadFromFile("data/Pagoda.obj", &model))
         {
             // Could not read the model file
             return 1;
         }
+        vertexCount = model->verts.size();
 
         D3D11_BUFFER_DESC vbufDesc = {};
-        vbufDesc.ByteWidth = sizeof(ObjReader::Vertex) * model->verts.size();
+        vbufDesc.ByteWidth = sizeof(ObjReader::Vertex) * vertexCount;
         vbufDesc.Usage = D3D11_USAGE_DEFAULT;
         vbufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
@@ -206,7 +208,9 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height)
             &vbufDesc,
             &srData,
             &pVertBuf);
+
         assert(SUCCEEDED(hr));
+        delete model;
     }
 
     return 0;
@@ -433,7 +437,7 @@ void Dx11Renderer::Render()
     //TODO: Move this to model data
     UINT vertStride = sizeof(ObjReader::Vertex);
     UINT vertOffset = 0;
-    UINT vertCount = model->verts.size();
+    UINT vertCount = vertexCount;
 
     pCtx->IASetVertexBuffers(0, 1, &pVertBuf, &vertStride, &vertOffset);
 
@@ -538,6 +542,5 @@ void Dx11Renderer::Quit()
     pDevice->Release();
     pSwapchain->Release();
 
-    delete model;
     printf("[RENDER] Done quitting Dx11\n");
 }

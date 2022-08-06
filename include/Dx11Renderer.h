@@ -3,11 +3,6 @@
 #include <d3d11.h>
 #include <dxgi.h>
 
-namespace ObjReader
-{
-    struct ModelData;
-};
-
 class Dx11Renderer
 {
 
@@ -54,6 +49,8 @@ private:
 
     D3D11_VIEWPORT viewport;
 
+    unsigned int vertexCount = 0;
+
     // Default Values
     float bgColor[4] = { 0.f / 255.f, 100.f / 255.f, 130.f / 255.f, 1.f };
 
@@ -72,8 +69,6 @@ private:
 
     float lightDir[3] = { 1.f, 1.f, 0.f };
     float lightUp[3] = { 0.f, 1.f, 0.f };
-
-    ObjReader::ModelData* model;
 
     // Shadow map resolution
     UINT shadowWidth = 1280;
