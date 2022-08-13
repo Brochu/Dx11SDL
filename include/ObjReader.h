@@ -1,7 +1,9 @@
 #pragma once
 
-#include <vector>
 #include <DXM/DirectXMath.h>
+#include <stdint.h>
+#include <string>
+#include <vector>
 
 namespace ObjReader
 {
@@ -17,14 +19,25 @@ namespace ObjReader
         std::vector<Vertex> verts;
     };
 
-    struct ModelObject
+    struct ObjectData
     {
+        std::string name;
         std::vector<MeshData> meshes;
     };
 
-    bool ReadSingleMeshFromFile(const char* filepath, MeshData** outMeshData);
-    bool ReadModelObjectFromFile(const char* filepath, ModelObject** outObjectData);
+    struct ModelData
+    {
+        std::string filename;
+        std::vector<ObjectData> objects;
+    };
 
+    bool ReadSingleMeshFromFile(const char* filepath, MeshData** ppMeshData);
     void DebugMeshData(const MeshData& meshData);
-    void DebugModelData(const ModelObject& objectData);
+
+    bool ReadModelFromFile(const char* filepath, ModelData** ppModelData);
+    bool ReadObjectForModel(std::ifstream& file, ModelData* outModelData);
+    bool ReadMeshForObject(std::ifstream& file, ObjectData* outObjectData);
+
+    void DebugModelData(const ModelData& modelData);
+    void DebugObjectData(const ObjectData& objectData);
 };
