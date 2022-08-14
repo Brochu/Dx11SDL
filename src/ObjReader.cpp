@@ -107,35 +107,55 @@ namespace ObjReader
         printf("------------------------------------------\n");
         printf("[MESH] %ld vertices :\n", meshData.verts.size());
 
-        for (const Vertex& v : meshData.verts)
-        {
-            printf("[VERT] pos = (%f, %f, %f)\n", v.pos.x, v.pos.y, v.pos.z);
-        }
+        //for (const Vertex& v : meshData.verts)
+        //{
+        //    printf("[VERT] pos = (%f, %f, %f)\n", v.pos.x, v.pos.y, v.pos.z);
+        //}
         printf("------------------------------------------\n");
     }
 
     bool ReadModelFromFile(const char* filepath, ModelData** ppModelData)
     {
-        //TODO: Implement this
         // Read Model information, list of objects
-
         (*ppModelData) = new ModelData();
         (*ppModelData)->filename = filepath;
 
-        return false;
+        std::ifstream file(filepath);
+        if (!file.good() || !file.is_open() || file.bad()) return false;
+
+        std::string line;
+        std::stringstream ss;
+        while (getline(file, line))
+        {
+            ss = std::stringstream(line);
+            std::string type;
+            ss >> type;
+
+            if (type == "o")
+            {
+                ObjectData objData;
+                ss >> objData.name;
+                if (objData.name == "EmptyObject")
+                    continue;
+
+                ReadObjectForModel(file, objData);
+                (*ppModelData)->objects.push_back(objData);
+            }
+        }
+
+        return true;
     }
-    bool ReadObjectForModel(std::ifstream& file, ModelData* outModelData)
+    bool ReadObjectForModel(std::ifstream& file, ObjectData& outObjectData)
     {
         //TODO: Implement this
         // Read all the info needed to represent an object from the model
         return false;
     }
-    bool ReadMeshForObject(std::ifstream& file, ObjectData* outObjectData)
+    bool ReadMeshForObject(std::ifstream& file, MeshData& outMeshData)
     {
         //TODO: Implement this
         // Read a single mesh from an obj file containing a full object
         // Read all mesh info between o entries
-        // Add the created mesh in the out object param
         return false;
     }
 
@@ -153,7 +173,7 @@ namespace ObjReader
     void DebugObjectData(const ObjectData& objectData)
     {
         printf("------------------------------------------\n");
-        printf("[OBJ] (name = ) with %ld meshes :\n", objectData.name.c_str() ,objectData.meshes.size());
+        printf("[OBJ] (name = %s) with %ld meshes :\n", objectData.name.c_str() ,objectData.meshes.size());
 
         for (const MeshData& m : objectData.meshes)
         {

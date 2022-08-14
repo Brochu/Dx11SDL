@@ -26,9 +26,9 @@ int main(int argc, char* argv[])
     // return 0;
 
     // TESTING MESH IMPORT
-    ObjReader::MeshData* data;
-    ObjReader::ReadSingleMeshFromFile("", &data);
-    ObjReader::DebugMeshData(*data);
+    ObjReader::ModelData* data;
+    ObjReader::ReadModelFromFile("data/WashingMachine/model.obj", &data);
+    ObjReader::DebugModelData(*data);
     delete data;
 
     return 0;

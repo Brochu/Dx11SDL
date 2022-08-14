@@ -35,8 +35,8 @@ namespace ObjReader
     void DebugMeshData(const MeshData& meshData);
 
     bool ReadModelFromFile(const char* filepath, ModelData** ppModelData);
-    bool ReadObjectForModel(std::ifstream& file, ModelData* outModelData);
-    bool ReadMeshForObject(std::ifstream& file, ObjectData* outObjectData);
+    bool ReadObjectForModel(std::ifstream& file, ObjectData& outObjectData);
+    bool ReadMeshForObject(std::ifstream& file, MeshData& outMeshData);
 
     void DebugModelData(const ModelData& modelData);
     void DebugObjectData(const ObjectData& objectData);
