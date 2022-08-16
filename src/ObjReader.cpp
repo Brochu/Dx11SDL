@@ -18,7 +18,7 @@ namespace ObjReader
     {
         out->verts.push_back({ bufs.positions[pIdx], bufs.uvs[uIdx], bufs.norms[nIdx] });
     }
-    void ReadVertex(TempBuffers& bufs, std::stringstream&& ss, MeshData** ppMeshData)
+    void ReadVertex(TempBuffers& bufs, std::stringstream&& ss, MeshData* ppMeshData)
     {
         std::string type;
         ss >> type;
@@ -66,22 +66,22 @@ namespace ObjReader
             if (pIdx.size() == 3)
             {
                 // One tri case
-                AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, *ppMeshData);
-                AddVertex(bufs, pIdx[1]-1, uIdx[1]-1, nIdx[1]-1, *ppMeshData);
-                AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, *ppMeshData);
+                AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, ppMeshData);
+                AddVertex(bufs, pIdx[1]-1, uIdx[1]-1, nIdx[1]-1, ppMeshData);
+                AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, ppMeshData);
             }
             else if (pIdx.size() == 4)
             {
                 // One quad case
                 // First Tri
-                AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, *ppMeshData);
-                AddVertex(bufs, pIdx[1]-1, uIdx[1]-1, nIdx[1]-1, *ppMeshData);
-                AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, *ppMeshData);
+                AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, ppMeshData);
+                AddVertex(bufs, pIdx[1]-1, uIdx[1]-1, nIdx[1]-1, ppMeshData);
+                AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, ppMeshData);
 
                 // Second Tri
-                AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, *ppMeshData);
-                AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, *ppMeshData);
-                AddVertex(bufs, pIdx[3]-1, uIdx[3]-1, nIdx[3]-1, *ppMeshData);
+                AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, ppMeshData);
+                AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, ppMeshData);
+                AddVertex(bufs, pIdx[3]-1, uIdx[3]-1, nIdx[3]-1, ppMeshData);
             }
         }
     }
@@ -99,7 +99,7 @@ namespace ObjReader
         std::stringstream ss;
         while (getline(file, line))
         {
-            ReadVertex(bufs, std::stringstream(line), ppMeshData);
+            ReadVertex(bufs, std::stringstream(line), *ppMeshData);
         }
 
         file.close();
@@ -129,6 +129,7 @@ namespace ObjReader
         {
             if (line[0] == 'o')
             {
+                TempBuffers bufs;
                 MeshData mesh;
                 mesh.name = line.substr(2);
                 if (mesh.name == "EmptyObject") continue;
@@ -136,6 +137,8 @@ namespace ObjReader
                 while(getline(file, line))
                 {
                     printf("%s\n", line.c_str());
+                    ReadVertex(bufs, std::stringstream(line), &mesh);
+
                     if (line.find(mesh.name) != -1) break;
                 }
                 (*ppModelData)->meshes.push_back(mesh);
