@@ -104,14 +104,12 @@ namespace ObjReader
     }
     void DebugMeshData(const MeshData& meshData)
     {
-        printf("------------------------------------------\n");
         printf("[MESH] %ld vertices :\n", meshData.verts.size());
 
         //for (const Vertex& v : meshData.verts)
         //{
         //    printf("[VERT] pos = (%f, %f, %f)\n", v.pos.x, v.pos.y, v.pos.z);
         //}
-        printf("------------------------------------------\n");
     }
 
     bool ReadModelFromFile(const char* filepath, ModelData** ppModelData)
@@ -140,6 +138,7 @@ namespace ObjReader
 
                 ReadObjectForModel(file, objData);
                 (*ppModelData)->objects.push_back(objData);
+                break;
             }
         }
 
@@ -147,38 +146,56 @@ namespace ObjReader
     }
     bool ReadObjectForModel(std::ifstream& file, ObjectData& outObjectData)
     {
-        //TODO: Implement this
         // Read all the info needed to represent an object from the model
+        std::string line;
+
+        while(getline(file, line))
+        {
+            if (line.find(outObjectData.name) != -1) return true;
+
+            MeshData meshData;
+            ReadMeshForObject(file, meshData);
+            outObjectData.meshes.push_back(meshData);
+        }
+
         return false;
     }
     bool ReadMeshForObject(std::ifstream& file, MeshData& outMeshData)
     {
-        //TODO: Implement this
         // Read a single mesh from an obj file containing a full object
         // Read all mesh info between o entries
+        //TODO: Extract vertex reading logic into separate functions
+        std::string line;
+
+        while(getline(file, line))
+        {
+            std::stringstream ss(line);
+            std::string type;
+
+            ss >> type;
+            printf("%s\n", line.c_str());
+
+            if (type == "#") return true;
+        }
         return false;
     }
 
     void DebugModelData(const ModelData& modelData)
     {
-        printf("------------------------------------------\n");
         printf("[MODEL] (file = %s) with %ld objects :\n", modelData.filename.c_str() ,modelData.objects.size());
 
         for (const ObjectData& o : modelData.objects)
         {
             DebugObjectData(o);
         }
-        printf("------------------------------------------\n");
     }
     void DebugObjectData(const ObjectData& objectData)
     {
-        printf("------------------------------------------\n");
         printf("[OBJ] (name = %s) with %ld meshes :\n", objectData.name.c_str() ,objectData.meshes.size());
 
         for (const MeshData& m : objectData.meshes)
         {
             DebugMeshData(m);
         }
-        printf("------------------------------------------\n");
     }
 };
