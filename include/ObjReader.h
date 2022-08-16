@@ -16,28 +16,21 @@ namespace ObjReader
 
     struct MeshData
     {
-        std::vector<Vertex> verts;
-    };
-
-    struct ObjectData
-    {
         std::string name;
-        std::vector<MeshData> meshes;
+        std::vector<Vertex> verts;
     };
 
     struct ModelData
     {
         std::string filename;
-        std::vector<ObjectData> objects;
+        std::vector<MeshData> meshes;
     };
 
     bool ReadSingleMeshFromFile(const char* filepath, MeshData** ppMeshData);
     void DebugMeshData(const MeshData& meshData);
 
     bool ReadModelFromFile(const char* filepath, ModelData** ppModelData);
-    bool ReadObjectForModel(std::ifstream& file, ObjectData& outObjectData);
-    bool ReadMeshForObject(std::ifstream& file, MeshData& outMeshData);
+    bool ReadMeshForModel(std::ifstream& file, MeshData& outMeshData);
 
     void DebugModelData(const ModelData& modelData);
-    void DebugObjectData(const ObjectData& objectData);
 };
