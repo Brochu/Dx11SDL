@@ -125,33 +125,25 @@ namespace ObjReader
         if (!file.good() || !file.is_open() || file.bad()) return false;
 
         std::string line;
-        std::stringstream ss;
         while (getline(file, line))
         {
-            ss = std::stringstream(line);
-            std::string type;
-            ss >> type;
-
-            if (type == "o")
+            if (line[0] == 'o')
             {
-                MeshData meshData;
-                ss >> meshData.name;
-                if (meshData.name == "EmptyObject")
-                    continue;
+                MeshData mesh;
+                mesh.name = line.substr(2);
+                if (mesh.name == "EmptyObject") continue;
 
-                ReadMeshForModel(file, meshData);
-                (*ppModelData)->meshes.push_back(meshData);
+                while(getline(file, line))
+                {
+                    printf("%s\n", line.c_str());
+                    if (line.find(mesh.name) != -1) break;
+                }
+                (*ppModelData)->meshes.push_back(mesh);
                 break;
             }
         }
 
         return true;
-    }
-    bool ReadMeshForModel(std::ifstream& file, MeshData& outObjectData)
-    {
-        //TODO: Implement this
-        // Read all the info needed to represent an object from the model
-        return false;
     }
 
     void DebugModelData(const ModelData& modelData)

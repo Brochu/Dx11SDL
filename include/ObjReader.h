@@ -30,7 +30,5 @@ namespace ObjReader
     void DebugMeshData(const MeshData& meshData);
 
     bool ReadModelFromFile(const char* filepath, ModelData** ppModelData);
-    bool ReadMeshForModel(std::ifstream& file, MeshData& outMeshData);
-
     void DebugModelData(const ModelData& modelData);
 };
