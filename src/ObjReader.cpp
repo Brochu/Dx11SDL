@@ -18,6 +18,73 @@ namespace ObjReader
     {
         out->verts.push_back({ bufs.positions[pIdx], bufs.uvs[uIdx], bufs.norms[nIdx] });
     }
+    void ReadVertex(TempBuffers& bufs, std::stringstream&& ss, MeshData** ppMeshData)
+    {
+        std::string type;
+        ss >> type;
+
+        if (type == "v")
+        {
+            DirectX::XMFLOAT3 vert;
+            ss >> vert.x;
+            ss >> vert.y;
+            ss >> vert.z;
+            bufs.positions.push_back(vert);
+        }
+        else if (type == "vt")
+        {
+            DirectX::XMFLOAT2 uv;
+            ss >> uv.x;
+            ss >> uv.y;
+            bufs.uvs.push_back(uv);
+        }
+        else if (type == "vn")
+        {
+            DirectX::XMFLOAT3 norm;
+            ss >> norm.x;
+            ss >> norm.y;
+            ss >> norm.z;
+            bufs.norms.push_back(norm);
+        }
+        else if (type == "f")
+        {
+            std::vector<uint64_t> pIdx, uIdx, nIdx;
+            while (ss.rdbuf()->in_avail() > 0)
+            {
+                // Handle one set of ids
+                uint64_t p, u, n;
+                ss >> p; ss.ignore(1);
+                ss >> u; ss.ignore(1);
+                ss >> n; ss.ignore(1);
+
+                pIdx.push_back(p);
+                uIdx.push_back(u);
+                nIdx.push_back(n);
+            }
+
+            //TODO: Look into some winding order issues, we can see through the Pagoda model
+            if (pIdx.size() == 3)
+            {
+                // One tri case
+                AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, *ppMeshData);
+                AddVertex(bufs, pIdx[1]-1, uIdx[1]-1, nIdx[1]-1, *ppMeshData);
+                AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, *ppMeshData);
+            }
+            else if (pIdx.size() == 4)
+            {
+                // One quad case
+                // First Tri
+                AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, *ppMeshData);
+                AddVertex(bufs, pIdx[1]-1, uIdx[1]-1, nIdx[1]-1, *ppMeshData);
+                AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, *ppMeshData);
+
+                // Second Tri
+                AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, *ppMeshData);
+                AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, *ppMeshData);
+                AddVertex(bufs, pIdx[3]-1, uIdx[3]-1, nIdx[3]-1, *ppMeshData);
+            }
+        }
+    }
     // Helpers methods - End
 
     bool ReadSingleMeshFromFile(const char* filepath, MeshData** ppMeshData)
@@ -32,71 +99,7 @@ namespace ObjReader
         std::stringstream ss;
         while (getline(file, line))
         {
-            ss = std::stringstream(line);
-            std::string type;
-            ss >> type;
-
-            if (type == "v")
-            {
-                DirectX::XMFLOAT3 vert;
-                ss >> vert.x;
-                ss >> vert.y;
-                ss >> vert.z;
-                bufs.positions.push_back(vert);
-            }
-            else if (type == "vt")
-            {
-                DirectX::XMFLOAT2 uv;
-                ss >> uv.x;
-                ss >> uv.y;
-                bufs.uvs.push_back(uv);
-            }
-            else if (type == "vn")
-            {
-                DirectX::XMFLOAT3 norm;
-                ss >> norm.x;
-                ss >> norm.y;
-                ss >> norm.z;
-                bufs.norms.push_back(norm);
-            }
-            else if (type == "f")
-            {
-                std::vector<uint64_t> pIdx, uIdx, nIdx;
-                while (ss.rdbuf()->in_avail() > 0)
-                {
-                    // Handle one set of ids
-                    uint64_t p, u, n;
-                    ss >> p; ss.ignore(1);
-                    ss >> u; ss.ignore(1);
-                    ss >> n; ss.ignore(1);
-
-                    pIdx.push_back(p);
-                    uIdx.push_back(u);
-                    nIdx.push_back(n);
-                }
-
-                //TODO: Look into some winding order issues, we can see through the Pagoda model
-                if (pIdx.size() == 3)
-                {
-                    // One tri case
-                    AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, *ppMeshData);
-                    AddVertex(bufs, pIdx[1]-1, uIdx[1]-1, nIdx[1]-1, *ppMeshData);
-                    AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, *ppMeshData);
-                }
-                else if (pIdx.size() == 4)
-                {
-                    // One quad case
-                    // First Tri
-                    AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, *ppMeshData);
-                    AddVertex(bufs, pIdx[1]-1, uIdx[1]-1, nIdx[1]-1, *ppMeshData);
-                    AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, *ppMeshData);
-
-                    // Second Tri
-                    AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, *ppMeshData);
-                    AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, *ppMeshData);
-                    AddVertex(bufs, pIdx[3]-1, uIdx[3]-1, nIdx[3]-1, *ppMeshData);
-                }
-            }
+            ReadVertex(bufs, std::stringstream(line), ppMeshData);
         }
 
         file.close();
