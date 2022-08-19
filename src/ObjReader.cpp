@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <stdint.h>
+#include <unordered_map>
 
 namespace ObjReader
 {
@@ -12,9 +13,10 @@ namespace ObjReader
         std::vector<DirectX::XMFLOAT2> uvs;
         std::vector<DirectX::XMFLOAT3> norms;
     };
+    typedef std::unordered_map<uint64_t, uint16_t> VertexCache;
 
     // Helpers methods - Start
-    void AddVertex(TempBuffers& bufs, uint64_t pIdx, uint64_t uIdx, uint64_t nIdx, MeshData* out)
+    void AddVertex(TempBuffers& bufs, uint16_t pIdx, uint16_t uIdx, uint16_t nIdx, MeshData* out)
     {
         out->verts.push_back({ bufs.positions[pIdx], bufs.uvs[uIdx], bufs.norms[nIdx] });
     }
@@ -48,11 +50,11 @@ namespace ObjReader
         }
         else if (type == "f")
         {
-            std::vector<uint64_t> pIdx, uIdx, nIdx;
+            std::vector<uint16_t> pIdx, uIdx, nIdx;
             while (ss.rdbuf()->in_avail() > 0)
             {
                 // Handle one set of ids
-                uint64_t p, u, n;
+                uint16_t p, u, n;
                 ss >> p; ss.ignore(1);
                 ss >> u; ss.ignore(1);
                 ss >> n; ss.ignore(1);
