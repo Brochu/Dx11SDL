@@ -3,7 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <stdint.h>
-#include <unordered_map>
+#include <unordered_set>
 
 namespace ObjReader
 {
@@ -13,14 +13,14 @@ namespace ObjReader
         std::vector<DirectX::XMFLOAT2> uvs;
         std::vector<DirectX::XMFLOAT3> norms;
     };
-    typedef std::unordered_map<uint64_t, uint16_t> VertexCache;
+    typedef std::unordered_set<uint64_t> VertexCache;
 
     // Helpers methods - Start
     void AddVertex(TempBuffers& bufs, uint16_t pIdx, uint16_t uIdx, uint16_t nIdx, MeshData* out)
     {
         out->verts.push_back({ bufs.positions[pIdx], bufs.uvs[uIdx], bufs.norms[nIdx] });
     }
-    void ReadVertex(TempBuffers& bufs, std::stringstream&& ss, MeshData* ppMeshData)
+    void ReadVertex(TempBuffers& bufs, VertexCache& cache, std::stringstream&& ss, MeshData* ppMeshData)
     {
         std::string type;
         ss >> type;
@@ -58,6 +58,25 @@ namespace ObjReader
                 ss >> p; ss.ignore(1);
                 ss >> u; ss.ignore(1);
                 ss >> n; ss.ignore(1);
+
+                uint64_t id = 0;
+                id = id | p;
+                id <<= 16;
+                id = id | u;
+                id <<= 16;
+                id = id | n;
+
+                uint16_t test0 = 0;
+                test0 = test0 | id;
+                id >>= 16;
+                uint16_t test1 = 0;
+                test1 = test1 | id;
+                id >>= 16;
+                uint16_t test2 = 0;
+                test2 = test2 | id;
+
+                printf("TEST %i, %i, %i => %i, %i, %i\n", p, u, n, test0, test1, test2);
+                cache.insert(id);
 
                 pIdx.push_back(p);
                 uIdx.push_back(u);
@@ -97,12 +116,15 @@ namespace ObjReader
         if (!file.good() || !file.is_open() || file.bad()) return false;
 
         TempBuffers bufs;
+        VertexCache cache;
         std::string line;
         std::stringstream ss;
         while (getline(file, line))
         {
-            ReadVertex(bufs, std::stringstream(line), *ppMeshData);
+            ReadVertex(bufs, cache, std::stringstream(line), *ppMeshData);
         }
+
+        printf("[SingleMesh] Total unique vertex = %ld\n", cache.size());
 
         file.close();
         return true;
@@ -127,6 +149,7 @@ namespace ObjReader
         if (!file.good() || !file.is_open() || file.bad()) return false;
 
         TempBuffers bufs;
+        VertexCache cache;
         std::string line;
         while (getline(file, line))
         {
@@ -138,7 +161,7 @@ namespace ObjReader
 
                 while(getline(file, line))
                 {
-                    ReadVertex(bufs, std::stringstream(line), &mesh);
+                    ReadVertex(bufs, cache, std::stringstream(line), &mesh);
 
                     if (line.find(mesh.name) != -1) break;
                 }
