@@ -26,16 +26,16 @@ int main(int argc, char* argv[])
     //return 0;
 
     // TESTING MESH IMPORT
-    //ObjReader::MeshData* mData;
-    //ObjReader::ReadSingleMeshFromFile("data/pagoda.obj", &mData);
-    //ObjReader::DebugMeshData(*mData);
-    //delete mData;
+    ObjReader::MeshData* mesh;
+    ObjReader::ReadSingleMeshFromFile("data/pagoda.obj", &mesh);
+    ObjReader::DebugMeshData(*mesh);
+    delete mesh;
 
     // TESTING MODEL IMPORT
-    ObjReader::ModelData* data;
-    ObjReader::ReadModelFromFile("data/WashingMachine/model.obj", &data);
-    ObjReader::DebugModelData(*data);
-    delete data;
+    ObjReader::ModelData* model;
+    ObjReader::ReadModelFromFile("data/WashingMachine/model.obj", &model);
+    ObjReader::DebugModelData(*model);
+    delete model;
 
     return 0;
 }
