@@ -1,7 +1,6 @@
 #pragma once
 
 #include <DXM/DirectXMath.h>
-#include <stdint.h>
 #include <string>
 #include <vector>
 
