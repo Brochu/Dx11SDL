@@ -18,6 +18,7 @@ namespace ObjReader
     {
         std::string name;
         std::vector<Vertex> verts;
+        std::vector<uint16_t> indices;
     };
 
     struct ModelData

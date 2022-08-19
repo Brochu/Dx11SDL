@@ -32,10 +32,10 @@ int main(int argc, char* argv[])
     delete mesh;
 
     // TESTING MODEL IMPORT
-    ObjReader::ModelData* model;
-    ObjReader::ReadModelFromFile("data/WashingMachine/model.obj", &model);
-    ObjReader::DebugModelData(*model);
-    delete model;
+    //ObjReader::ModelData* model;
+    //ObjReader::ReadModelFromFile("data/WashingMachine/model.obj", &model);
+    //ObjReader::DebugModelData(*model);
+    //delete model;
 
     return 0;
 }
