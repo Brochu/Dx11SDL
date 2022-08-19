@@ -124,25 +124,23 @@ namespace ObjReader
         std::ifstream file(filepath);
         if (!file.good() || !file.is_open() || file.bad()) return false;
 
+        TempBuffers bufs;
         std::string line;
         while (getline(file, line))
         {
             if (line[0] == 'o')
             {
-                TempBuffers bufs;
                 MeshData mesh;
                 mesh.name = line.substr(2);
                 if (mesh.name == "EmptyObject") continue;
 
                 while(getline(file, line))
                 {
-                    printf("%s\n", line.c_str());
                     ReadVertex(bufs, std::stringstream(line), &mesh);
 
                     if (line.find(mesh.name) != -1) break;
                 }
                 (*ppModelData)->meshes.push_back(mesh);
-                break;
             }
         }
 
