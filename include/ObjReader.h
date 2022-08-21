@@ -1,7 +1,9 @@
 #pragma once
 
 #include <DXM/DirectXMath.h>
+#include <stdint.h>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 namespace ObjReader
@@ -15,8 +17,9 @@ namespace ObjReader
 
     struct MeshData
     {
-        std::string name;
+        std::string name = "--NoName--";
         std::vector<Vertex> verts;
+        std::unordered_set<uint64_t> vertsCache;
         std::vector<uint16_t> indices;
     };
 
