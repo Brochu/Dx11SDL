@@ -120,7 +120,10 @@ namespace ObjReader
     }
     void DebugMeshData(const MeshData& meshData)
     {
-        printf("[MESH] %s with %ld vertices :\n", meshData.name.c_str(), meshData.verts.size());
+        printf("[MESH] %s with %ld vertices & %ld indices:\n",
+            meshData.name.c_str(),
+            meshData.verts.size(),
+            meshData.indices.size());
 
         //for (const Vertex& v : meshData.verts)
         //{
