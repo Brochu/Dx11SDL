@@ -22,9 +22,14 @@ namespace ObjReader
         id = id | uIdx;
         id <<= 16;
         id = id | nIdx;
-        out->vertsCache.insert(id);
 
-        out->verts.push_back({ bufs.positions[pIdx], bufs.uvs[uIdx], bufs.norms[nIdx] });
+        if (out->vertsCache.find(id) == out->vertsCache.end())
+        {
+            out->verts.push_back({ bufs.positions[pIdx], bufs.uvs[uIdx], bufs.norms[nIdx] });
+            out->vertsCache[id] = out->verts.size() - 1;
+        }
+
+        out->indices.push_back(out->vertsCache[id]);
     }
     void ReadVertex(TempBuffers& bufs, std::stringstream&& ss, MeshData* ppMeshData)
     {
@@ -110,9 +115,10 @@ namespace ObjReader
             ReadVertex(bufs, std::stringstream(line), *ppMeshData);
         }
 
-        printf("[ReadSingleMeshFromFile] Done reading, %ld vertices, %ld unique vertices\n",
+        printf("[ReadSingleMeshFromFile] Done reading, %ld vertices, %ld unique vertices, %ld indices\n",
             (*ppMeshData)->verts.size(),
-            (*ppMeshData)->vertsCache.size());
+            (*ppMeshData)->vertsCache.size(),
+            (*ppMeshData)->indices.size());
 
         file.close();
         return true;

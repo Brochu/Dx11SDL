@@ -3,7 +3,7 @@
 #include <DXM/DirectXMath.h>
 #include <stdint.h>
 #include <string>
-#include <unordered_set>
+#include <unordered_map>
 #include <vector>
 
 namespace ObjReader
@@ -19,7 +19,7 @@ namespace ObjReader
     {
         std::string name = "--NoName--";
         std::vector<Vertex> verts;
-        std::unordered_set<uint64_t> vertsCache;
+        std::unordered_map<uint64_t, uint16_t> vertsCache;
         std::vector<uint16_t> indices;
     };
 
