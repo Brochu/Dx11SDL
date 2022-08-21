@@ -3,16 +3,25 @@ Test application combining Dx11 rendering with an SDL2 window
 
 ## Features to add
 
-* Fix strange view distorsion
+* [DONE] Fix strange view distorsion
     * Tune near and far values
     * Normalize directions used to build transform matrices
     * Make sure we provide the FOV angle properly
 
-* Check and make sure the winding order is being use properly
+* [DONE] Check and make sure the winding order is being use properly
     * Also check to make sure we are culling the back faces
 
-* Add a directionnal light source position to send to shader
+* [DONE] Add a directionnal light source position to send to shader
     * Apply simple shading
+
+* [IN PROGRESS] Implement simple shadow mapping technique
+    * Depth only pass from the light's POV
+    * Send this depth texture to lighting shader
+    * Reconstruct 3d position of fragment to test if the fragment is in shadow or not
+
+* [IN PROGRESS] Better OBJ file loading for multiple objets in one file
+    * Handle indices and only store unique vertices
+    * Use indexed draws with the new indices for better storage perf.
 
 * Add a plane object under the main OBJ file
     * Test simple shadow mapping techniques
