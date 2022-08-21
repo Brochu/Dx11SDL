@@ -115,11 +115,6 @@ namespace ObjReader
             ReadVertex(bufs, std::stringstream(line), *ppMeshData);
         }
 
-        printf("[ReadSingleMeshFromFile] Done reading, %ld vertices, %ld unique vertices, %ld indices\n",
-            (*ppMeshData)->verts.size(),
-            (*ppMeshData)->vertsCache.size(),
-            (*ppMeshData)->indices.size());
-
         file.close();
         return true;
     }
