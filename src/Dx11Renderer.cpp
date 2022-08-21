@@ -186,7 +186,7 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height)
     pVs->Release();
     pPs->Release();
 
-    // VERTEX BUFFER DESCRIPTION AND CREATION
+    // VERTEX BUFFER AND INDEX DESCRIPTION AND CREATION
     {
         ObjReader::MeshData *mesh;
         if (!ObjReader::ReadSingleMeshFromFile("data/Pagoda.obj", &mesh))
@@ -195,19 +195,36 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height)
             return 1;
         }
         vertexCount = mesh->verts.size();
+        indexCount = mesh->indices.size();
 
         D3D11_BUFFER_DESC vbufDesc = {};
         vbufDesc.ByteWidth = sizeof(ObjReader::Vertex) * vertexCount;
         vbufDesc.Usage = D3D11_USAGE_DEFAULT;
         vbufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
-        D3D11_SUBRESOURCE_DATA srData = {0};
-        srData.pSysMem = mesh->verts.data();
+        D3D11_SUBRESOURCE_DATA vData = {0};
+        vData.pSysMem = mesh->verts.data();
 
         hr = pDevice->CreateBuffer(
             &vbufDesc,
-            &srData,
+            &vData,
             &pVertBuf);
+
+        assert(SUCCEEDED(hr));
+
+        // ==========================
+        D3D11_BUFFER_DESC ibufDesc = {};
+        ibufDesc.ByteWidth = sizeof(uint16_t) * indexCount;
+        ibufDesc.Usage = D3D11_USAGE_DEFAULT;
+        ibufDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+
+        D3D11_SUBRESOURCE_DATA iData = {0};
+        iData.pSysMem = mesh->indices.data();
+
+        hr = pDevice->CreateBuffer(
+            &ibufDesc,
+            &iData,
+            &pIdxBuf);
 
         assert(SUCCEEDED(hr));
         delete mesh;
@@ -437,11 +454,12 @@ void Dx11Renderer::Render()
     //TODO: Move this to model data
     UINT vertStride = sizeof(ObjReader::Vertex);
     UINT vertOffset = 0;
+    UINT idxOffset = 0;
     UINT vertCount = vertexCount;
+    UINT idxCount = indexCount;
 
     pCtx->IASetVertexBuffers(0, 1, &pVertBuf, &vertStride, &vertOffset);
-    //TODO: Handle indices for Indexed Draws
-    //pCtx->IASetIndexBuffer(ID3D11Buffer *pIndexBuffer, DXGI_FORMAT Format, UINT Offset)
+    pCtx->IASetIndexBuffer(pIdxBuf, DXGI_FORMAT_R16_UINT, idxOffset);
 
     // Shadow Pass
     pCtx->OMSetRenderTargets(0, nullptr, pShadowTarget);
@@ -452,7 +470,7 @@ void Dx11Renderer::Render()
 
     pCtx->PSSetShader(nullptr, NULL, 0); // Empty pixel shader for shadow pass
 
-    pCtx->Draw(vertCount, 0);
+    pCtx->DrawIndexed(idxCount, 0, 0);
     //--------------------
 
     // Base Pass
@@ -467,8 +485,7 @@ void Dx11Renderer::Render()
     pCtx->PSSetSamplers(0, 1, &pShadowSampler);
     pCtx->PSSetShaderResources(0, 1, &pShadowShaderView);
 
-    //TODO: Handle indexed draws here
-    pCtx->Draw(vertCount, 0);
+    pCtx->DrawIndexed(idxCount, 0, 0);
     //--------------------
 
     // UI Pass
@@ -522,6 +539,7 @@ void Dx11Renderer::Quit()
 {
     ImGui_ImplDX11_Shutdown();
     pVertBuf->Release();
+    pIdxBuf->Release();
     pInputLayout->Release();
 
     pPixShader->Release();

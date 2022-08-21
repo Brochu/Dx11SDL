@@ -42,6 +42,7 @@ private:
 
     ID3D11InputLayout* pInputLayout = nullptr;
     ID3D11Buffer* pVertBuf = nullptr;
+    ID3D11Buffer* pIdxBuf = nullptr;
     ID3D11Buffer* pConstBuf = nullptr;
     ID3D11Buffer* pLightBuf = nullptr;
 
@@ -50,6 +51,7 @@ private:
     D3D11_VIEWPORT viewport;
 
     unsigned int vertexCount = 0;
+    unsigned int indexCount = 0;
 
     // Default Values
     float bgColor[4] = { 0.f / 255.f, 100.f / 255.f, 130.f / 255.f, 1.f };
