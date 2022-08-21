@@ -440,6 +440,8 @@ void Dx11Renderer::Render()
     UINT vertCount = vertexCount;
 
     pCtx->IASetVertexBuffers(0, 1, &pVertBuf, &vertStride, &vertOffset);
+    //TODO: Handle indices for Indexed Draws
+    //pCtx->IASetIndexBuffer(ID3D11Buffer *pIndexBuffer, DXGI_FORMAT Format, UINT Offset)
 
     // Shadow Pass
     pCtx->OMSetRenderTargets(0, nullptr, pShadowTarget);
@@ -465,6 +467,7 @@ void Dx11Renderer::Render()
     pCtx->PSSetSamplers(0, 1, &pShadowSampler);
     pCtx->PSSetShaderResources(0, 1, &pShadowShaderView);
 
+    //TODO: Handle indexed draws here
     pCtx->Draw(vertCount, 0);
     //--------------------
 
