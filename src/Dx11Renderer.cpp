@@ -213,6 +213,7 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height)
         assert(SUCCEEDED(hr));
 
         // ==========================
+        //TODO: Change format to use 32bit indices, for combining MKB2 models
         D3D11_BUFFER_DESC ibufDesc = {};
         ibufDesc.ByteWidth = sizeof(uint16_t) * indexCount;
         ibufDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -459,6 +460,7 @@ void Dx11Renderer::Render()
     UINT idxCount = indexCount;
 
     pCtx->IASetVertexBuffers(0, 1, &pVertBuf, &vertStride, &vertOffset);
+    //TODO: Change this to use 32bit indices
     pCtx->IASetIndexBuffer(pIdxBuf, DXGI_FORMAT_R16_UINT, idxOffset);
 
     // Shadow Pass
@@ -478,7 +480,6 @@ void Dx11Renderer::Render()
 
     pCtx->VSSetShader(pVertShader, NULL, 0);
     pCtx->VSSetConstantBuffers(0, 1, &pConstBuf);
-    //TODO: Add light info to vertex buffer, keep track of light space pos?
 
     pCtx->PSSetShader(pPixShader, NULL, 0);
     pCtx->PSSetConstantBuffers(1, 1, &pLightBuf);
@@ -518,7 +519,7 @@ void Dx11Renderer::RenderDebugUI()
     ImGui::Separator();
     ImGui::DragFloat3("Eye Position", eyePos, 1.f, -100.f, 100.f);
     ImGui::DragFloat3("Look Position", focusPos, 1.f, -100.f, 100.f);
-    ImGui::DragFloat3("Up Direction", upDir, 0.01f, -1.f, 1.f); //TODO: Change this to a drop down with 8 axis
+    ImGui::DragFloat3("Up Direction", upDir, 0.01f, -1.f, 1.f);
 
     ImGui::Text("Transform:");
     ImGui::Separator();

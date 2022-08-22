@@ -77,7 +77,6 @@ namespace ObjReader
                 nIdx.push_back(n);
             }
 
-            //TODO: Look into some winding order issues, we can see through the Pagoda model
             if (pIdx.size() == 3)
             {
                 // One tri case
