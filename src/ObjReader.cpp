@@ -13,13 +13,7 @@ namespace ObjReader
         std::vector<DirectX::XMFLOAT3> norms;
     };
 
-    struct VertexCacheEntry
-    {
-    };
-    struct VertexCache
-    {
-        std::unordered_map<uint64_t, uint16_t> map;
-    };
+    typedef std::unordered_map<uint64_t, uint16_t> VertexCache;
 
     // Helpers methods - Start
     void AddVertex(VertexCache& cache, TempBuffers& bufs, uint16_t pIdx, uint16_t uIdx, uint16_t nIdx, MeshData* out)
@@ -31,13 +25,13 @@ namespace ObjReader
         id <<= 16;
         id = id | nIdx;
 
-        if (cache.map.find(id) == cache.map.end())
+        if (cache.find(id) == cache.end())
         {
             out->verts.push_back({ bufs.positions[pIdx], bufs.uvs[uIdx], bufs.norms[nIdx] });
-            cache.map[id] = out->verts.size() - 1;
+            cache[id] = out->verts.size() - 1;
         }
 
-        out->indices.push_back(cache.map[id]);
+        out->indices.push_back(cache[id]);
     }
     void ReadVertex(VertexCache& cache, TempBuffers& bufs, std::stringstream&& ss, MeshData* ppMeshData)
     {
