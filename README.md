@@ -19,7 +19,7 @@ Test application combining Dx11 rendering with an SDL2 window
     * Send this depth texture to lighting shader
     * Reconstruct 3d position of fragment to test if the fragment is in shadow or not
 
-* [IN PROGRESS] Better OBJ file loading for multiple objets in one file
+* [DONE] Better OBJ file loading for multiple objets in one file
     * Handle indices and only store unique vertices
     * Use indexed draws with the new indices for better storage perf.
 
