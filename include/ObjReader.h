@@ -33,4 +33,5 @@ namespace ObjReader
 
     bool ReadModelFromFile(const char* filepath, ModelData** ppModelData);
     void DebugModelData(const ModelData& modelData);
+    void MergeModelToSingleMesh(const ModelData& modelData, MeshData** ppMeshData);
 };

@@ -175,4 +175,24 @@ namespace ObjReader
             DebugMeshData(m);
         }
     }
+
+    void MergeModelToSingleMesh(const ModelData& modelData, MeshData** ppMeshData)
+    {
+        // Combine all sub meshes found in the model into one for easier rendering
+        (*ppMeshData) = new MeshData();
+        (*ppMeshData)->name = modelData.filename;
+
+        for (ObjReader::MeshData m : modelData.meshes)
+        {
+            for (uint16_t i : m.indices)
+            {
+                (*ppMeshData)->indices.push_back((uint16_t)i + (*ppMeshData)->verts.size());
+            }
+            for (ObjReader::Vertex v : m.verts)
+            {
+                (*ppMeshData)->verts.push_back(v);
+            }
+        }
+    }
 };
+
