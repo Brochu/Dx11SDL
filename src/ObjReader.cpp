@@ -128,9 +128,9 @@ namespace ObjReader
             meshData.verts.size(),
             meshData.indices.size());
 
-        //for (const Vertex& v : meshData.verts)
+        //for (const uint16_t& i : meshData.indices)
         //{
-        //    printf("[VERT] pos = (%f, %f, %f)\n", v.pos.x, v.pos.y, v.pos.z);
+        //    printf("[VERTEX] index at %i\n", i);
         //}
     }
 

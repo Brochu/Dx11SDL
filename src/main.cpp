@@ -24,9 +24,10 @@ int main(int argc, char* argv[])
     //printf("[MAIN] Terminating\n");
     //return 0;
 
+
     // TESTING MODEL IMPORT
     ObjReader::ModelData* model;
-    ObjReader::ReadModelFromFile("data/Volcan/model.obj", &model);
+    ObjReader::ReadModelFromFile("data/Eau/model.obj", &model);
     ObjReader::DebugModelData(*model);
 
     //TODO: Try to combine the submeshes into one mesh data object for easier rendering
