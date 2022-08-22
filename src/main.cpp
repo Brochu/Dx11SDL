@@ -27,10 +27,19 @@ int main(int argc, char* argv[])
 
     // TESTING MODEL IMPORT
     ObjReader::ModelData* model;
-    ObjReader::ReadModelFromFile("data/Eau/model.obj", &model);
+    ObjReader::ReadModelFromFile("data/Volcan/model.obj", &model);
     ObjReader::DebugModelData(*model);
 
     //TODO: Try to combine the submeshes into one mesh data object for easier rendering
+    uint64_t sumIndices = 0;
+    for (ObjReader::MeshData m : model->meshes)
+    {
+        sumIndices += m.indices.size();
+    }
+    printf("[MAIN] Total indices found = %ld\n", sumIndices);
+
+    uint16_t test = static_cast<uint16_t>(sumIndices);
+    printf("[MAIN] Test = %ld\n", test);
 
     delete model;
     return 0;
