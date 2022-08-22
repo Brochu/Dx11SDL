@@ -13,6 +13,13 @@ namespace ObjReader
         std::vector<DirectX::XMFLOAT3> norms;
     };
 
+    struct VertexCacheEntry
+    {
+    };
+    struct VertexCache
+    {
+    };
+
     // Helpers methods - Start
     void AddVertex(TempBuffers& bufs, uint16_t pIdx, uint16_t uIdx, uint16_t nIdx, MeshData* out)
     {
