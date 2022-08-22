@@ -28,7 +28,9 @@ int main(int argc, char* argv[])
     ObjReader::ModelData* model;
     ObjReader::ReadModelFromFile("data/Volcan/model.obj", &model);
     ObjReader::DebugModelData(*model);
-    delete model;
 
+    //TODO: Try to combine the submeshes into one mesh data object for easier rendering
+
+    delete model;
     return 0;
 }
