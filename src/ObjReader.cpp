@@ -18,10 +18,11 @@ namespace ObjReader
     };
     struct VertexCache
     {
+        std::unordered_map<uint64_t, uint16_t> map;
     };
 
     // Helpers methods - Start
-    void AddVertex(TempBuffers& bufs, uint16_t pIdx, uint16_t uIdx, uint16_t nIdx, MeshData* out)
+    void AddVertex(VertexCache& cache, TempBuffers& bufs, uint16_t pIdx, uint16_t uIdx, uint16_t nIdx, MeshData* out)
     {
         uint64_t id = 0;
         id = id | pIdx;
@@ -30,15 +31,15 @@ namespace ObjReader
         id <<= 16;
         id = id | nIdx;
 
-        if (out->vertsCache.find(id) == out->vertsCache.end())
+        if (cache.map.find(id) == cache.map.end())
         {
             out->verts.push_back({ bufs.positions[pIdx], bufs.uvs[uIdx], bufs.norms[nIdx] });
-            out->vertsCache[id] = out->verts.size() - 1;
+            cache.map[id] = out->verts.size() - 1;
         }
 
-        out->indices.push_back(out->vertsCache[id]);
+        out->indices.push_back(cache.map[id]);
     }
-    void ReadVertex(TempBuffers& bufs, std::stringstream&& ss, MeshData* ppMeshData)
+    void ReadVertex(VertexCache& cache, TempBuffers& bufs, std::stringstream&& ss, MeshData* ppMeshData)
     {
         std::string type;
         ss >> type;
@@ -86,22 +87,22 @@ namespace ObjReader
             if (pIdx.size() == 3)
             {
                 // One tri case
-                AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, ppMeshData);
-                AddVertex(bufs, pIdx[1]-1, uIdx[1]-1, nIdx[1]-1, ppMeshData);
-                AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, ppMeshData);
+                AddVertex(cache, bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, ppMeshData);
+                AddVertex(cache, bufs, pIdx[1]-1, uIdx[1]-1, nIdx[1]-1, ppMeshData);
+                AddVertex(cache, bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, ppMeshData);
             }
             else if (pIdx.size() == 4)
             {
                 // One quad case
                 // First Tri
-                AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, ppMeshData);
-                AddVertex(bufs, pIdx[1]-1, uIdx[1]-1, nIdx[1]-1, ppMeshData);
-                AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, ppMeshData);
+                AddVertex(cache, bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, ppMeshData);
+                AddVertex(cache, bufs, pIdx[1]-1, uIdx[1]-1, nIdx[1]-1, ppMeshData);
+                AddVertex(cache, bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, ppMeshData);
 
                 // Second Tri
-                AddVertex(bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, ppMeshData);
-                AddVertex(bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, ppMeshData);
-                AddVertex(bufs, pIdx[3]-1, uIdx[3]-1, nIdx[3]-1, ppMeshData);
+                AddVertex(cache, bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, ppMeshData);
+                AddVertex(cache, bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, ppMeshData);
+                AddVertex(cache, bufs, pIdx[3]-1, uIdx[3]-1, nIdx[3]-1, ppMeshData);
             }
         }
     }
@@ -114,12 +115,13 @@ namespace ObjReader
         std::ifstream file(filepath);
         if (!file.good() || !file.is_open() || file.bad()) return false;
 
+        VertexCache vertCache;
         TempBuffers bufs;
         std::string line;
         std::stringstream ss;
         while (getline(file, line))
         {
-            ReadVertex(bufs, std::stringstream(line), *ppMeshData);
+            ReadVertex(vertCache, bufs, std::stringstream(line), *ppMeshData);
         }
 
         file.close();
@@ -147,6 +149,7 @@ namespace ObjReader
         std::ifstream file(filepath);
         if (!file.good() || !file.is_open() || file.bad()) return false;
 
+        VertexCache vertCache;
         TempBuffers bufs;
         std::string line;
         while (getline(file, line))
@@ -159,7 +162,7 @@ namespace ObjReader
 
                 while(getline(file, line))
                 {
-                    ReadVertex(bufs, std::stringstream(line), &mesh);
+                    ReadVertex(vertCache, bufs, std::stringstream(line), &mesh);
 
                     if (line.find(mesh.name) != -1) break;
                 }

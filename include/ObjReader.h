@@ -19,7 +19,6 @@ namespace ObjReader
     {
         std::string name = "--NoName--";
         std::vector<Vertex> verts;
-        std::unordered_map<uint64_t, uint16_t> vertsCache;
         std::vector<uint16_t> indices;
     };
 
