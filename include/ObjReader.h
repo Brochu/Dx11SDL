@@ -13,6 +13,7 @@ namespace ObjReader
         DirectX::XMFLOAT3 pos;
         DirectX::XMFLOAT2 uvs;
         DirectX::XMFLOAT3 norm;
+        //TODO: Add the tag for texture sampling
     };
 
     struct MeshData

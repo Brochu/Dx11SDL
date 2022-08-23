@@ -174,6 +174,7 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height, const char *scenePath
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+        //TODO: Add tag to sample the right texture
     };
     hr = pDevice->CreateInputLayout(
         inputElems,
@@ -186,15 +187,16 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height, const char *scenePath
     pVs->Release();
     pPs->Release();
 
+    // Loading the requested scene model
+    ObjReader::ModelData *model;
+    if (!ObjReader::ReadModelFromFile(scenePath, &model))
+    {
+        // Could not read the model file
+        return 1;
+    }
+
     // VERTEX BUFFER AND INDEX DESCRIPTION AND CREATION
     {
-        ObjReader::ModelData *model;
-        if (!ObjReader::ReadModelFromFile(scenePath, &model))
-        {
-            // Could not read the model file
-            return 1;
-        }
-
         ObjReader::MeshData *mesh;
         ObjReader::MergeModelToSingleMesh(*model, &mesh);
         vertexCount = mesh->verts.size();
@@ -232,6 +234,12 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height, const char *scenePath
         assert(SUCCEEDED(hr));
         delete mesh;
     }
+
+    // Load all needed textures and upload to GPU memory + Create shader resource views
+    {
+        //TODO: Handle texture loading from the model data
+    }
+    delete model;
 
     return 0;
 }
@@ -482,6 +490,7 @@ void Dx11Renderer::Render()
     pCtx->PSSetConstantBuffers(1, 1, &pLightBuf);
     pCtx->PSSetSamplers(0, 1, &pShadowSampler);
     pCtx->PSSetShaderResources(0, 1, &pShadowShaderView);
+    //TODO: Bind texture array for pixel shader of base pass
 
     pCtx->DrawIndexed(idxCount, 0, 0);
     //--------------------

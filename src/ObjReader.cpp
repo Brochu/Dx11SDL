@@ -147,6 +147,7 @@ namespace ObjReader
         std::string line;
         while (getline(file, line))
         {
+            //TODO: Parsing the material file if found
             if (line[0] == 'o')
             {
                 MeshData mesh;

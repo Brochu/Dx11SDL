@@ -16,11 +16,14 @@ cbuffer LightData : register(b1)
 Texture2D shadowmap: register(t0);
 sampler shadowSampler: register(s0);
 
+//TODO: Find out how to bind texture array for handling texture
+
 struct VS_Input
 {
     float3 pos : POSITION;
     float2 uv : TEXCOORD0;
     float3 norm : NORMAL0;
+    //TODO: Add tag for sampling texture
 };
 
 struct PS_Input
