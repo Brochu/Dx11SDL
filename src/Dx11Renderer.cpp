@@ -518,15 +518,15 @@ void Dx11Renderer::RenderDebugUI()
 
     ImGui::Text("View:");
     ImGui::Separator();
-    ImGui::DragFloat3("Eye Position", eyePos, 1.f, -100.f, 100.f);
+    ImGui::DragFloat3("Eye Position", eyePos, 1.f, -500.f, 500.f);
     ImGui::DragFloat3("Look Position", focusPos, 1.f, -100.f, 100.f);
     ImGui::DragFloat3("Up Direction", upDir, 0.01f, -1.f, 1.f);
 
     ImGui::Text("Transform:");
     ImGui::Separator();
-    ImGui::DragFloat3("Translate", translation, 0.1f, -10.f, 10.f);
-    ImGui::DragFloat3("Rotate", rotation, 0.1f, 0.f, 10.f);
-    ImGui::DragFloat3("Scale", scale, 0.1f, -100.f, 100.f);
+    ImGui::DragFloat3("Translate", translation, 0.1f, -100.f, 100.f);
+    ImGui::DragFloat3("Rotate", rotation, 0.025f, -6.2832f, 6.2832f);
+    ImGui::DragFloat3("Scale", scale, 0.025f, -10.f, 10.f);
 
     ImGui::Text("Directional Light:");
     ImGui::Separator();
