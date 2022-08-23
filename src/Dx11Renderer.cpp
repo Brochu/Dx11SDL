@@ -377,16 +377,12 @@ void Dx11Renderer::Update(float time, float delta)
 
     // Update transform matrices
     DirectX::XMFLOAT4 eye { eyePos[0], eyePos[1], eyePos[2], 1.f };
-
-    DirectX::XMFLOAT4 lookDir { eyePos[0] - focusPos[0], eyePos[1] - focusPos[1], eyePos[2] - focusPos[2], 0.f };
-    DirectX::XMVECTOR look = DirectX::XMLoadFloat4(&lookDir);
-    look = DirectX::XMVector4Normalize(look);
-    DirectX::XMStoreFloat4(&lookDir, look);
-
+    DirectX::XMFLOAT4 focus { focusPos[0], focusPos[1], focusPos[2], 1.f };
     DirectX::XMFLOAT4 up { upDir[0], upDir[1], upDir[2], 0.f };
+
     DirectX::XMStoreFloat4x4(&newData.view, DirectX::XMMatrixLookAtLH(
         DirectX::XMLoadFloat4(&eye),
-        DirectX::XMLoadFloat4(&lookDir),
+        DirectX::XMLoadFloat4(&focus),
         DirectX::XMLoadFloat4(&up)
     ));
 
@@ -519,7 +515,7 @@ void Dx11Renderer::RenderDebugUI()
     ImGui::Text("View:");
     ImGui::Separator();
     ImGui::DragFloat3("Eye Position", eyePos, 1.f, -500.f, 500.f);
-    ImGui::DragFloat3("Look Position", focusPos, 1.f, -100.f, 100.f);
+    ImGui::DragFloat3("Look Position", focusPos, 1.f, -1000.f, 1000.f);
     ImGui::DragFloat3("Up Direction", upDir, 0.01f, -1.f, 1.f);
 
     ImGui::Text("Transform:");
