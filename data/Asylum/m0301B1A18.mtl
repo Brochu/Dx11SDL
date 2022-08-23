@@ -1,0 +1,65 @@
+# Blender MTL File: 'None'
+# Material Count: 5
+
+newmtl m0010B0A18_0
+Ns 31.372549
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd m19_bone.png
+map_Bump m19_bone_n.png
+map_Ks m19_bone.png
+
+newmtl m0010B0A18_1
+Ns 31.372549
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd m19_decal_bone.png
+map_Bump m19_decal_bone_n.png
+map_d m19_decal_bone.png
+
+newmtl m0010B0A18_2
+Ns 31.372549
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd m19_obj_skull.png
+map_Ks m19_obj_skull.png
+
+newmtl m0010B0A18_3
+Ns 31.372549
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd m19_B_wall_05.png
+map_Bump m19_B_wall_05_n.png
+
+newmtl m0010B0A18_4
+Ns 31.372549
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd m19_bone.png
+map_Bump m19_bone_n.png
+map_Ks m19_bone.png

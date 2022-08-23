@@ -1,0 +1,139 @@
+# Blender MTL File: 'None'
+# Material Count: 11
+
+newmtl m0030B1A13_0
+Ns 31.372549
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd m15_room_floor_02.png
+
+newmtl m0030B1A13_1
+Ns 31.372549
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd m15_wall_roomwall_03.png
+map_Bump m15_wall_roomwall_03_n.png
+
+newmtl m0030B1A13_10
+Ns 31.372549
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd m15_decal_floor_rubble.png
+map_Bump m15_decal_floor_rubble_n.png
+map_d m15_decal_floor_rubble.png
+
+newmtl m0030B1A13_2
+Ns 31.372549
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd m15_furniture_chandelier.png
+map_Bump m15_furniture_chandelier_n.png
+map_Ks m15_furniture_chandelier_s.png
+
+newmtl m0030B1A13_3
+Ns 31.372549
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd m15_furniture_fireplace.png
+map_Bump m15_furniture_fireplace_n.png
+
+newmtl m0030B1A13_4
+Ns 31.372549
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd m15_wall_roomwall_01.png
+map_Bump m15_wall_roomwall_01_n.png
+
+newmtl m0030B1A13_5
+Ns 31.372549
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd m15_wall_roomwall_04.png
+map_Bump m15_wall_roomwall_04_n.png
+
+newmtl m0030B1A13_6
+Ns 31.372549
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd m15_wall_roomwall_05.png
+map_Bump m15_wall_roomwall_05_n.png
+
+newmtl m0030B1A13_7
+Ns 31.372549
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd m15_furniture_fireplace.png
+map_Bump m15_furniture_fireplace_n.png
+map_Ks m15_furniture_fireplace_s.png
+map_d m15_furniture_fireplace.png
+
+newmtl m0030B1A13_8
+Ns 31.372549
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd m15_furniture_window.png
+map_Bump m15_furniture_window_n.png
+map_Ks m15_furniture_window_s.png
+map_d m15_furniture_window.png
+
+newmtl m0030B1A13_9
+Ns 31.372549
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd m15_wall_roomwall_09.png
+map_Bump m15_wall_roomwall_09_n.png
