@@ -188,12 +188,15 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height)
 
     // VERTEX BUFFER AND INDEX DESCRIPTION AND CREATION
     {
-        ObjReader::MeshData *mesh;
-        if (!ObjReader::ReadSingleMeshFromFile("data/Pagoda.obj", &mesh))
+        ObjReader::ModelData *model;
+        if (!ObjReader::ReadModelFromFile("data/WashingMachine/model.obj", &model))
         {
             // Could not read the model file
             return 1;
         }
+
+        ObjReader::MeshData *mesh;
+        ObjReader::MergeModelToSingleMesh(*model, &mesh);
         vertexCount = mesh->verts.size();
         indexCount = mesh->indices.size();
 
@@ -213,7 +216,6 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height)
         assert(SUCCEEDED(hr));
 
         // ==========================
-        //TODO: Change format to use 32bit indices, for combining MKB2 models
         D3D11_BUFFER_DESC ibufDesc = {};
         ibufDesc.ByteWidth = sizeof(uint16_t) * indexCount;
         ibufDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -460,7 +462,6 @@ void Dx11Renderer::Render()
     UINT idxCount = indexCount;
 
     pCtx->IASetVertexBuffers(0, 1, &pVertBuf, &vertStride, &vertOffset);
-    //TODO: Change this to use 32bit indices
     pCtx->IASetIndexBuffer(pIdxBuf, DXGI_FORMAT_R16_UINT, idxOffset);
 
     // Shadow Pass
