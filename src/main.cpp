@@ -5,9 +5,15 @@
 
 int RunModelViewer(int argc, char* argv[])
 {
+    if (argc != 2)
+    {
+        printf("usage: Dx11SDL2.exe <obj file path>\n");
+        return 1;
+    }
+
     printf("[MAIN] Init App\n");
     Application app("Dx11-SDL2", 1280, 720);
-    if (app.Init() != 0)
+    if (app.Init(argv[1]) != 0)
     {
         printf("[MAIN] Could not init application!\n");
     }

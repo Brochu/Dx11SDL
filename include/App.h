@@ -12,7 +12,7 @@ class Application
 public:
     Application(const std::string&& name, int w, int h);
 
-    int Init();
+    int Init(const char* scenePath);
     int Tick();
     void Close();
 
@@ -22,11 +22,12 @@ public:
     int height;
 
 private:
-    SDL_Window* window = nullptr;
-    SDL_Surface* surface = nullptr;
-    Dx11Renderer* render = nullptr;
+    std::string objPath;
 
     uint64_t startTicks = 0;
     uint64_t prevTicks = 0;
 
+    SDL_Window* window = nullptr;
+    SDL_Surface* surface = nullptr;
+    Dx11Renderer* render = nullptr;
 };

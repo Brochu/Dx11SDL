@@ -27,7 +27,7 @@ struct LightData
     DirectX::XMFLOAT4X4 objectToLight;
 };
 
-int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
+int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height, const char *scenePath)
 {
     // This makes sure we have a swapchain, a device and a context
     PrepareBaseObjects(hWindow);
@@ -36,7 +36,7 @@ int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height)
     PrepareShadowPass();
 
     // Prep all needed resources for main pass
-    PrepareBasePass(width, height);
+    PrepareBasePass(width, height, scenePath);
 
     // Make sure we have created structs for constant buffers
     PrepareCBuffers();
@@ -117,7 +117,7 @@ int Dx11Renderer::PrepareBaseObjects(HWND hWindow)
     return 0;
 }
 
-int Dx11Renderer::PrepareBasePass(UINT width, UINT height)
+int Dx11Renderer::PrepareBasePass(UINT width, UINT height, const char *scenePath)
 {
     // Create main render target view
     ID3D11Texture2D* backBuffer;
@@ -189,7 +189,7 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height)
     // VERTEX BUFFER AND INDEX DESCRIPTION AND CREATION
     {
         ObjReader::ModelData *model;
-        if (!ObjReader::ReadModelFromFile("data/WashingMachine/model.obj", &model))
+        if (!ObjReader::ReadModelFromFile(scenePath, &model))
         {
             // Could not read the model file
             return 1;

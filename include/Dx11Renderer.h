@@ -7,9 +7,9 @@ class Dx11Renderer
 {
 
 public:
-    int Init(HWND hWindow, UINT width, UINT height);
+    int Init(HWND hWindow, UINT width, UINT height, const char *scenePath);
     int PrepareBaseObjects(HWND hWindow);
-    int PrepareBasePass(UINT width, UINT height);
+    int PrepareBasePass(UINT width, UINT height, const char *scenePath);
     int PrepareShadowPass();
     int PrepareCBuffers();
     //TODO: Make sure to move generic resource creation to Utils

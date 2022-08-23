@@ -13,7 +13,7 @@ Application::Application(const std::string&& name, int w, int h)
     : isRunning(true), AppName(name), width(w), height(h)
 { }
 
-int Application::Init()
+int Application::Init(const char* scenePath)
 {
     printf("[APP] Start Init Flow");
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
@@ -21,6 +21,9 @@ int Application::Init()
         printf("[ERROR] Could not initialize SDL2 library; error = %s\n", SDL_GetError());
         return 1;
     }
+
+    // Get which scene file to load from the app args
+    objPath = std::string(scenePath);
 
     // Start tracking time spent in the app
     startTicks = prevTicks = SDL_GetTicks64();
@@ -54,7 +57,7 @@ int Application::Init()
     ImGui_ImplSDL2_InitForD3D(window);
 
     render = new Dx11Renderer();
-    int code = render->Init(wmInfo.info.win.window, width, height);
+    int code = render->Init(wmInfo.info.win.window, width, height, objPath.c_str());
     if (code != 0) return code;
 
     printf("[APP] Finished Dx11 initialization\n");
