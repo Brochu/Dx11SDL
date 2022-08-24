@@ -1,5 +1,5 @@
 - (OK) Remove model data file, move to obj reader
-- (OK)Create the Vertex struct that we will use for VertexBuffers
+- (OK) Create the Vertex struct that we will use for VertexBuffers
 - (OK) Read the OBJ into the Vertex struct instead
 - (OK) Be able to sent the Vertex format to the Dx11Renderer
 - (OK) Send the model Vertex data to renderer
