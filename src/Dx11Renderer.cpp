@@ -195,6 +195,8 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height, const char *scenePath
         // Could not read the model file
         return 1;
     }
+    ObjReader::DebugModelData(*model);
+
     // VERTEX BUFFER AND INDEX DESCRIPTION AND CREATION
     {
         D3D11_BUFFER_DESC vbufDesc = {};
@@ -467,7 +469,10 @@ void Dx11Renderer::Render()
 
     pCtx->PSSetShader(nullptr, NULL, 0); // Empty pixel shader for shadow pass
 
-    pCtx->DrawIndexed(model->indices.size(), 0, 0);
+    for (const ObjReader::MeshData& m : model->meshes)
+    {
+        pCtx->DrawIndexed(m.indexCount, m.indexOffset, 0);
+    }
     //--------------------
 
     // Base Pass
@@ -482,7 +487,10 @@ void Dx11Renderer::Render()
     pCtx->PSSetShaderResources(0, 1, &pShadowShaderView);
     //TODO: Bind texture array for pixel shader of base pass
 
-    pCtx->DrawIndexed(model->indices.size(), 0, 0);
+    for (const ObjReader::MeshData& m : model->meshes)
+    {
+        pCtx->DrawIndexed(m.indexCount, m.indexOffset, 0);
+    }
     //--------------------
 
     // UI Pass
