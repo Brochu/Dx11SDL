@@ -35,7 +35,14 @@ int RunModelViewer(int argc, char* argv[])
 
 int RunTest(int argc, char* argv[])
 {
-    // No test at the moment
+    printf("[MAIN] Starting the tests ...\n");
+    ObjReader::ModelData *model;
+    ObjReader::ReadMultipleMeshFromFile(argv[2], &model);
+    ObjReader::DebugModelData(*model);
+
+    delete model;
+    printf("[MAIN] Tests are done!\n");
+
     return 0;
 }
 

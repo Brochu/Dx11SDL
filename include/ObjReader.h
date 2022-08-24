@@ -1,9 +1,7 @@
 #pragma once
 
 #include <DXM/DirectXMath.h>
-#include <stdint.h>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 namespace ObjReader
@@ -19,20 +17,22 @@ namespace ObjReader
     struct MeshData
     {
         std::string name = "--NoName--";
-        std::vector<Vertex> verts;
-        std::vector<uint16_t> indices;
+        uint64_t indexOffset;
+        uint64_t indexCount;
     };
 
     struct ModelData
     {
         std::string filename;
+
+        std::vector<Vertex> verts;
+        std::vector<uint16_t> indices;
+
         std::vector<MeshData> meshes;
     };
 
-    bool ReadSingleMeshFromFile(const char* filepath, MeshData** ppMeshData);
-    void DebugMeshData(const MeshData& meshData);
+    bool ReadSingleMeshFromFile(const char* filepath, ModelData** ppModelData);
+    bool ReadMultipleMeshFromFile(const char* filepath, ModelData** ppModelData);
 
-    bool ReadModelFromFile(const char* filepath, ModelData** ppModelData);
     void DebugModelData(const ModelData& modelData);
-    void MergeModelToSingleMesh(const ModelData& modelData, MeshData** ppMeshData);
 };

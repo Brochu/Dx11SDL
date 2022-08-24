@@ -189,7 +189,7 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height, const char *scenePath
 
     // Loading the requested scene model
     ObjReader::ModelData *model;
-    if (!ObjReader::ReadModelFromFile(scenePath, &model))
+    if (!ObjReader::ReadMultipleMeshFromFile(scenePath, &model))
     {
         // Could not read the model file
         return 1;
@@ -197,10 +197,8 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height, const char *scenePath
 
     // VERTEX BUFFER AND INDEX DESCRIPTION AND CREATION
     {
-        ObjReader::MeshData *mesh;
-        ObjReader::MergeModelToSingleMesh(*model, &mesh);
-        vertexCount = mesh->verts.size();
-        indexCount = mesh->indices.size();
+        vertexCount = model->verts.size();
+        indexCount = model->indices.size();
 
         D3D11_BUFFER_DESC vbufDesc = {};
         vbufDesc.ByteWidth = sizeof(ObjReader::Vertex) * vertexCount;
@@ -208,7 +206,7 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height, const char *scenePath
         vbufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
         D3D11_SUBRESOURCE_DATA vData = {0};
-        vData.pSysMem = mesh->verts.data();
+        vData.pSysMem = model->verts.data();
 
         hr = pDevice->CreateBuffer(
             &vbufDesc,
@@ -224,7 +222,7 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height, const char *scenePath
         ibufDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
         D3D11_SUBRESOURCE_DATA iData = {0};
-        iData.pSysMem = mesh->indices.data();
+        iData.pSysMem = model->indices.data();
 
         hr = pDevice->CreateBuffer(
             &ibufDesc,
@@ -232,7 +230,6 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height, const char *scenePath
             &pIdxBuf);
 
         assert(SUCCEEDED(hr));
-        delete mesh;
     }
 
     // Load all needed textures and upload to GPU memory + Create shader resource views

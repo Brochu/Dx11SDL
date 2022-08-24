@@ -2,7 +2,7 @@
 
 #include <fstream>
 #include <sstream>
-#include <stdint.h>
+#include <unordered_map>
 
 namespace ObjReader
 {
@@ -13,27 +13,45 @@ namespace ObjReader
         std::vector<DirectX::XMFLOAT3> norms;
     };
 
+    struct VertexComponents
+    {
+        uint16_t posidx;
+        uint16_t uvidx;
+        uint16_t normidx;
+
+        VertexComponents(uint16_t pIdx, uint16_t uIdx, uint16_t nIdx)
+        {
+            posidx = (uint16_t)(pIdx - 1);
+            uvidx = (uint16_t)(uIdx - 1);
+            normidx = (uint16_t)(nIdx - 1);
+        }
+    };
+
     typedef std::unordered_map<uint64_t, uint16_t> VertexCache;
 
     // Helpers methods - Start
-    void AddVertex(VertexCache& cache, TempBuffers& bufs, uint16_t pIdx, uint16_t uIdx, uint16_t nIdx, MeshData* out)
+    void AddVertex(VertexCache& cache, TempBuffers& bufs, VertexComponents&& vcomp, ModelData* outModel)
     {
         uint64_t id = 0;
-        id = id | pIdx;
+        id = id | vcomp.posidx;
         id <<= 16;
-        id = id | uIdx;
+        id = id | vcomp.uvidx;
         id <<= 16;
-        id = id | nIdx;
+        id = id | vcomp.normidx;
 
         if (cache.find(id) == cache.end())
         {
-            out->verts.push_back({ bufs.positions[pIdx], bufs.uvs[uIdx], bufs.norms[nIdx] });
-            cache[id] = out->verts.size() - 1;
+            outModel->verts.push_back({
+                bufs.positions[vcomp.posidx],
+                bufs.uvs[vcomp.uvidx],
+                bufs.norms[vcomp.normidx]
+            });
+            cache[id] = outModel->verts.size() - 1;
         }
 
-        out->indices.push_back(cache[id]);
+        outModel->indices.push_back(cache[id]);
     }
-    void ReadVertex(VertexCache& cache, TempBuffers& bufs, std::stringstream&& ss, MeshData* ppMeshData)
+    void ReadVertex(VertexCache& cache, TempBuffers& bufs, std::stringstream&& ss, ModelData* pModelData)
     {
         std::string type;
         ss >> type;
@@ -80,30 +98,30 @@ namespace ObjReader
             if (pIdx.size() == 3)
             {
                 // One tri case
-                AddVertex(cache, bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, ppMeshData);
-                AddVertex(cache, bufs, pIdx[1]-1, uIdx[1]-1, nIdx[1]-1, ppMeshData);
-                AddVertex(cache, bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, ppMeshData);
+                AddVertex(cache, bufs, VertexComponents(pIdx[0], uIdx[0], nIdx[0]), pModelData);
+                AddVertex(cache, bufs, VertexComponents(pIdx[1], uIdx[1], nIdx[1]), pModelData);
+                AddVertex(cache, bufs, VertexComponents(pIdx[2], uIdx[2], nIdx[2]), pModelData);
             }
             else if (pIdx.size() == 4)
             {
                 // One quad case
                 // First Tri
-                AddVertex(cache, bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, ppMeshData);
-                AddVertex(cache, bufs, pIdx[1]-1, uIdx[1]-1, nIdx[1]-1, ppMeshData);
-                AddVertex(cache, bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, ppMeshData);
+                AddVertex(cache, bufs, VertexComponents(pIdx[0], uIdx[0], nIdx[0]), pModelData);
+                AddVertex(cache, bufs, VertexComponents(pIdx[1], uIdx[1], nIdx[1]), pModelData);
+                AddVertex(cache, bufs, VertexComponents(pIdx[2], uIdx[2], nIdx[2]), pModelData);
 
                 // Second Tri
-                AddVertex(cache, bufs, pIdx[0]-1, uIdx[0]-1, nIdx[0]-1, ppMeshData);
-                AddVertex(cache, bufs, pIdx[2]-1, uIdx[2]-1, nIdx[2]-1, ppMeshData);
-                AddVertex(cache, bufs, pIdx[3]-1, uIdx[3]-1, nIdx[3]-1, ppMeshData);
+                AddVertex(cache, bufs, VertexComponents(pIdx[0], uIdx[0], nIdx[0]), pModelData);
+                AddVertex(cache, bufs, VertexComponents(pIdx[2], uIdx[2], nIdx[2]), pModelData);
+                AddVertex(cache, bufs, VertexComponents(pIdx[3], uIdx[3], nIdx[3]), pModelData);
             }
         }
     }
     // Helpers methods - End
 
-    bool ReadSingleMeshFromFile(const char* filepath, MeshData** ppMeshData)
+    bool ReadSingleMeshFromFile(const char* filepath, ModelData** ppModelData)
     {
-        *ppMeshData = new MeshData();
+        *ppModelData = new ModelData();
 
         std::ifstream file(filepath);
         if (!file.good() || !file.is_open() || file.bad()) return false;
@@ -114,26 +132,14 @@ namespace ObjReader
         std::stringstream ss;
         while (getline(file, line))
         {
-            ReadVertex(vertCache, bufs, std::stringstream(line), *ppMeshData);
+            ReadVertex(vertCache, bufs, std::stringstream(line), *ppModelData);
         }
+        (*ppModelData)->meshes.push_back({ "Mesh0", 0, (*ppModelData)->indices.size() });
 
         file.close();
         return true;
     }
-    void DebugMeshData(const MeshData& meshData)
-    {
-        printf("[MESH] %s with %ld vertices & %ld indices:\n",
-            meshData.name.c_str(),
-            meshData.verts.size(),
-            meshData.indices.size());
-
-        //for (const uint16_t& i : meshData.indices)
-        //{
-        //    printf("[VERTEX] index at %i\n", i);
-        //}
-    }
-
-    bool ReadModelFromFile(const char* filepath, ModelData** ppModelData)
+    bool ReadMultipleMeshFromFile(const char* filepath, ModelData** ppModelData)
     {
         // Read Model information, list of objects
         (*ppModelData) = new ModelData();
@@ -154,12 +160,14 @@ namespace ObjReader
                 mesh.name = line.substr(2);
                 if (mesh.name == "EmptyObject") continue;
 
+                mesh.indexOffset = (*ppModelData)->indices.size();
                 while(getline(file, line))
                 {
-                    ReadVertex(vertCache, bufs, std::stringstream(line), &mesh);
+                    ReadVertex(vertCache, bufs, std::stringstream(line), *ppModelData);
 
                     if (line.find(mesh.name) != -1) break;
                 }
+                mesh.indexCount = (*ppModelData)->indices.size() - mesh.indexOffset;
                 (*ppModelData)->meshes.push_back(mesh);
             }
         }
@@ -169,31 +177,15 @@ namespace ObjReader
 
     void DebugModelData(const ModelData& modelData)
     {
-        printf("[MODEL] (file = %s) with %ld meshes :\n", modelData.filename.c_str() ,modelData.meshes.size());
+        printf("[MODEL] file = %s [%ld verts][%ld idx]\n",
+            modelData.filename.c_str(),
+            modelData.verts.size(),
+            modelData.indices.size());
 
+        printf("\tcontains %ld meshes\n", modelData.meshes.size());
         for (const MeshData& m : modelData.meshes)
         {
-            DebugMeshData(m);
-        }
-    }
-
-    void MergeModelToSingleMesh(const ModelData& modelData, MeshData** ppMeshData)
-    {
-        // Combine all sub meshes found in the model into one for easier rendering
-        (*ppMeshData) = new MeshData();
-        (*ppMeshData)->name = modelData.filename;
-
-        for (ObjReader::MeshData m : modelData.meshes)
-        {
-            for (uint16_t i : m.indices)
-            {
-                (*ppMeshData)->indices.push_back((uint16_t)i + (*ppMeshData)->verts.size());
-            }
-            for (ObjReader::Vertex v : m.verts)
-            {
-                (*ppMeshData)->verts.push_back(v);
-            }
+            printf("\t%s [index offset = %i][index count = %ld]\n", m.name.c_str(), m.indexOffset, m.indexCount);
         }
     }
 };
-
