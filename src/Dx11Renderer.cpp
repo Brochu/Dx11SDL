@@ -27,6 +27,8 @@ struct LightData
     DirectX::XMFLOAT4X4 objectToLight;
 };
 
+ObjReader::ModelData *model = nullptr;
+
 int Dx11Renderer::Init(HWND hWindow, UINT width, UINT height, const char *scenePath)
 {
     // This makes sure we have a swapchain, a device and a context
@@ -188,20 +190,15 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height, const char *scenePath
     pPs->Release();
 
     // Loading the requested scene model
-    ObjReader::ModelData *model;
     if (!ObjReader::ReadMultipleMeshFromFile(scenePath, &model))
     {
         // Could not read the model file
         return 1;
     }
-
     // VERTEX BUFFER AND INDEX DESCRIPTION AND CREATION
     {
-        vertexCount = model->verts.size();
-        indexCount = model->indices.size();
-
         D3D11_BUFFER_DESC vbufDesc = {};
-        vbufDesc.ByteWidth = sizeof(ObjReader::Vertex) * vertexCount;
+        vbufDesc.ByteWidth = sizeof(ObjReader::Vertex) * model->verts.size();
         vbufDesc.Usage = D3D11_USAGE_DEFAULT;
         vbufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
@@ -217,7 +214,7 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height, const char *scenePath
 
         // ==========================
         D3D11_BUFFER_DESC ibufDesc = {};
-        ibufDesc.ByteWidth = sizeof(uint16_t) * indexCount;
+        ibufDesc.ByteWidth = sizeof(uint16_t) * model->indices.size();
         ibufDesc.Usage = D3D11_USAGE_DEFAULT;
         ibufDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
@@ -236,7 +233,6 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height, const char *scenePath
     {
         //TODO: Handle texture loading from the model data
     }
-    delete model;
 
     return 0;
 }
@@ -458,12 +454,9 @@ void Dx11Renderer::Render()
     //TODO: Move this to model data
     UINT vertStride = sizeof(ObjReader::Vertex);
     UINT vertOffset = 0;
-    UINT idxOffset = 0;
-    UINT vertCount = vertexCount;
-    UINT idxCount = indexCount;
 
     pCtx->IASetVertexBuffers(0, 1, &pVertBuf, &vertStride, &vertOffset);
-    pCtx->IASetIndexBuffer(pIdxBuf, DXGI_FORMAT_R16_UINT, idxOffset);
+    pCtx->IASetIndexBuffer(pIdxBuf, DXGI_FORMAT_R16_UINT, 0);
 
     // Shadow Pass
     pCtx->OMSetRenderTargets(0, nullptr, pShadowTarget);
@@ -474,7 +467,7 @@ void Dx11Renderer::Render()
 
     pCtx->PSSetShader(nullptr, NULL, 0); // Empty pixel shader for shadow pass
 
-    pCtx->DrawIndexed(idxCount, 0, 0);
+    pCtx->DrawIndexed(model->indices.size(), 0, 0);
     //--------------------
 
     // Base Pass
@@ -489,7 +482,7 @@ void Dx11Renderer::Render()
     pCtx->PSSetShaderResources(0, 1, &pShadowShaderView);
     //TODO: Bind texture array for pixel shader of base pass
 
-    pCtx->DrawIndexed(idxCount, 0, 0);
+    pCtx->DrawIndexed(model->indices.size(), 0, 0);
     //--------------------
 
     // UI Pass
@@ -541,6 +534,8 @@ void Dx11Renderer::RenderDebugUI()
 
 void Dx11Renderer::Quit()
 {
+    delete model;
+
     ImGui_ImplDX11_Shutdown();
     pVertBuf->Release();
     pIdxBuf->Release();
