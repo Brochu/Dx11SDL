@@ -36,6 +36,9 @@ private:
     ID3D11SamplerState* pShadowSampler = nullptr;
     ID3D11ShaderResourceView* pShadowShaderView = nullptr;
 
+    // Textures parsed from the material file
+    ID3D11ShaderResourceView* pTextureViews[255];
+
     ID3D11VertexShader* pShadowShader = NULL;
     ID3D11VertexShader* pVertShader = NULL;
     ID3D11PixelShader* pPixShader = NULL;
