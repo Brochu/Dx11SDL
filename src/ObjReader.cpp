@@ -146,7 +146,7 @@ namespace ObjReader
     {
         // Read Model information, list of objects
         (*ppModelData) = new ModelData();
-        (*ppModelData)->filename = filepath;
+        (*ppModelData)->objFilename = filepath;
 
         std::ifstream file(filepath);
         if (!file.good() || !file.is_open() || file.bad()) return false;
@@ -156,7 +156,6 @@ namespace ObjReader
         std::string line;
         while (getline(file, line))
         {
-            //TODO: Parsing the material file if found
             if (line[0] == 'o')
             {
                 MeshData mesh;
@@ -169,9 +168,18 @@ namespace ObjReader
                     ReadVertex(vertCache, bufs, std::stringstream(line), *ppModelData);
 
                     if (line.find(mesh.name) != -1) break;
+                    else if (line.substr(0, 6) == "usemtl")
+                    {
+                        mesh.materialName = line.substr(7);
+                    }
                 }
                 mesh.indexCount = (*ppModelData)->indices.size() - mesh.indexOffset;
                 (*ppModelData)->meshes.push_back(mesh);
+            }
+            else if (line.substr(0, 6) == "mtllib")
+            {
+                (*ppModelData)->matFilename = line.substr(7);
+                //TODO: Parsing the material file if found
             }
         }
 
@@ -181,14 +189,23 @@ namespace ObjReader
     void DebugModelData(const ModelData& modelData)
     {
         printf("[MODEL] file = %s [%ld verts][%ld idx]\n",
-            modelData.filename.c_str(),
+            modelData.objFilename.c_str(),
             modelData.verts.size(),
             modelData.indices.size());
+
+        if (modelData.matFilename.size() != 0)
+        {
+            printf("\tLinked materials filename = %s\n", modelData.matFilename.c_str());
+        }
 
         printf("\tcontains %ld meshes\n", modelData.meshes.size());
         for (const MeshData& m : modelData.meshes)
         {
-            printf("\t%s [index offset = %i][index count = %ld]\n", m.name.c_str(), m.indexOffset, m.indexCount);
+            printf("\t%s [index offset = %i][index count = %ld][material name = %s]\n",
+                m.name.c_str(),
+                m.indexOffset,
+                m.indexCount,
+                m.materialName.c_str());
         }
     }
 };

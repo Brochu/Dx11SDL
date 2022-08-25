@@ -17,13 +17,16 @@ namespace ObjReader
     struct MeshData
     {
         std::string name = "--NoName--";
+        std::string materialName = "";
+
         uint64_t indexOffset;
         uint64_t indexCount;
     };
 
     struct ModelData
     {
-        std::string filename;
+        std::string objFilename;
+        std::string matFilename;
 
         std::vector<Vertex> verts;
         std::vector<uint16_t> indices;
