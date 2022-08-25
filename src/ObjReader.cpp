@@ -62,6 +62,9 @@ namespace ObjReader
             ss >> vert.x;
             ss >> vert.y;
             ss >> vert.z;
+
+            // Not 100% sure why this is needed, is the OBJ file wrong or am I wrong...
+            vert.x *= -1;
             bufs.positions.push_back(vert);
         }
         else if (type == "vt")
@@ -99,8 +102,8 @@ namespace ObjReader
             {
                 // One tri case
                 AddVertex(cache, bufs, VertexComponents(pIdx[0], uIdx[0], nIdx[0]), pModelData);
-                AddVertex(cache, bufs, VertexComponents(pIdx[1], uIdx[1], nIdx[1]), pModelData);
                 AddVertex(cache, bufs, VertexComponents(pIdx[2], uIdx[2], nIdx[2]), pModelData);
+                AddVertex(cache, bufs, VertexComponents(pIdx[1], uIdx[1], nIdx[1]), pModelData);
             }
             else if (pIdx.size() == 4)
             {
