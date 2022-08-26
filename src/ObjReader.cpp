@@ -171,6 +171,8 @@ namespace ObjReader
                     else if (line.substr(0, 6) == "usemtl")
                     {
                         mesh.materialName = line.substr(7);
+                        //TODO: Might need to split these in more separate meshes for mat
+                        //Save a new mesh every time we change the texture/material
                     }
                 }
                 mesh.indexCount = (*ppModelData)->indices.size() - mesh.indexOffset;
@@ -179,7 +181,7 @@ namespace ObjReader
             else if (line.substr(0, 6) == "mtllib")
             {
                 (*ppModelData)->matFilename = line.substr(7);
-                //TODO: Parsing the material file if found
+                ReadMaterialLibrary((*ppModelData)->matFilename.c_str(), *ppModelData);
             }
         }
 
@@ -207,5 +209,11 @@ namespace ObjReader
                 m.indexCount,
                 m.materialName.c_str());
         }
+    }
+
+    bool ReadMaterialLibrary(const char* filepath, ModelData* pModelData)
+    {
+        //TODO: Implement material library parsing
+        return true;
     }
 };

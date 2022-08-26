@@ -11,7 +11,6 @@ namespace ObjReader
         DirectX::XMFLOAT3 pos;
         DirectX::XMFLOAT2 uvs;
         DirectX::XMFLOAT3 norm;
-        //TODO: Add the tag for texture sampling
     };
 
     struct MeshData
@@ -32,10 +31,16 @@ namespace ObjReader
         std::vector<uint16_t> indices;
 
         std::vector<MeshData> meshes;
+
+        std::string matNames[1024];
+        std::string texFiles[1024];
+        uint64_t matCount = 0;
     };
 
     bool ReadSingleMeshFromFile(const char* filepath, ModelData** ppModelData);
     bool ReadMultipleMeshFromFile(const char* filepath, ModelData** ppModelData);
 
     void DebugModelData(const ModelData& modelData);
+
+    bool ReadMaterialLibrary(const char* filepath, ModelData* pModelData);
 };
