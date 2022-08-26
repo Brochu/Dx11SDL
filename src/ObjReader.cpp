@@ -185,6 +185,7 @@ namespace ObjReader
             }
         }
 
+        file.close();
         return true;
     }
 
@@ -213,7 +214,40 @@ namespace ObjReader
 
     bool ReadMaterialLibrary(const char* filepath, ModelData* pModelData)
     {
-        //TODO: Implement material library parsing
+        // Creates an array of all the materials needed to render the model
+        printf("[ReadMat] reading at %s\n", filepath);
+
+        std::ifstream file(filepath);
+        if (!file.good() || !file.is_open() || file.bad()) return false;
+
+        std::string line;
+        getline(file, line);
+        while(getline(file, line))
+        {
+            if (line.size() <= 0) continue;
+            else if (line.substr(0, 6) == "newmtl")
+            {
+                pModelData->matNames[pModelData->matCount] = line.substr(7);
+            }
+            else if (line.substr(0, 6) == "map_Kd")
+            {
+                pModelData->texFiles[pModelData->matCount++] = line.substr(7);
+            }
+        }
+
+        file.close();
         return true;
+    }
+
+    void DebugModelMaterial(const ModelData& modelData)
+    {
+        printf("[MODEL] file = %s [%ld mats]\n",
+            modelData.matFilename.c_str(),
+            modelData.matCount);
+
+        for (int i = 0; i < modelData.matCount; i++)
+        {
+            printf("\t%s :%s\n", modelData.matNames[i].c_str(), modelData.texFiles[i].c_str());
+        }
     }
 };

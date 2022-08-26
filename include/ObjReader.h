@@ -43,4 +43,5 @@ namespace ObjReader
     void DebugModelData(const ModelData& modelData);
 
     bool ReadMaterialLibrary(const char* filepath, ModelData* pModelData);
+    void DebugModelMaterial(const ModelData& modelData);
 };
