@@ -175,7 +175,8 @@ namespace ObjReader
                             {
                                 mesh.materialName = line.substr(7);
                             }
-                            else {
+                            else
+                            {
                                 ReadVertex(vertCache, bufs, std::stringstream(line), *ppModelData);
                             }
                             if (line.find(mesh.name) != -1) break;
