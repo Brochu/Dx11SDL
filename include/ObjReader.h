@@ -3,6 +3,7 @@
 #include <DXM/DirectXMath.h>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 namespace ObjReader
 {
@@ -32,9 +33,9 @@ namespace ObjReader
 
         std::vector<MeshData> meshes;
 
-        std::string matNames[1024];
-        std::string texFiles[1024];
-        uint64_t matCount = 0;
+        std::unordered_map<std::string, uint8_t> matCache;
+        std::string texFiles[256];
+        uint8_t texCount = 0;
     };
 
     bool ReadSingleMeshFromFile(const char* filepath, ModelData** ppModelData);

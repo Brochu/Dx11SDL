@@ -2,7 +2,6 @@
 
 #include <fstream>
 #include <sstream>
-#include <unordered_map>
 
 namespace ObjReader
 {
@@ -232,18 +231,27 @@ namespace ObjReader
         if (!file.good() || !file.is_open() || file.bad()) return false;
 
         std::string line;
+
         getline(file, line);
         while(getline(file, line))
         {
             if (line.size() <= 0) continue;
-            else if (line.substr(0, 6) == "newmtl")
+
+            std::string mat = line.substr(7);
+            getline(file, line);
+            std::string tex = line.substr(7);
+
+            uint8_t i;
+            for (i = 0; i < pModelData->texCount; i++)
             {
-                pModelData->matNames[pModelData->matCount] = line.substr(7);
+                if (pModelData->texFiles[i] == tex) break;
             }
-            else if (line.substr(0, 6) == "map_Kd")
+
+            if (i == pModelData->texCount)
             {
-                pModelData->texFiles[pModelData->matCount++] = line.substr(7);
+                pModelData->texFiles[pModelData->texCount++] = tex;
             }
+            pModelData->matCache[mat] = i;
         }
 
         file.close();
@@ -252,13 +260,19 @@ namespace ObjReader
 
     void DebugModelMaterial(const ModelData& modelData)
     {
-        printf("[MODEL] file = %s [%ld mats]\n",
+        printf("[MODEL] file = %s [%i textures]\n",
             modelData.matFilename.c_str(),
-            modelData.matCount);
+            modelData.texCount);
 
-        for (int i = 0; i < modelData.matCount; i++)
+        for (uint8_t i = 0; i < modelData.texCount; i++)
         {
-            printf("\t%s :%s\n", modelData.matNames[i].c_str(), modelData.texFiles[i].c_str());
+            printf("%s ; ", modelData.texFiles[i].c_str());
         }
+        printf("\n---\n");
+        for (const auto& entry :  modelData.matCache)
+        {
+            printf("%s (%i) ; ", entry.first.c_str(), entry.second);
+        }
+        printf("\n");
     }
 };
