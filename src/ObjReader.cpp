@@ -173,6 +173,7 @@ namespace ObjReader
                         {
                             if (line.substr(0, 6) == "usemtl")
                             {
+                                //TODO: maybe track texture index instead
                                 mesh.materialName = line.substr(7);
                             }
                             else
