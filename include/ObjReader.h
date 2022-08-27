@@ -17,8 +17,8 @@ namespace ObjReader
     struct MeshData
     {
         std::string name = "--NoName--";
-        std::string materialName = "";
 
+        uint8_t textureIndex = 0;
         uint64_t indexOffset;
         uint64_t indexCount;
     };

@@ -172,8 +172,7 @@ namespace ObjReader
                         {
                             if (line.substr(0, 6) == "usemtl")
                             {
-                                //TODO: maybe track texture index instead
-                                mesh.materialName = line.substr(7);
+                                mesh.textureIndex = (*ppModelData)->matCache[line.substr(7)];
                             }
                             else
                             {
@@ -192,7 +191,10 @@ namespace ObjReader
             }
             else if (line.substr(0, 6) == "mtllib")
             {
-                (*ppModelData)->matFilename = line.substr(7);
+                //TODO Find a better way to find the matlib in the same folder as the OBJ
+                // This will not work with other OBJ files or folder structure
+                std::string path(filepath);
+                (*ppModelData)->matFilename = path.substr(0, path.size()-3) + "mtl";
                 ReadMaterialLibrary((*ppModelData)->matFilename.c_str(), *ppModelData);
             }
         }
@@ -216,11 +218,11 @@ namespace ObjReader
         printf("\tcontains %ld meshes\n", modelData.meshes.size());
         for (const MeshData& m : modelData.meshes)
         {
-            printf("\t%s [index offset = %i][index count = %ld][material name = %s]\n",
+            printf("\t%s [index offset = %i][index count = %ld][texture index = %i]\n",
                 m.name.c_str(),
                 m.indexOffset,
                 m.indexCount,
-                m.materialName.c_str());
+                m.textureIndex);
         }
     }
 
