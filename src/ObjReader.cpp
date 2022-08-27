@@ -158,25 +158,36 @@ namespace ObjReader
         {
             if (line[0] == 'o')
             {
-                MeshData mesh;
-                mesh.name = line.substr(2);
-                if (mesh.name == "EmptyObject") continue;
+                std::string currentObjName = line.substr(2);
+                if (currentObjName == "EmptyObject") continue;
 
-                mesh.indexOffset = (*ppModelData)->indices.size();
                 while(getline(file, line))
                 {
-                    ReadVertex(vertCache, bufs, std::stringstream(line), *ppModelData);
-
-                    if (line.find(mesh.name) != -1) break;
-                    else if (line.substr(0, 6) == "usemtl")
+                    if (line.substr(0, 3) == "# o")
                     {
-                        mesh.materialName = line.substr(7);
-                        //TODO: Might need to split these in more separate meshes for mat
-                        //Save a new mesh every time we change the texture/material
+                        MeshData mesh = {};
+                        mesh.name = line.substr(4);
+                        mesh.indexOffset = (*ppModelData)->indices.size();
+
+                        while(getline(file, line))
+                        {
+                            if (line.substr(0, 6) == "usemtl")
+                            {
+                                mesh.materialName = line.substr(7);
+                            }
+                            else {
+                                ReadVertex(vertCache, bufs, std::stringstream(line), *ppModelData);
+                            }
+                            if (line.find(mesh.name) != -1) break;
+                        }
+
+                        mesh.name = currentObjName + "::" + mesh.name;
+                        mesh.indexCount = (*ppModelData)->indices.size() - mesh.indexOffset;
+                        (*ppModelData)->meshes.push_back(mesh);
                     }
+
+                    if (line.find(currentObjName) != -1) break;
                 }
-                mesh.indexCount = (*ppModelData)->indices.size() - mesh.indexOffset;
-                (*ppModelData)->meshes.push_back(mesh);
             }
             else if (line.substr(0, 6) == "mtllib")
             {
@@ -215,8 +226,6 @@ namespace ObjReader
     bool ReadMaterialLibrary(const char* filepath, ModelData* pModelData)
     {
         // Creates an array of all the materials needed to render the model
-        printf("[ReadMat] reading at %s\n", filepath);
-
         std::ifstream file(filepath);
         if (!file.good() || !file.is_open() || file.bad()) return false;
 
