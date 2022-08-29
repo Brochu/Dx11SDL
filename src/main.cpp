@@ -1,6 +1,4 @@
 #include "App.h"
-#include "ObjReader.h"
-
 #include <cstring>
 
 int RunModelViewer(int argc, char* argv[])
@@ -35,12 +33,7 @@ int RunModelViewer(int argc, char* argv[])
 
 int RunTest(int argc, char* argv[])
 {
-    ObjReader::ModelData *model;
-    ObjReader::ReadMultipleMeshFromFile(argv[2], &model);
-    ObjReader::DebugModelMaterial(*model);
-    ObjReader::DebugModelData(*model);
-    delete model;
-
+    // Write code to test here
     return 0;
 }
 
