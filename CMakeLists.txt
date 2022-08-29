@@ -38,6 +38,7 @@ set (source
 set (libs
     SDL2main
     SDL2
+    SDL2_image
 
     d3d11.lib
     d3dx11.lib
