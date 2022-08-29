@@ -3,6 +3,7 @@
 
 #define SDL_MAIN_HANDLED
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h> // Separate install from SDL2
 #include <SDL2/SDL_syswm.h>
 #include <SDL2/SDL_timer.h>
 
@@ -15,10 +16,16 @@ Application::Application(const std::string&& name, int w, int h)
 
 int Application::Init(const char* scenePath)
 {
-    printf("[APP] Start Init Flow");
+    printf("[APP] Start Init Flow\n");
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
         printf("[ERROR] Could not initialize SDL2 library; error = %s\n", SDL_GetError());
+        return 1;
+    }
+
+    if ( !(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) )
+    {
+        printf("[ERROR] Could not initialize SDL2_image library; error = %s\n", SDL_GetError());
         return 1;
     }
 
