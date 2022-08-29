@@ -1,15 +1,12 @@
 #include "Dx11Renderer.h"
-#include "ObjReader.h"
 #include "RendererUtils.h"
+#include "ObjReader.h"
 
-#include <d3dcompiler.h>
-#include <DXM/DirectXMath.h>
+#include <SDL2/SDL_surface.h>
 
 #include <imgui.h>
 #include <imgui_impl_dx11.h>
 
-#include <cstdio>
-#include <winerror.h>
 
 struct PerFrameData
 {
@@ -232,7 +229,17 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height, const char *scenePath
 
     // Load all needed textures and upload to GPU memory + Create shader resource views
     {
-        //TODO: Handle texture loading from the model data
+        for(uint8_t i = 0; i < model->texCount; i++)
+        {
+            //TODO: Find a better way to store the current path, at App level or Renderer level
+            //Split path and file
+            std::string tempPath(scenePath);
+            tempPath = tempPath.substr(0, tempPath.size()-9); //Very hacky
+            tempPath.append(model->texFiles[i]);
+
+            printf("%s\n", tempPath.c_str());
+            SDL_Surface *surf = nullptr;
+        }
     }
 
     return 0;
