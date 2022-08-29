@@ -195,7 +195,6 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height, const char *scenePath
         // Could not read the model file
         return 1;
     }
-    ObjReader::DebugModelData(*model);
 
     // VERTEX BUFFER AND INDEX DESCRIPTION AND CREATION
     {
