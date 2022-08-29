@@ -16,6 +16,8 @@ public:
     int Tick();
     void Close();
 
+    static SDL_Surface* LoadImageFromFile(std::string filepath);
+
     bool isRunning;
     std::string AppName;
     int width;

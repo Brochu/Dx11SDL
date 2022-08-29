@@ -137,3 +137,8 @@ void Application::Close()
 
     printf("[APP] Done Closing\n");
 }
+
+SDL_Surface* Application::LoadImageFromFile(std::string filepath)
+{
+    return IMG_Load(filepath.c_str());
+}
