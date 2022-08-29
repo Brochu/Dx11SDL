@@ -1,6 +1,7 @@
 #include "Dx11Renderer.h"
 #include "RendererUtils.h"
 #include "ObjReader.h"
+#include "App.h"
 
 #include <SDL2/SDL_surface.h>
 
@@ -237,8 +238,10 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height, const char *scenePath
             tempPath = tempPath.substr(0, tempPath.size()-9); //Very hacky
             tempPath.append(model->texFiles[i]);
 
-            printf("%s\n", tempPath.c_str());
-            SDL_Surface *surf = nullptr;
+            SDL_Surface *surf = Application::LoadImageFromFile(tempPath);
+            printf("[RENDER] tex: %s (%i X %i)\n", tempPath.c_str(), surf->w, surf->h);
+
+            SDL_FreeSurface(surf);
         }
     }
 
