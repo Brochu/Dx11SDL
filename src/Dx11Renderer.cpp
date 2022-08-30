@@ -239,7 +239,7 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height, const char *scenePath
             tempPath.append(model->texFiles[i]);
 
             SDL_Surface *surf = Application::LoadImageFromFile(tempPath);
-            printf("[RENDER] tex: %s (%i X %i)\n", tempPath.c_str(), surf->w, surf->h);
+            printf("[RENDER] tex: %s (%i X %i)[%i]\n", tempPath.c_str(), surf->w, surf->h, surf->pitch);
 
             SDL_FreeSurface(surf);
         }
