@@ -2,6 +2,7 @@
 #include "RendererUtils.h"
 #include "ObjReader.h"
 #include "App.h"
+#include "SDL2/SDL_pixels.h"
 
 #include <SDL2/SDL_surface.h>
 
@@ -239,7 +240,41 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height, const char *scenePath
             tempPath.append(model->texFiles[i]);
 
             SDL_Surface *surf = Application::LoadImageFromFile(tempPath);
-            printf("[RENDER] tex: %s (%i X %i)[%i]\n", tempPath.c_str(), surf->w, surf->h, surf->pitch);
+            printf("[RENDER] tex: %s (%i X %i)[%i][%s]\n",
+                tempPath.c_str(),
+                surf->w,
+                surf->h,
+                surf->pitch,
+                SDL_GetPixelFormatName(surf->format->format)
+            );
+
+            D3D11_TEXTURE2D_DESC texDesc = {};
+            texDesc.Width = surf->w;
+            texDesc.Height = surf->h;
+            texDesc.MipLevels = 1;
+            texDesc.ArraySize = 1;
+            texDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+            texDesc.SampleDesc.Count = 1;
+            texDesc.SampleDesc.Quality = 0;
+            texDesc.Usage = D3D11_USAGE_DEFAULT;
+            texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+            texDesc.CPUAccessFlags = 0;
+            texDesc.MiscFlags = 0;
+            D3D11_SUBRESOURCE_DATA texData = {};
+            texData.pSysMem = surf->pixels;
+            texData.SysMemPitch = surf->pitch;
+            texData.SysMemSlicePitch = 0;
+
+            hr = pDevice->CreateTexture2D(&texDesc, &texData, &pTextures[i]);
+            assert(SUCCEEDED(hr));
+
+            D3D11_SHADER_RESOURCE_VIEW_DESC srDesc = {};
+            srDesc.Format = texDesc.Format;
+            srDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+            srDesc.Texture2D.MostDetailedMip = 0;
+            srDesc.Texture2D.MipLevels = 1;
+            hr = pDevice->CreateShaderResourceView(pTextures[i], &srDesc, &pTextureViews[i]);
+            assert(SUCCEEDED(hr));
 
             SDL_FreeSurface(surf);
         }
