@@ -78,5 +78,7 @@ float4 PS_Main(PS_Input input) : SV_TARGET
     factor += 0.1;
 
     color = float4(factor, factor, factor, 1.0f);
-    return color;
+    float4 base = albedo.Sample(shadowSampler, input.uv);
+
+    return color * base;
 }
