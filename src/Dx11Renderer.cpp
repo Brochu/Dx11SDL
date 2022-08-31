@@ -240,13 +240,6 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height, const char *scenePath
             tempPath.append(model->texFiles[i]);
 
             SDL_Surface *surf = Application::LoadImageFromFile(tempPath);
-            printf("[RENDER] tex: %s (%i X %i)[%i][%s]\n",
-                tempPath.c_str(),
-                surf->w,
-                surf->h,
-                surf->pitch,
-                SDL_GetPixelFormatName(surf->format->format)
-            );
 
             D3D11_TEXTURE2D_DESC texDesc = {};
             texDesc.Width = surf->w;
