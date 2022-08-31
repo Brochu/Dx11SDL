@@ -16,6 +16,8 @@ cbuffer LightData : register(b1)
 Texture2D shadowmap: register(t0);
 sampler shadowSampler: register(s0);
 
+Texture2D albedo: register(t1);
+
 //TODO: Find out how to bind texture array for handling texture
 
 struct VS_Input
