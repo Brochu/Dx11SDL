@@ -126,6 +126,7 @@ int Application::Tick()
 
 void Application::Close()
 {
+    printf("[APP] Closing Application\n");
     SDL_DestroyWindow(window);
     SDL_Quit();
 

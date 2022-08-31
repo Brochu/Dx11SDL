@@ -579,7 +579,7 @@ void Dx11Renderer::RenderDebugUI()
 
 void Dx11Renderer::Quit()
 {
-    delete model;
+    printf("[RENDER] Quitting Dx11 Renderer\n");
 
     ImGui_ImplDX11_Shutdown();
     pVertBuf->Release();
@@ -594,7 +594,7 @@ void Dx11Renderer::Quit()
 
     pRenderTarget->Release();
     pDepthTarget->Release();
-    pDepthShaderView->Release();
+    //pDepthShaderView->Release(); // Not used yet, no need to clear
 
     pShadowTarget->Release();
     pShadowSampler->Release();
@@ -607,5 +607,6 @@ void Dx11Renderer::Quit()
     pDevice->Release();
     pSwapchain->Release();
 
+    delete model;
     printf("[RENDER] Done quitting Dx11\n");
 }
