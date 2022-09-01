@@ -433,7 +433,6 @@ void Dx11Renderer::Update(float time, float delta)
         farZ
     ));
 
-    //TODO: Simplify this as we did for transform matrices
     DirectX::XMMATRIX transform = DirectX::XMMatrixIdentity();
     transform *= DirectX::XMMatrixTranslation(translation[0], translation[1], translation[2]);
     transform *= DirectX::XMMatrixRotationRollPitchYaw(rotation[0], rotation[1], rotation[2]);
@@ -441,30 +440,26 @@ void Dx11Renderer::Update(float time, float delta)
     DirectX::XMStoreFloat4x4(&newData.model, transform);
 
     // Update light position transformation info
-    DirectX::XMFLOAT4 lDir { lightDir[0], lightDir[1], lightDir[2], 0.f };
-    DirectX::XMVECTOR lightLook = DirectX::XMLoadFloat4(&lDir);
-    DirectX::XMVector4Normalize(lightLook);
-    DirectX::XMStoreFloat4(&lDir, lightLook);
-
-    DirectX::XMFLOAT4 lPos { -lightDir[0], -lightDir[1], -lightDir[2], 1.f };
+    DirectX::XMFLOAT4 lPos { lightDir[0], lightDir[1], lightDir[2], 1.f };
+    DirectX::XMFLOAT4 lFocus { 0.f, 0.f, 0.f, 1.f };
     DirectX::XMFLOAT4 lUp { lightUp[0], lightUp[1], lightUp[2], 0.f };
 
     DirectX::XMMATRIX lightView = DirectX::XMMatrixLookAtLH(
         DirectX::XMLoadFloat4(&lPos),
-        DirectX::XMLoadFloat4(&lDir),
+        DirectX::XMLoadFloat4(&lFocus),
         DirectX::XMLoadFloat4(&lUp)
     );
     DirectX::XMMATRIX lightPersp = DirectX::XMMatrixOrthographicLH(
-        128,
-        128,
-        -100,
-        100
+        4096,
+        4096,
+        -1.f,
+        farZ * 10
     );
     DirectX::XMMATRIX final = DirectX::XMMatrixMultiply(lightView, lightPersp); // Combine
 
     LightData newLightData = {};
     DirectX::XMStoreFloat4x4(&newLightData.objectToLight, final);
-    newLightData.lightDir = lDir;
+    newLightData.lightDir = { lightDir[0], lightDir[1], lightDir[2], 0.f };
 
     // Update constant buffers
     D3D11_MAPPED_SUBRESOURCE mapped = {};
@@ -571,7 +566,8 @@ void Dx11Renderer::RenderDebugUI()
 
     ImGui::Text("Directional Light:");
     ImGui::Separator();
-    //TODO: Add debug values to test different light directions
+    ImGui::DragFloat3("Light Direction", lightDir, 1.f, -500.f, 500.f);
+    ImGui::DragFloat3("Light Up Direction", lightUp, 0.01f, -1.f, 1.f);
 
     ImGui::End();
     ImGui::Render();
@@ -582,10 +578,11 @@ void Dx11Renderer::Quit()
 {
     printf("[RENDER] Quitting Dx11 Renderer\n");
 
-    //TODO: Make sure we release every obj, shadow maps, textures
     ImGui_ImplDX11_Shutdown();
     pVertBuf->Release();
     pIdxBuf->Release();
+    pConstBuf->Release();
+    pLightBuf->Release();
     pInputLayout->Release();
 
     pPixShader->Release();
@@ -596,14 +593,16 @@ void Dx11Renderer::Quit()
 
     pRenderTarget->Release();
     pDepthTarget->Release();
-    //pDepthShaderView->Release(); // Not used yet, no need to clear
 
     pShadowTarget->Release();
     pShadowSampler->Release();
     pShadowShaderView->Release();
 
-    pConstBuf->Release();
-    pLightBuf->Release();;
+    for(uint8_t i = 0; i < model->texCount; i++)
+    {
+        pTextures[i]->Release();
+        pTextureViews[i]->Release();
+    }
 
     pCtx->Release();
     pDevice->Release();
