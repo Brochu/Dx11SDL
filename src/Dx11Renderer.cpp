@@ -433,6 +433,7 @@ void Dx11Renderer::Update(float time, float delta)
         farZ
     ));
 
+    //TODO: Simplify this as we did for transform matrices
     DirectX::XMMATRIX transform = DirectX::XMMatrixIdentity();
     transform *= DirectX::XMMatrixTranslation(translation[0], translation[1], translation[2]);
     transform *= DirectX::XMMatrixRotationRollPitchYaw(rotation[0], rotation[1], rotation[2]);
@@ -581,6 +582,7 @@ void Dx11Renderer::Quit()
 {
     printf("[RENDER] Quitting Dx11 Renderer\n");
 
+    //TODO: Make sure we release every obj, shadow maps, textures
     ImGui_ImplDX11_Shutdown();
     pVertBuf->Release();
     pIdxBuf->Release();
