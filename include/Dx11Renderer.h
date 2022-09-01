@@ -29,7 +29,6 @@ private:
     // Base render pass targets
     ID3D11RenderTargetView* pRenderTarget = nullptr;
     ID3D11DepthStencilView* pDepthTarget = nullptr;
-    ID3D11ShaderResourceView* pDepthShaderView = nullptr;
 
     // Shadow map targets
     ID3D11DepthStencilView* pShadowTarget = nullptr;
@@ -79,6 +78,6 @@ private:
 
     // Debug Values
     UINT frameTimeIdx;
-    float frameTimes[10];
-    float frameRates[10];
+    float frameTimes[512];
+    float frameRates[512];
 };
