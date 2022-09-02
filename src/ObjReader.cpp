@@ -71,6 +71,8 @@ namespace ObjReader
             DirectX::XMFLOAT2 uv;
             ss >> uv.x;
             ss >> uv.y;
+
+            uv.y *= -1;
             bufs.uvs.push_back(uv);
         }
         else if (type == "vn")
