@@ -502,6 +502,7 @@ void Dx11Renderer::Render()
 
     pCtx->PSSetShader(nullptr, NULL, 0); // Empty pixel shader for shadow pass
 
+    //TODO: Combine in one draw call if possible?
     for (const ObjReader::MeshData& m : model->meshes)
     {
         pCtx->DrawIndexed(m.indexCount, m.indexOffset, 0);
@@ -519,6 +520,7 @@ void Dx11Renderer::Render()
     pCtx->PSSetSamplers(0, 1, &pShadowSampler);
     pCtx->PSSetShaderResources(0, 1, &pShadowShaderView);
 
+    //TODO: Sort calls by texture index + combine draws with the same tex id
     for (const ObjReader::MeshData& m : model->meshes)
     {
         pCtx->PSSetShaderResources(1, 1, &pTextureViews[m.textureIndex]);
@@ -566,7 +568,7 @@ void Dx11Renderer::RenderDebugUI()
 
     ImGui::Text("Directional Light:");
     ImGui::Separator();
-    ImGui::DragFloat3("Light Direction", lightDir, 1.f, -500.f, 500.f);
+    ImGui::DragFloat3("Light Direction", lightDir, 0.025f, -6.2832f, 6.2832f);
     ImGui::DragFloat3("Light Up Direction", lightUp, 0.01f, -1.f, 1.f);
 
     ImGui::End();
