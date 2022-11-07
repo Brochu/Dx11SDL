@@ -2,9 +2,9 @@
 #include "RendererUtils.h"
 #include "ObjReader.h"
 #include "App.h"
-#include "SDL2/SDL_pixels.h"
+#include "SDL_pixels.h"
 
-#include <SDL2/SDL_surface.h>
+#include <SDL_surface.h>
 
 #include <imgui.h>
 #include <imgui_impl_dx11.h>
@@ -159,14 +159,14 @@ int Dx11Renderer::PrepareBasePass(UINT width, UINT height, const char *scenePath
 
     ID3DBlob *pVs = NULL;
     // VERTEX SHADER
-    if (!Utils::compileShader(L"shaders/basePass.hlsl", "VS_Main", "vs_5_0", &pVs))
+    if (!Utils::compileShader(L"../../../shaders/basePass.hlsl", "VS_Main", "vs_5_0", &pVs))
         return 1;
     hr = pDevice->CreateVertexShader(pVs->GetBufferPointer(), pVs->GetBufferSize(), NULL, &pVertShader);
     assert(SUCCEEDED(hr));
 
     ID3DBlob *pPs = NULL;
     // PIXEL SHADER
-    if (!Utils::compileShader(L"shaders/basePass.hlsl", "PS_Main", "ps_5_0", &pPs))
+    if (!Utils::compileShader(L"../../../shaders/basePass.hlsl", "PS_Main", "ps_5_0", &pPs))
         return 1;
     hr = pDevice->CreatePixelShader(pPs->GetBufferPointer(), pPs->GetBufferSize(), NULL, &pPixShader);
     assert(SUCCEEDED(hr));
@@ -338,7 +338,7 @@ int Dx11Renderer::PrepareShadowPass()
 
     ID3DBlob *pVs = NULL;
     // VERTEX SHADER
-    if (!Utils::compileShader(L"shaders/shadowPass.hlsl", "VS_Main_Shadow", "vs_5_0", &pVs))
+    if (!Utils::compileShader(L"../../../shaders/shadowPass.hlsl", "VS_Main_Shadow", "vs_5_0", &pVs))
         return 1;
     hr = pDevice->CreateVertexShader(pVs->GetBufferPointer(), pVs->GetBufferSize(), NULL, &pShadowShader);
     assert(SUCCEEDED(hr));

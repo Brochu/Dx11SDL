@@ -26,6 +26,8 @@ bool Utils::compileShader(const WCHAR *filepath, const char *entry, const char *
         &pError);
     if (FAILED(hr))
     {
+        printf("Failed for entry point: %s\n", entry);
+        printf("%llu\n", hr);
         if (pError)
         {
             OutputDebugStringA((char*) pError->GetBufferPointer());

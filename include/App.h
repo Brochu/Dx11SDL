@@ -2,9 +2,9 @@
 
 #include <string>
 
-class SDL_Window;
-class SDL_Surface;
-//class Dx11Renderer;
+struct SDL_Window;
+struct SDL_Surface;
+class Dx11Renderer;
 
 class Application
 {
@@ -31,5 +31,5 @@ private:
 
     SDL_Window* window = nullptr;
     SDL_Surface* surface = nullptr;
-    //Dx11Renderer* render = nullptr;
+    Dx11Renderer* render = nullptr;
 };
