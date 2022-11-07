@@ -1,0 +1,47 @@
+[
+{
+  "directory": "C:/Users/Alex/Documents/Dx11SDL/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -IC:/Users/Alex/Documents/Dx11SDL/include -IC:/Users/Alex/Documents/Dx11SDL/imgui -g -Xclang -gcodeview -O0 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -std=gnu++17 -o CMakeFiles\\Dx11SDL2.dir\\src\\main.cpp.obj -c C:\\Users\\Alex\\Documents\\Dx11SDL\\src\\main.cpp",
+  "file": "C:\\Users\\Alex\\Documents\\Dx11SDL\\src\\main.cpp"
+},
+{
+  "directory": "C:/Users/Alex/Documents/Dx11SDL/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -IC:/Users/Alex/Documents/Dx11SDL/include -IC:/Users/Alex/Documents/Dx11SDL/imgui -g -Xclang -gcodeview -O0 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -std=gnu++17 -o CMakeFiles\\Dx11SDL2.dir\\src\\App.cpp.obj -c C:\\Users\\Alex\\Documents\\Dx11SDL\\src\\App.cpp",
+  "file": "C:\\Users\\Alex\\Documents\\Dx11SDL\\src\\App.cpp"
+},
+{
+  "directory": "C:/Users/Alex/Documents/Dx11SDL/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -IC:/Users/Alex/Documents/Dx11SDL/include -IC:/Users/Alex/Documents/Dx11SDL/imgui -g -Xclang -gcodeview -O0 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -std=gnu++17 -o CMakeFiles\\Dx11SDL2.dir\\imgui\\imgui.cpp.obj -c C:\\Users\\Alex\\Documents\\Dx11SDL\\imgui\\imgui.cpp",
+  "file": "C:\\Users\\Alex\\Documents\\Dx11SDL\\imgui\\imgui.cpp"
+},
+{
+  "directory": "C:/Users/Alex/Documents/Dx11SDL/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -IC:/Users/Alex/Documents/Dx11SDL/include -IC:/Users/Alex/Documents/Dx11SDL/imgui -g -Xclang -gcodeview -O0 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -std=gnu++17 -o CMakeFiles\\Dx11SDL2.dir\\imgui\\imgui_demo.cpp.obj -c C:\\Users\\Alex\\Documents\\Dx11SDL\\imgui\\imgui_demo.cpp",
+  "file": "C:\\Users\\Alex\\Documents\\Dx11SDL\\imgui\\imgui_demo.cpp"
+},
+{
+  "directory": "C:/Users/Alex/Documents/Dx11SDL/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -IC:/Users/Alex/Documents/Dx11SDL/include -IC:/Users/Alex/Documents/Dx11SDL/imgui -g -Xclang -gcodeview -O0 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -std=gnu++17 -o CMakeFiles\\Dx11SDL2.dir\\imgui\\imgui_draw.cpp.obj -c C:\\Users\\Alex\\Documents\\Dx11SDL\\imgui\\imgui_draw.cpp",
+  "file": "C:\\Users\\Alex\\Documents\\Dx11SDL\\imgui\\imgui_draw.cpp"
+},
+{
+  "directory": "C:/Users/Alex/Documents/Dx11SDL/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -IC:/Users/Alex/Documents/Dx11SDL/include -IC:/Users/Alex/Documents/Dx11SDL/imgui -g -Xclang -gcodeview -O0 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -std=gnu++17 -o CMakeFiles\\Dx11SDL2.dir\\imgui\\imgui_tables.cpp.obj -c C:\\Users\\Alex\\Documents\\Dx11SDL\\imgui\\imgui_tables.cpp",
+  "file": "C:\\Users\\Alex\\Documents\\Dx11SDL\\imgui\\imgui_tables.cpp"
+},
+{
+  "directory": "C:/Users/Alex/Documents/Dx11SDL/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -IC:/Users/Alex/Documents/Dx11SDL/include -IC:/Users/Alex/Documents/Dx11SDL/imgui -g -Xclang -gcodeview -O0 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -std=gnu++17 -o CMakeFiles\\Dx11SDL2.dir\\imgui\\imgui_widgets.cpp.obj -c C:\\Users\\Alex\\Documents\\Dx11SDL\\imgui\\imgui_widgets.cpp",
+  "file": "C:\\Users\\Alex\\Documents\\Dx11SDL\\imgui\\imgui_widgets.cpp"
+},
+{
+  "directory": "C:/Users/Alex/Documents/Dx11SDL/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -IC:/Users/Alex/Documents/Dx11SDL/include -IC:/Users/Alex/Documents/Dx11SDL/imgui -g -Xclang -gcodeview -O0 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -std=gnu++17 -o CMakeFiles\\Dx11SDL2.dir\\imgui\\imgui_impl_dx11.cpp.obj -c C:\\Users\\Alex\\Documents\\Dx11SDL\\imgui\\imgui_impl_dx11.cpp",
+  "file": "C:\\Users\\Alex\\Documents\\Dx11SDL\\imgui\\imgui_impl_dx11.cpp"
+},
+{
+  "directory": "C:/Users/Alex/Documents/Dx11SDL/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -IC:/Users/Alex/Documents/Dx11SDL/include -IC:/Users/Alex/Documents/Dx11SDL/imgui -g -Xclang -gcodeview -O0 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -std=gnu++17 -o CMakeFiles\\Dx11SDL2.dir\\imgui\\imgui_impl_sdl.cpp.obj -c C:\\Users\\Alex\\Documents\\Dx11SDL\\imgui\\imgui_impl_sdl.cpp",
+  "file": "C:\\Users\\Alex\\Documents\\Dx11SDL\\imgui\\imgui_impl_sdl.cpp"
+}
+]
