@@ -1,6 +1,6 @@
 #include "ObjReader.h"
-
 #include <fstream>
+#include <string>
 
 namespace ObjReader
 {
@@ -43,6 +43,21 @@ namespace ObjReader
             line = "";
         }
     }
+    void ExtractVertex(std::string& line, uint16_t& pid, uint16_t& uid, uint16_t& nid)
+    {
+        std::string substring;
+        ExtractSubstring(line, substring);
+
+        auto pos = line.find('/');
+        pid = (uint16_t)std::stoi(line.substr(0, pos));
+        line = line.substr(pos+1);
+
+        pos = line.find('/');
+        uid = (uint16_t)std::stoi(line.substr(0, pos));
+        line = line.substr(pos+1);
+
+        uid = (uint16_t)std::stoi(line);
+    }
     void AddVertex(VertexCache& cache, TempBuffers& bufs, VertexComponents&& vcomp, ModelData* outModel)
     {
         uint64_t id = 0;
@@ -64,18 +79,22 @@ namespace ObjReader
 
         outModel->indices.push_back(cache[id]);
     }
-    void ReadVertex(VertexCache& cache, TempBuffers& bufs, std::stringstream&& ss, ModelData* pModelData)
+    void ReadVertex(VertexCache& cache, TempBuffers& bufs, std::string& line, ModelData* pModelData)
     {
-        //TODO: Implement this w/o stringstream, use extract substring + convert functions
         std::string type;
-        ss >> type;
+        ExtractSubstring(line, type);
 
         if (type == "v")
         {
+            std::string sx, sy, sz;
+            ExtractSubstring(line, sx);
+            ExtractSubstring(line, sy);
+            ExtractSubstring(line, sz);
+
             DirectX::XMFLOAT3 vert;
-            ss >> vert.x;
-            ss >> vert.y;
-            ss >> vert.z;
+            vert.x = std::stof(sx);
+            vert.y = std::stof(sy);
+            vert.z = std::stof(sz);
 
             // Not 100% sure why this is needed, is the OBJ file wrong or am I wrong...
             vert.x *= -1;
@@ -83,31 +102,39 @@ namespace ObjReader
         }
         else if (type == "vt")
         {
+            std::string sx, sy;
+            ExtractSubstring(line, sx);
+            ExtractSubstring(line, sy);
+
             DirectX::XMFLOAT2 uv;
-            ss >> uv.x;
-            ss >> uv.y;
+            uv.x = std::stof(sx);
+            uv.y = std::stof(sy);
 
             uv.y *= -1;
             bufs.uvs.push_back(uv);
         }
         else if (type == "vn")
         {
+            std::string sx, sy, sz;
+            ExtractSubstring(line, sx);
+            ExtractSubstring(line, sy);
+            ExtractSubstring(line, sz);
+
             DirectX::XMFLOAT3 norm;
-            ss >> norm.x;
-            ss >> norm.y;
-            ss >> norm.z;
+            norm.x = std::stof(sx);
+            norm.y = std::stof(sy);
+            norm.z = std::stof(sz);
+
             bufs.norms.push_back(norm);
         }
         else if (type == "f")
         {
             std::vector<uint16_t> pIdx, uIdx, nIdx;
-            while (ss.rdbuf()->in_avail() > 0)
+            while (line.length() > 0)
             {
                 // Handle one set of ids
                 uint16_t p, u, n;
-                ss >> p; ss.ignore(1);
-                ss >> u; ss.ignore(1);
-                ss >> n; ss.ignore(1);
+                ExtractVertex(line, p, u, n);
 
                 pIdx.push_back(p);
                 uIdx.push_back(u);
@@ -148,11 +175,9 @@ namespace ObjReader
         VertexCache vertCache;
         TempBuffers bufs;
         std::string line;
-        std::stringstream ss;
         while (getline(file, line))
         {
-            // TODO: STOP USING STRINGSTREAM, Finish implementing ReadVertex w/o it
-            ReadVertex(vertCache, bufs, std::stringstream(line), *ppModelData);
+            ReadVertex(vertCache, bufs, line, *ppModelData);
         }
         (*ppModelData)->meshes.push_back({ "Mesh0", 0, (*ppModelData)->indices.size() });
 
@@ -194,7 +219,7 @@ namespace ObjReader
                             }
                             else
                             {
-                                ReadVertex(vertCache, bufs, std::stringstream(line), *ppModelData);
+                                ReadVertex(vertCache, bufs, line, *ppModelData);
                             }
                             if (line.find(mesh.name) != -1) break;
                         }
@@ -223,7 +248,7 @@ namespace ObjReader
 
     void DebugModelData(const ModelData& modelData)
     {
-        printf("[MODEL] file = %s [%ld verts][%ld idx]\n",
+        printf("[MODEL] file = %s [%llu verts][%llu idx]\n",
             modelData.objFilename.c_str(),
             modelData.verts.size(),
             modelData.indices.size());
@@ -233,10 +258,10 @@ namespace ObjReader
             printf("\tLinked materials filename = %s\n", modelData.matFilename.c_str());
         }
 
-        printf("\tcontains %ld meshes\n", modelData.meshes.size());
+        printf("\tcontains %llu meshes\n", modelData.meshes.size());
         for (const MeshData& m : modelData.meshes)
         {
-            printf("\t%s [index offset = %i][index count = %ld][texture index = %i]\n",
+            printf("\t%s [index offset = %llu][index count = %llu][texture index = %i]\n",
                 m.name.c_str(),
                 m.indexOffset,
                 m.indexCount,

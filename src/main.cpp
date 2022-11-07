@@ -39,8 +39,8 @@ int RunTest(int argc, char* argv[])
     // Write code to test here
     printf("Starting test ...\n");
 
-    //ObjReader::ModelData* model = nullptr;
-    //ObjReader::ReadSingleMeshFromFile(argv[2], &model);
+    ObjReader::ModelData* model = nullptr;
+    ObjReader::ReadSingleMeshFromFile(argv[2], &model);
 
     printf("Ending test ...\n");
     return 0;

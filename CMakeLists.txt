@@ -23,7 +23,7 @@ set (source
     ${CMAKE_CURRENT_LIST_DIR}/src/main.cpp
     #${CMAKE_CURRENT_LIST_DIR}/src/App.cpp
     #${CMAKE_CURRENT_LIST_DIR}/src/Dx11Renderer.cpp
-    #${CMAKE_CURRENT_LIST_DIR}/src/ObjReader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/ObjReader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/RendererUtils.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/imgui/imgui.cpp
