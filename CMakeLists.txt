@@ -5,8 +5,8 @@ set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set (CMAKE_CXX_STANDARD 17)
 
 set (headers
-    ${CMAKE_CURRENT_LIST_DIR}/include/App.h
-    ${CMAKE_CURRENT_LIST_DIR}/include/Dx11Renderer.h
+    #${CMAKE_CURRENT_LIST_DIR}/include/App.h
+    #${CMAKE_CURRENT_LIST_DIR}/include/Dx11Renderer.h
     ${CMAKE_CURRENT_LIST_DIR}/include/ObjReader.h
     ${CMAKE_CURRENT_LIST_DIR}/include/RendererUtils.h
 
@@ -21,9 +21,9 @@ set (headers
 )
 set (source
     ${CMAKE_CURRENT_LIST_DIR}/src/main.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/App.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/Dx11Renderer.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/ObjReader.cpp
+    #${CMAKE_CURRENT_LIST_DIR}/src/App.cpp
+    #${CMAKE_CURRENT_LIST_DIR}/src/Dx11Renderer.cpp
+    #${CMAKE_CURRENT_LIST_DIR}/src/ObjReader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/RendererUtils.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/imgui/imgui.cpp

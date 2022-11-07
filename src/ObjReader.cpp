@@ -1,7 +1,6 @@
 #include "ObjReader.h"
 
 #include <fstream>
-#include <sstream>
 
 namespace ObjReader
 {
@@ -29,6 +28,21 @@ namespace ObjReader
     typedef std::unordered_map<uint64_t, uint16_t> VertexCache;
 
     // Helpers methods - Start
+    void ExtractSubstring(std::string& line, std::string& substring)
+    {
+        auto pos = line.find(' ');
+
+        if (pos != std::string::npos)
+        {
+            substring = line.substr(0, pos);
+            line = line.substr(pos+1);
+        }
+        else
+        {
+            substring = line;
+            line = "";
+        }
+    }
     void AddVertex(VertexCache& cache, TempBuffers& bufs, VertexComponents&& vcomp, ModelData* outModel)
     {
         uint64_t id = 0;
@@ -52,6 +66,7 @@ namespace ObjReader
     }
     void ReadVertex(VertexCache& cache, TempBuffers& bufs, std::stringstream&& ss, ModelData* pModelData)
     {
+        //TODO: Implement this w/o stringstream, use extract substring + convert functions
         std::string type;
         ss >> type;
 
@@ -136,6 +151,7 @@ namespace ObjReader
         std::stringstream ss;
         while (getline(file, line))
         {
+            // TODO: STOP USING STRINGSTREAM, Finish implementing ReadVertex w/o it
             ReadVertex(vertCache, bufs, std::stringstream(line), *ppModelData);
         }
         (*ppModelData)->meshes.push_back({ "Mesh0", 0, (*ppModelData)->indices.size() });
